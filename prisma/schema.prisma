@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Airport {
+   id                Int     @id
+   ident             String  @unique
+   type              String
+   name              String
+   latitude_deg      Float
+   longitude_deg     Float
+   elevation_ft      Int?
+   continent         String?
+   iso_country       String?
+   iso_region        String?
+   municipality      String?
+   scheduled_service String?
+   icao_code         String? @unique
+   iata_code         String? @unique
+   gps_code          String?
+   local_code        String?
+   home_link         String?
+   wikipedia_link    String?
+   keywords          String?
+   supports_map      Boolean @default(false)
+   timezone          String?
+
+   frequencies  AirportFrequency[]
+   navaids      AirportNav[]
+   runways      AirportRunway[]
+   airline_hubs AirportAirlineHub[]
+
+   @@map("airports")
+}
+
+model AirportFrequency {
+   id            Int     @id
+   airport_ref   Int
+   airport_ident String
+   type          String
+   description   String?
+   frequency_mhz Float
+
+   airport Airport @relation(fields: [airport_ref], references: [id], onDelete: Cascade)
+
+   @@map("airport_frequencies")
+}
+
+model AirportNav {
+   id                     Int     @id
+   filename               String?
+   ident                  String
+   name                   String
+   type                   String
+   frequency_khz          Int?
+   latitude_deg           Float?
+   longitude_deg          Float?
+   elevation_ft           Int?
+   iso_country            String?
+   dme_frequency_khz      Int?
+   dme_channel            String?
+   dme_latitude_deg       Float?
+   dme_longitude_deg      Float?
+   dme_elevation_ft       Int?
+   slaved_variation_deg   Float?
+   magnetic_variation_deg Float?
+   usageType              String?
+   power                  String?
+   associated_airport     String?
+
+   airport Airport? @relation(fields: [associated_airport], references: [ident], onDelete: Cascade)
+
+   @@map("airport_nav")
+}
+
+model AirportRunway {
+   id                        Int      @id
+   airport_ref               Int
+   airport_ident             String
+   length_ft                 Int?
+   width_ft                  Int?
+   surface                   String?
+   lighted                   Boolean?
+   closed                    Boolean?
+   le_ident                  String?
+   le_latitude_deg           Float?
+   le_longitude_deg          Float?
+   le_elevation_ft           Int?
+   le_heading_degT           Float?
+   le_displaced_threshold_ft Int?
+   he_ident                  String?
+   he_latitude_deg           Float?
+   he_longitude_deg          Float?
+   he_elevation_ft           Int?
+   he_heading_degT           Float?
+   he_displaced_threshold_ft Int?
+
+   airport Airport @relation(fields: [airport_ref], references: [id], onDelete: Cascade)
+
+   @@map("airport_runways")
+}
+
+model AirportAirlineHub {
+   airline_iata String
+   airport_iata String
+   airport      Airport  @relation(fields: [airport_iata], references: [iata_code])
+   terminals    String[]
+
+   @@unique([airline_iata, airport_iata])
+   @@map("airport_airline_hubs")
+}
