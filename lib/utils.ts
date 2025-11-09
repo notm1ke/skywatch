@@ -36,8 +36,19 @@ export const shortenAirportName = (name: string) => {
 		.replaceAll("National", "Ntl")
 		.replaceAll("County", "Cnty")
 		.replaceAll("Metropolitan", "Metro")
-		.replaceAll("Airport", "");
+		.replaceAll("Airport", "")
+		.replaceAll(/\/.*$/g, "");
 };
+
+export const delayReason = (raw: string) => {
+	if (/:wx$/g.test(raw.toLowerCase()))
+		return "Weather";
+	if (/:(vol|volume|minutes in trail)$/g.test(raw.toLowerCase()) || raw.toLowerCase().includes('demand'))
+		return "Traffic Volume";
+	if (raw.toLowerCase().includes('staffing') || raw.toLowerCase().includes('staff'))
+		return "Staffing";
+	return raw;
+}
 
 export const getLatestTimeValue = (time: number, delimiter = ', ', short = true, top?: number) => {
 	const sec = Math.trunc(time / 1000) % 60;

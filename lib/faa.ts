@@ -12,10 +12,10 @@ export type AirportAdvisory = {
 	groundDelay?: GroundDelayAdvisory;
 	airportClosure?: any;
 	freeForm?: FreeFormAdvisory;
-	arrivalDelay?: any;
-	departureDelay?: any;
+	arrivalDelay?: DelayAdvisory;
+	departureDelay?: DelayAdvisory;
 	airportConfig?: AirportConfig;
-	deicing?: any;
+	deicing?: DeicingAdvisory;
 	airportLongName: string;
 	latitude: string;
 	longitude: string;
@@ -91,6 +91,29 @@ export type FreeFormAdvisory = {
 	issuedDate: string;
 }
 
+export type DeicingAdvisory = {
+	id: string;
+	airportId: string; // IATA
+	createdAt: string;
+	updatedAt: string;
+	eventTime: string;
+	expTime: string;
+}
+
+export type DelayAdvisory = {
+	airportId: string;
+	reason: string;
+	arrivalDeparture: {
+		type: string;
+		min: string; // fmt time string i.e. 1 hour and 1 minute
+		max: string; // fmt time string i.e. 1 hour and 1 minute
+		trend: string;
+	};
+	updateTime: string;
+	averageDelay: string;
+	trend: string;
+}
+
 export type AirportConfig = {
 	id: string;
 	airportId: string; // IATA
@@ -118,56 +141,101 @@ export type PlannedAirportEvent = {
 	eventType: string;
 }
 
+type MetricType = "STATUS" | "CENTER" | "FIX";
+type StatusMetricNames =
+	| "Past Dept Time"
+	| "Departing"
+	| "EDCT Issued"
+	| "Irregular"
+	| "Flight Active"
+	| "Arrived";
+
+type CenterMetricNames = string;
+type FixMetricNames = string;
+type MetricName<Metric extends MetricType> = 
+	Metric extends "STATUS" ? StatusMetricNames :
+	Metric extends "CENTER" ? CenterMetricNames :
+	Metric extends "FIX" ? FixMetricNames : never;
+
+export type AirportMetrics = {
+	name: string; // IATA
+	totalFlightCount: string; // int
+	cancelledFlightCount: number;
+	dateTime: string;
+	month: string;
+	day: string;
+	year: string;
+	defaultAarRate: string; // int
+	control: string; // No GDP - ground delay protocol?
+	rates: string[];
+	fixes: string[]; // waypoints ?
+	timeBuckets: Array<{
+		day: string; // day of month, zero padded
+		time: string; // time of day like 0800
+		counts: Array<{
+			type: MetricType;
+			name: MetricName<MetricType>;
+		}>;
+		flights: Array<{
+			acid: string; // callsign, i.e. UAL1609
+			type: string; // IATA aircraft type, i.e. B739
+			origin: string; // origin IATA
+			destination: string; // destination IATA
+			etd: string; // est. time of departure, i.e. A09/0422 (perhaps 11/9 at 0422?)
+			ete: string; // est. time en-route (224 means 2h24m or 224m not sure)
+			departureCenter: string; // origin airspace center, i.e. ZHU, ZOA
+			majorAirline: string; // airline callsign, i.e. UAL
+		}>;
+	}>;
+}
+
 const AIRSPACE_STATUS_CACHE_KEY = 'airspace:status';
 const PLANNED_EVENTS_CACHE_KEY = 'airspace:planned';
 
-export const fetchAirspaceStatus = async () => {
-	return okAsync(redis
-		.get(AIRSPACE_STATUS_CACHE_KEY)
-		.then(response => {
-			if (response) return safeParseJson<AirportAdvisory[]>(response);
-			return axios
-				.get<AirportAdvisory[]>('https://nasstatus.faa.gov/api/airport-events')
-				.then(res => res.data)
-				.then(data => {
-					redis
-						.set(AIRSPACE_STATUS_CACHE_KEY, JSON.stringify(data))
-						.then(() => redis.expire(AIRSPACE_STATUS_CACHE_KEY, 60 * 5));
-					
-					return data;
-				})
-		}),
-		err => err.message
-	);
-}
+export const fetchAirspaceStatus = async () => okAsync(redis
+	.get(AIRSPACE_STATUS_CACHE_KEY)
+	.then(response => {
+		if (response) return safeParseJson<AirportAdvisory[]>(response);
+		return axios
+			.get<AirportAdvisory[]>('https://nasstatus.faa.gov/api/airport-events')
+			.then(res => res.data)
+			.then(data => {
+				redis
+					.set(AIRSPACE_STATUS_CACHE_KEY, JSON.stringify(data))
+					.then(() => redis.expire(AIRSPACE_STATUS_CACHE_KEY, 60 * 5));
+				
+				return data;
+			})
+	}),
+	err => err.message
+);
 
-export const fetchPlannedEvents = async () => {
-	return okAsync(redis
-		.get(PLANNED_EVENTS_CACHE_KEY)
-		.then(response => {
-			if (response) return safeParseJson<PlannedAirportEvent[]>(response);
-			return axios
-				.get<OperationsPlanResponse>('https://nasstatus.faa.gov/api/operations-plan')
-				.then(res => res.data)
-				.then(data => {
-					const enriched = data
-						.terminalPlanned
-						.map(enrichPlannedEvent);
-					
-					redis
-						.set(PLANNED_EVENTS_CACHE_KEY, JSON.stringify(enriched))
-						.then(() => redis.expire(PLANNED_EVENTS_CACHE_KEY, 60 * 10));
-					
-					return enriched;
-				})
-		}),
-		err => err.message
-	);
-}
+export const fetchPlannedEvents = async () => okAsync(redis
+	.get(PLANNED_EVENTS_CACHE_KEY)
+	.then(response => {
+		if (response) return safeParseJson<PlannedAirportEvent[]>(response);
+		return axios
+			.get<OperationsPlanResponse>('https://nasstatus.faa.gov/api/operations-plan')
+			.then(res => res.data)
+			.then(data => {
+				const enriched = data
+					.terminalPlanned
+					.map(enrichPlannedEvent);
+				
+				redis
+					.set(PLANNED_EVENTS_CACHE_KEY, JSON.stringify(enriched))
+					.then(() => redis.expire(PLANNED_EVENTS_CACHE_KEY, 60 * 10));
+				
+				return enriched;
+			})
+	}),
+	err => err.message
+);
 
 export const fetchCompositeAirspaceData = async () => okAsync(
 	Promise
 		.all([
+			// unwrap here rather than in a .then() so ts can infer each individual array item type
 			fetchAirspaceStatus().then(unwrap),
 			fetchPlannedEvents().then(unwrap)
 		])

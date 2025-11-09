@@ -10,7 +10,7 @@ export const AirspacePlannedEvents = () => {
 	if (error) return <>error</>;
 	
 	return (
-		<div className="border-l border-b">
+		<div className="border-t border-l">
 			<div className="flex flex-row p-3 justify-between">
 				<span className="text-md font-bold">
 					Planned Interruptions

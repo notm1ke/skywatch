@@ -32,6 +32,7 @@ export const okAsync = async <T, Err = Error>(
 	promise: Promise<T>,
 	except?: (cause: Err) => string
 ) => {
+	console.time('okAsync');
 	const awaited: Awaitable<T> = await promise.catch(err => ({
 		status: "ERR_IN_PROMISE",
 		cause: err,
@@ -40,6 +41,7 @@ export const okAsync = async <T, Err = Error>(
 			: err.message
 	}));
 	
+	console.timeEnd('okAsync');
 	if (isAwaitableErrored(awaited)) return raise(awaited.message);
 	return { data: awaited, success: true };
 }

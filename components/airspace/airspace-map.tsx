@@ -64,7 +64,8 @@ type AirportStatus =
 	| "ground_delay"
 	| "ops_delay"
 	| "airport_closure"
-	| "freeform";
+	| "freeform"
+	| "deicing";
 	
 const colorForAirportStatus = (status: AirportStatus) => {
 	switch (status) {
@@ -73,6 +74,7 @@ const colorForAirportStatus = (status: AirportStatus) => {
 		case "ops_delay": return "bg-yellow-400";
 		case "ground_stop": return "bg-orange-400";
 		case "freeform": return "bg-blue-400";
+		case "deicing": return "bg-blue-400";
 		default: return "bg-green-400";
 	}
 }
@@ -84,6 +86,7 @@ const AirportMarker: React.FC<{ advisory: AirportAdvisory, airport: AirportWithJ
 		if (advisory.arrivalDelay || advisory.departureDelay) return "ops_delay";
 		if (advisory.groundStop) return "ground_stop";
 		if (advisory.freeForm) return "freeform";
+		if (advisory.deicing) return "deicing";
 		return "normal";
 	}, [advisory]);
 	
@@ -148,7 +151,7 @@ export const AirspaceMap: React.FC = () => {
 					<NavigationControl position="top-right" />
 					<AttributionControl
 						compact
-						customAttribution="Airside (c) 2025"
+						customAttribution="Skywatch (c) 2025"
 						style={{
 							color: "black",
 							fontSize: "12px",

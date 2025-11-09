@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 	return (
 		<AirportProvider>
 			<AirspaceProvider>
-				<div className="min-h-screen max-w-[1700px] mx-auto border">
+				<div className="max-w-[1700px] mx-auto border">
 					<Header />
 					<main>{children}</main>
 				</div>

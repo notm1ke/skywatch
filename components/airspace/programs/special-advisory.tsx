@@ -1,4 +1,5 @@
 import moment from "moment-timezone";
+
 import { AirportAdvisory } from "~/lib/faa";
 import { getLatestTimeValue } from "~/lib/utils";
 
@@ -13,17 +14,17 @@ export const SpecialAdvisoryProgram: React.FC<{ advisory: AirportAdvisory }> = (
 		<div className="flex flex-row justify-between">
 			<div className="text-sm">Start</div>
 			<div className="text-sm tabular-nums font-mono tracking-tighter">
-				{moment(advisory.freeForm!.startTime).format('ddd, MMM Do [at] h:m A')}
+				{moment(advisory.freeForm!.startTime).format('ddd, MMM Do [at] h:mm A')}
 			</div>
 		</div>
 		<div className="flex flex-row justify-between">
 			<div className="text-sm">End</div>
 			<div className="text-sm tabular-nums font-mono tracking-tighter">
-				{moment(advisory.freeForm!.endTime).format('ddd, MMM Do [at] h:m A')}
+				{moment(advisory.freeForm!.endTime).format('ddd, MMM Do [at] h:mm A')}
 			</div>
 		</div>
 		<div className="flex flex-row justify-between">
-			<div className="text-sm">Period</div>
+			<div className="text-sm">Duration</div>
 			<div className="text-sm tabular-nums font-mono tracking-tighter">
 				{getLatestTimeValue(moment(advisory.freeForm!.endTime).diff(moment(advisory.freeForm!.startTime)), ', ', false, 2)}
 			</div>

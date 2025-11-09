@@ -1,5 +1,3 @@
-import moment from 'moment-timezone';
-
 import { ExternalLink } from "lucide-react";
 import { AirportAdvisory } from "~/lib/faa";
 import { Badge } from "~/components/ui/badge";
@@ -26,9 +24,9 @@ export const GroundDelayProgram: React.FC<{ advisory: AirportAdvisory }> = ({ ad
 			</div>
 		</div>
 		<div className="flex flex-row justify-between">
-			<div className="text-sm">Last Updated</div>
+			<div className="text-sm">Last Update</div>
 			<div className="text-sm tabular-nums font-mono tracking-tighter">
-				{moment(advisory.groundDelay!.updatedAt).fromNow()}
+				{advisory.groundDelay!.updatedAt}
 			</div>
 		</div>
 		<div className="flex flex-row justify-between">
