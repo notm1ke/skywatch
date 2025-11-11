@@ -1,9 +1,9 @@
-import { RedisClient } from "bun";
+import { Redis } from "ioredis";
 
 const globalForRedis = global as unknown as {
-	redis: RedisClient
+	redis: Redis
 };
 
-export const redis = globalForRedis.redis || new RedisClient(process.env.REDIS_URL!);
+export const redis = globalForRedis.redis || new Redis(process.env.REDIS_URL!);
 
 if (process.env.NODE_ENV !== 'production') globalForRedis.redis = redis;

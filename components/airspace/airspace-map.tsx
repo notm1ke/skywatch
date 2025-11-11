@@ -70,9 +70,9 @@ type AirportStatus =
 const colorForAirportStatus = (status: AirportStatus) => {
 	switch (status) {
 		case "airport_closure": return "bg-red-400";
+		case "ground_stop": return "bg-orange-400";
 		case "ground_delay": return "bg-yellow-400";
 		case "ops_delay": return "bg-yellow-400";
-		case "ground_stop": return "bg-orange-400";
 		case "freeform": return "bg-blue-400";
 		case "deicing": return "bg-blue-400";
 		default: return "bg-green-400";
@@ -82,9 +82,9 @@ const colorForAirportStatus = (status: AirportStatus) => {
 const AirportMarker: React.FC<{ advisory: AirportAdvisory, airport: AirportWithJoins }> = ({ advisory, airport }) => {
 	const status: AirportStatus = useMemo(() => {
 		if (advisory.airportClosure) return "airport_closure";
+		if (advisory.groundStop) return "ground_stop";
 		if (advisory.groundDelay) return "ground_delay";
 		if (advisory.arrivalDelay || advisory.departureDelay) return "ops_delay";
-		if (advisory.groundStop) return "ground_stop";
 		if (advisory.freeForm) return "freeform";
 		if (advisory.deicing) return "deicing";
 		return "normal";
@@ -129,9 +129,24 @@ export const AirspaceMap: React.FC = () => {
 		[advisories, airports]
 	);
 	
+	const layerStyle = useMemo(() => {
+		const colors = {
+			dark: {
+				textColor: '#ffffff',
+				lineColor: '#cccccc'
+			},
+			light: {
+				textColor: '#262828',
+				lineColor: '#424242'
+			}
+		};
+		
+		return colors[theme as keyof typeof colors] ?? colors.dark;
+	}, [theme]);
+	
 	return (
 		<div className="w-full min-h-[600px] h-full relative overflow-hidden">
-			<div className="absolute inset-0 bg-zinc-900/80">
+			<div className="absolute inset-0">
 				<Map
 					mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
 					initialViewState={{
@@ -139,6 +154,7 @@ export const AirspaceMap: React.FC = () => {
 						longitude: -100,
 						zoom: 3.25
 					}}
+					projection="mercator"
 					interactiveLayerIds={['airspace']}
 					attributionControl={false}
 					style={{ width: "100%", height: "600px" }}
@@ -170,9 +186,9 @@ export const AirspaceMap: React.FC = () => {
 									'line-color': [
 										'match',
 										['get', 'status'],
-										'#cccccc',
-										'#cccccc',
-										'#cccccc'
+										layerStyle.lineColor,
+										layerStyle.lineColor,
+										layerStyle.lineColor
 									],
 									'line-opacity': 0.2
 								}
@@ -188,7 +204,7 @@ export const AirspaceMap: React.FC = () => {
 								'text-size': 14,
 								'symbol-placement': 'point'
 							}}
-							paint={{ 'text-color': '#ffffff' }}
+							paint={{ 'text-color': layerStyle.textColor }}
 						/>
 					</Source>
 				</Map>

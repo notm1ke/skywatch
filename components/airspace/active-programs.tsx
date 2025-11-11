@@ -1,14 +1,15 @@
 import { useAirspace } from "./provider"
 import { AirportAdvisory } from "~/lib/faa";
+import { DelayProgram } from "./programs/delay";
 import { shortenAirportName } from "~/lib/utils";
 import { useAirports } from "../airport-provider";
 import { DeicingProgram } from "./programs/deicing";
 import { ChevronRight, Snowflake } from "lucide-react";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { GroundStopProgram } from "./programs/ground-stop";
 import { GroundDelayProgram } from "./programs/ground-delay";
 import { SpecialAdvisoryProgram } from "./programs/special-advisory";
 import { Disclosure, DisclosureContent, DisclosureTrigger } from "../ui/disclosure";
-import { DelayProgram } from "./programs/delay";
 
 enum Priority {
 	Normal,
@@ -101,7 +102,7 @@ const programDisclosureContent = (advisory: AirportAdvisory) => {
 		case Priority.AirportClosure:
 			return <></>
 		case Priority.GroundStop:
-			return <></>
+			return <GroundStopProgram advisory={advisory} />
 		case Priority.GroundDelay:
 			return <GroundDelayProgram advisory={advisory} />
 		case Priority.ArrivalDelay:
@@ -130,17 +131,17 @@ export const ActivePrograms = () => {
 	);
 	
 	return (
-		<div className="border-l">
-			<div className="flex flex-row p-3 justify-between">
-				<span className="text-md font-bold">
+		<div>
+			<div className="flex flex-row px-3 py-2 justify-between">
+				<span className="text-md font-semibold pointer-events-none">
 					Active Interruptions
 				</span>
-				<div className="flex px-2 text-sm items-center rounded-sm bg-zinc-800 font-mono tabular-nums">
+				<div className="flex px-2 text-sm items-center rounded-sm bg-zinc-300 dark:bg-zinc-800 font-mono tabular-nums pointer-events-none">
 					{advisories.length}
 				</div>
 			</div>
 			<div className="border-t">
-				<ScrollArea className="h-[800px] max-h-[800px]">
+				<ScrollArea className="min-h-auto h-[559px] max-h-[800px]">
 					{advisories.sort(sortOrder).map(advisory => {
 						const airport = airports.find(airport => airport.iata_code === advisory.airportId);
 						if (!airport) return null;
@@ -152,7 +153,7 @@ export const ActivePrograms = () => {
 										<div>
 											<div className="flex items-center">
 												<ChevronRight className="size-4 mr-2 text-zinc-500 transition-transform duration-200 ease-in-out rotate-0 group-aria-expanded:rotate-90" />
-												<span className="text-sm font-bold font-mono px-2 bg-zinc-700 mr-2">{airport.iata_code}</span>
+												<span className="text-sm font-bold font-mono px-2 bg-zinc-300 dark:bg-zinc-700 mr-2">{airport.iata_code}</span>
 												<span className="text-sm font-bold">{shortenAirportName(airport.name)}</span>
 											</div>
 										</div>

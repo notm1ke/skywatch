@@ -8,7 +8,7 @@ export const SpecialAdvisoryProgram: React.FC<{ advisory: AirportAdvisory }> = (
 		<div className="flex flex-row justify-between">
 			<div className="text-sm">NOTAM</div>
 			<div className="text-sm tabular-nums font-mono tracking-tighter">
-				{advisory.freeForm!.notamNumber}
+				#{advisory.freeForm!.notamNumber}
 			</div>
 		</div>
 		<div className="flex flex-row justify-between">
@@ -31,7 +31,7 @@ export const SpecialAdvisoryProgram: React.FC<{ advisory: AirportAdvisory }> = (
 		</div>
 		<div className="flex flex-row justify-between">
 			<div className="text-sm">Advisory</div>
-			<div className="text-sm tabular-nums font-mono tracking-tighter">
+			<div className="text-sm tabular-nums font-mono tracking-tighter max-w-[415px] text-right">
 				{advisory.freeForm!.text}
 			</div>
 		</div>

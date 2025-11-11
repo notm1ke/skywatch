@@ -1,5 +1,7 @@
 import { PrismaClient } from "~/prisma/generated/client";
 
+export * from "~/prisma/generated/models";
+
 const globalForPrisma = global as unknown as {
 	prisma?: PrismaClient;
 };

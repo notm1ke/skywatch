@@ -1,7 +1,28 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from "clsx";
+import { FlowStatusMetricKeys } from "./faa";
+
+export type ArgumentType<Func> = Func extends (...args: infer Args) => any ? Args : never;
+
+export type RemoteChartType = 
+	| "line"
+	| "bar"
+	| "bar_stacked"
+	| "pie"
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
+
+export const shortNumberFormatter = new Intl.NumberFormat('en', {
+  notation: "compact",
+  compactDisplay: "short",
+  maximumFractionDigits: 1
+});
+
+export const formatFaaTime = (raw: string) => {
+	if (!raw) return 'Today';
+	const hour = (parseInt(raw.slice(0, 2)) % 12)
+	return (hour === 0 ? '12' : padWithZero(hour)) + ':' + raw.slice(2) + ' ' + (raw < '1200' ? 'am' : 'pm');
+}
 
 export const capitalizeFirst = (input: string) =>
 	input
@@ -86,4 +107,41 @@ export const getLatestTimeValue = (time: number, delimiter = ', ', short = true,
 		.split(', ')
 		.slice(0, top ?? result.split(', ').length)
 		.join(delimiter);
+}
+
+export const flowStatusColors = (status: FlowStatusMetricKeys) => {
+	switch (status) {
+		case "arrived": return "var(--color-green-400)";
+		case "departing": return "var(--color-blue-400)";
+		case "flight_active": return "var(--color-blue-600)";
+		case "past_dept_time": return "var(--color-yellow-400)";
+		case "edct_issued": return "var(--color-yellow-600)";
+		case "irregular": return "var(--color-red-400)";
+	}
+}
+
+export const flowCenterColors = (center: string) => {
+	switch (center) {
+		case "ZAB": return "var(--color-red-400)";
+		case "ZAU": return "var(--color-orange-400)";
+		case "ZBW": return "var(--color-amber-400)";
+		case "ZDC": return "var(--color-yellow-400)";
+		case "ZDV": return "var(--color-lime-400)";
+		case "ZFW": return "var(--color-green-400)";
+		case "ZHU": return "var(--color-emerald-400)";
+		case "ZID": return "var(--color-teal-400)";
+		case "ZJX": return "var(--color-cyan-400)";
+		case "ZKC": return "var(--color-sky-400)";
+		case "ZLA": return "var(--color-blue-400)";
+		case "ZLC": return "var(--color-indigo-400)";
+		case "ZMA": return "var(--color-violet-400)";
+		case "ZME": return "var(--color-purple-400)";
+		case "ZMP": return "var(--color-fuchsia-400)";
+		case "ZNY": return "var(--color-pink-400)";
+		case "ZOA": return "var(--color-rose-400)";
+		case "ZOB": return "var(--color-slate-600)";
+		case "ZSE": return "var(--color-gray-600)";
+		case "ZTL": return "var(--color-zinc-600)";
+		default: return "var(--color-blue-400)";
+	}
 }

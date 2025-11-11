@@ -1,11 +1,15 @@
 generator client {
-  provider = "prisma-client"
-  output   = "./generated"
+   provider = "prisma-client"
+   output   = "./generated"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+   provider = "postgresql"
+   url      = env("DATABASE_URL")
+}
+
+generator json {
+   provider = "prisma-json-types-generator"
 }
 
 model Airport {
@@ -34,6 +38,7 @@ model Airport {
    frequencies  AirportFrequency[]
    navaids      AirportNav[]
    runways      AirportRunway[]
+   traffic      AirportTrafficFlow[]
    airline_hubs AirportAirlineHub[]
 
    @@map("airports")
@@ -104,6 +109,43 @@ model AirportRunway {
    airport Airport @relation(fields: [airport_ref], references: [id], onDelete: Cascade)
 
    @@map("airport_runways")
+}
+
+model AirportTrafficFlow {
+   iata_code            String
+   year                 Int
+   month                Int
+   day                  Int
+   default_arrival_rate Int
+   arrival_rates        Int[]
+   total_flights        Int @default(0)
+   cancelled_flights    Int @default(0)
+   fixes                String[]
+   time_buckets         AirportTrafficFlowRecord[]
+
+   airport Airport @relation(fields: [iata_code], references: [iata_code])
+
+   @@unique([iata_code, year, month, day])
+   @@map("airport_traffic")
+}
+
+model AirportTrafficFlowRecord {
+   iata_code String
+   record    AirportTrafficFlow @relation(fields: [iata_code, year, month, day], references: [iata_code, year, month, day])
+
+   year  Int
+   month Int
+   day   Int
+   time  String
+
+   /// [TrafficFlowCounts]
+   counts Json
+
+   /// [TrafficFlowFlights]
+   flights Json
+
+   @@unique([iata_code, year, month, day, time])
+   @@map("airport_traffic_record")
 }
 
 model AirportAirlineHub {

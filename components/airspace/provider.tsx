@@ -5,7 +5,12 @@ import React from "react";
 import { toast } from "sonner";
 import { useCallback } from "react";
 import { unwrap } from "~/lib/actions";
-import { AirportAdvisory, fetchAirspaceStatus, fetchCompositeAirspaceData, PlannedAirportEvent } from "~/lib/faa";
+
+import {
+	AirportAdvisory,
+	fetchCompositeAirspaceData,
+	PlannedAirportEvent
+} from "~/lib/faa";
 
 import {
 	createContext,
@@ -30,6 +35,7 @@ export const AirspaceProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
 	const [advisories, setAdvisories] = useState<AirportAdvisory[]>([]);
 	const [planned, setPlanned] = useState<PlannedAirportEvent[]>([]);
+	
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<Error | null>(null);
 
