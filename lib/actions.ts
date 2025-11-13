@@ -20,19 +20,18 @@ type AwaitedError = {
 	message: string;
 }
 
-export const raise = (message: string) => ({
+export const raise = (message: string): ActionErrorResponse => ({
 	message, success: false
 });
 
-export const ok = <T>(data: T) => ({
+export const ok = <T>(data: T): ActionSuccessResponse<T> => ({
 	data, success: true
 });
 
 export const okAsync = async <T, Err = Error>(
 	promise: Promise<T>,
 	except?: (cause: Err) => string
-) => {
-	console.time('okAsync');
+): Promise<ActionResponse<T>> => {
 	const awaited: Awaitable<T> = await promise.catch(err => ({
 		status: "ERR_IN_PROMISE",
 		cause: err,
@@ -41,7 +40,6 @@ export const okAsync = async <T, Err = Error>(
 			: err.message
 	}));
 	
-	console.timeEnd('okAsync');
 	if (isAwaitableErrored(awaited)) return raise(awaited.message);
 	return { data: awaited, success: true };
 }
@@ -55,10 +53,10 @@ const isAwaitableErrored = <T>(promise: Awaitable<T>): promise is AwaitedError =
 }
 
 const isErrorResponse = <T>(response: ActionResponse<T>): response is ActionErrorResponse => {
-	return !response.success || 'message' in response;
+	return !response.success || 'message' in response || !('data' in response);
 }
 
-export const unwrap = <T>(response: ActionResponse<T>) => {
+export const unwrap = <T>(response: ActionResponse<T>): T => {
 	if (isErrorResponse(response)) throw new Error(
 		response.message || 'Unknown error'
 	);

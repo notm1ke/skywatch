@@ -4,7 +4,7 @@ import moment from "moment-timezone";
 import { Effect } from "effect";
 import { prisma } from "~/lib/prisma";
 import { FatalError, sleep } from "workflow";
-import { AirportTrafficFlow, TrafficFlowResponse } from "~/lib/faa";
+import { AirportTrafficFlow, TrafficFlowResponse } from "~/lib/traffic";
 
 // https://github.com/vercel/workflow/discussions/66#discussioncomment-14809207
 

@@ -1,5 +1,5 @@
 import { AirspaceMap } from "./airspace-map";
-import { TrafficFlowChart } from "./traffic-flow";
+import { TrafficFlowChart } from "./traffic";
 import { ActivePrograms } from "./active-programs";
 import { AirspacePlannedEvents } from "./planned-programs";
 import { CancellationsPieChart } from "./cancellations";

@@ -1,0 +1,1898 @@
+[
+	{
+		"icao_code": "A10",
+		"model_name": "Fairchild A10",
+		"manufacturer": "Fairchild Dornier"
+	},
+	{
+		"icao_code": "A124",
+		"model_name": "Antonov AN-124 Ruslan",
+		"manufacturer": "Antonov"
+	},
+	{
+		"icao_code": "A19N",
+		"model_name": "Airbus A319 Neo",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A20N",
+		"model_name": "Airbus A320 Neo",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A21N",
+		"model_name": "Airbus A321 Neo",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A306",
+		"model_name": "Airbus A300 B4-600",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A30B",
+		"model_name": "Airbus A300-B2",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A310",
+		"model_name": "Airbus A310",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A318",
+		"model_name": "Airbus A318",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A319",
+		"model_name": "Airbus A319",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A320",
+		"model_name": "Airbus A320",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A321",
+		"model_name": "Airbus A321",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A332",
+		"model_name": "Airbus A330-200",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A333",
+		"model_name": "Airbus A330-300",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A337",
+		"model_name": "Airbus A330-700 - Beluga XL",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A338",
+		"model_name": "Airbus A330-800",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A339",
+		"model_name": "Airbus A330-900",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A342",
+		"model_name": "Airbus A340-200",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A343",
+		"model_name": "Airbus A340-300",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A345",
+		"model_name": "Airbus A340-500",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A346",
+		"model_name": "Airbus A340-600",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A359",
+		"model_name": "Airbus 350-900",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A35K",
+		"model_name": "Airbus A350-1000 XWB",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A388",
+		"model_name": "Airbus A380-800",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A400",
+		"model_name": "Airbus A400M Atlas",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "A5",
+		"model_name": "Icon A-5",
+		"manufacturer": "Icon Aircraft"
+	},
+	{
+		"icao_code": "AA1",
+		"model_name": "Grumman American AA1",
+		"manufacturer": "Grumman American"
+	},
+	{
+		"icao_code": "AA5",
+		"model_name": "Grumman American AA5",
+		"manufacturer": "Grumman American"
+	},
+	{
+		"icao_code": "AC11",
+		"model_name": "Rockwell Commander 112",
+		"manufacturer": "Rockwell"
+	},
+	{
+		"icao_code": "AC50",
+		"model_name": "Aero Commander 500",
+		"manufacturer": "Aero Design"
+	},
+	{
+		"icao_code": "AC56",
+		"model_name": "Aero Commander 560",
+		"manufacturer": "Aero Design"
+	},
+	{
+		"icao_code": "AC68",
+		"model_name": "Aero Commander 680FP",
+		"manufacturer": "Aero Design"
+	},
+	{
+		"icao_code": "AC6L",
+		"model_name": "Aero Commander 680FL",
+		"manufacturer": "Aero Design"
+	},
+	{
+		"icao_code": "AC80",
+		"model_name": "Rockwell Commander Turbo 680",
+		"manufacturer": "Rockwell"
+	},
+	{
+		"icao_code": "AC90",
+		"model_name": "Gulfstream 690 Commander 690",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "AC95",
+		"model_name": "Gulfstream Jetprop Commander 1000",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "AEST",
+		"model_name": "Piper Aero Star",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "AN12",
+		"model_name": "Antonov AN-12",
+		"manufacturer": "Antonov"
+	},
+	{
+		"icao_code": "AN72",
+		"model_name": "Antonov AN-74-100/200",
+		"manufacturer": "Antonov"
+	},
+	{ "icao_code": "AR11", "model_name": "Aeronca 11 Chief", "manufacturer": "Aeronca" },
+	{ "icao_code": "ASTR", "model_name": "IAI Astra 1125", "manufacturer": "Israel Aircraft" },
+	{
+		"icao_code": "AT3T",
+		"model_name": "Air Tractor AT-402",
+		"manufacturer": "Air Tractor"
+	},
+	{
+		"icao_code": "AT43",
+		"model_name": "ATR 42-300/320",
+		"manufacturer": "ATR"
+	},
+	{ "icao_code": "AT44", "model_name": "ATR-42-400", "manufacturer": "ATR" },
+	{ "icao_code": "AT45", "model_name": "ATR 42-500", "manufacturer": "ATR" },
+	{ "icao_code": "AT46", "model_name": "ATR 42-600", "manufacturer": "ATR" },
+	{
+		"icao_code": "AT5T",
+		"model_name": "Air Tractor AT-503",
+		"manufacturer": "Air Tractor"
+	},
+	{
+		"icao_code": "AT6T",
+		"model_name": "AT-602 Air Tractor",
+		"manufacturer": "Air Tractor"
+	},
+	{
+		"icao_code": "AT72",
+		"model_name": "ATR-72-201/202",
+		"manufacturer": "ATR"
+	},
+	{
+		"icao_code": "AT73",
+		"model_name": "ATR 72-211/212",
+		"manufacturer": "ATR"
+	},
+	{ "icao_code": "AT75", "model_name": "ATR-72-500", "manufacturer": "ATR" },
+	{
+		"icao_code": "AT76",
+		"model_name": "ATR 72-600/212A",
+		"manufacturer": "ATR"
+	},
+	{
+		"icao_code": "AT8T",
+		"model_name": "Air Tractor AT-802",
+		"manufacturer": "Air Tractor"
+	},
+	{
+		"icao_code": "B18T",
+		"model_name": "Beech 18 (Turbo)",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "B190",
+		"model_name": "Beech 1900/C-12J",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "B2",
+		"model_name": "Northrop B-2 Spirit",
+		"manufacturer": "Northrop Grumman"
+	},
+	{
+		"icao_code": "B350",
+		"model_name": "Beech Super King Air 350",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "B36T",
+		"model_name": "Allison 36 Turbine Bonanza",
+		"manufacturer": "Allison"
+	},
+	{
+		"icao_code": "B37M",
+		"model_name": "Boeing 737 MAX 7",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B38M",
+		"model_name": "Boeing 737 MAX 8",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B39M",
+		"model_name": "Boeing 737 MAX 9",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B461",
+		"model_name": "BAe 146-100",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "B462",
+		"model_name": "BAe 146 -200",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "B52",
+		"model_name": "Boeing B-52 Stratofortress",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B703",
+		"model_name": "Boeing 707-300",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B712",
+		"model_name": "Boeing 717-200",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B721",
+		"model_name": "Boeing 727-100 (C-22)",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B722",
+		"model_name": "Boeing 727-200",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B732",
+		"model_name": "Boeing 737-200/VC96",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B733",
+		"model_name": "Boeing 737-300",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B734",
+		"model_name": "Boeing 737-400",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B735",
+		"model_name": "Boeing 737-500",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B736",
+		"model_name": "Boeing 737-600",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B737",
+		"model_name": "Boeing 737-700",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B738",
+		"model_name": "Boeing 737-800",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B739",
+		"model_name": "Boeing 737-900",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B741",
+		"model_name": "Boeing 747-100",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B742",
+		"model_name": "Boeing 747-200",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B743",
+		"model_name": "Boeing 747-300",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B744",
+		"model_name": "Boeing 747-400",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B748",
+		"model_name": "Boeing 747-8",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B752",
+		"model_name": "Boeing 757-200",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B753",
+		"model_name": "Boeing 757-300",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B762",
+		"model_name": "Boeing 767-200",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B763",
+		"model_name": "Boeing 767-300",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B764",
+		"model_name": "Boeing 767-400",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B772",
+		"model_name": "Boeing 777-200",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B773",
+		"model_name": "Boeing 777-300",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B778",
+		"model_name": "Boeing 777-8",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B779",
+		"model_name": "Boeing 777-9",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B77L",
+		"model_name": "Boeing 777-200LRF/LR",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B77W",
+		"model_name": "Boeing 777-300ER",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B788",
+		"model_name": "Boeing 787-8 Dreamliner",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B789",
+		"model_name": "Boeing 787-9 Dreamliner",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "B78X",
+		"model_name": "Boeing 787-10 Dreamliner",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "BA11",
+		"model_name": "BAC 111 One-Eleven",
+		"manufacturer": "British Aircraft Corp"
+	},
+	{
+		"icao_code": "BCS1",
+		"model_name": "Airbus A220-100",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "BCS3",
+		"model_name": "Airbus A220-300",
+		"manufacturer": "Airbus"
+	},
+	{
+		"icao_code": "BE10",
+		"model_name": "Beech King Air 100",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE18",
+		"model_name": "Beech 18",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE19",
+		"model_name": "Beech B19 Musketeer",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE20",
+		"model_name": "Beech 200 Super King",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE23",
+		"model_name": "Beech 23 Sundowner",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE24",
+		"model_name": "Beech 24 Sierra",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE30",
+		"model_name": "Raytheon 300 Super King Air",
+		"manufacturer": "Raytheon"
+	},
+	{
+		"icao_code": "BE33",
+		"model_name": "Beech Bonanza 33",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE35",
+		"model_name": "Beech Bonanza 35",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE36",
+		"model_name": "Beech Bonanza 36",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE40",
+		"model_name": "Raytheon/Beech Beechjet 400/T-1 Jayhawk",
+		"manufacturer": "Raytheon"
+	},
+	{
+		"icao_code": "BE50",
+		"model_name": "Beechcraft 50 Twin Bonanza",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE55",
+		"model_name": "Beech Baron 55",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE58",
+		"model_name": "Beech 58 Baron",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE60",
+		"model_name": "Beech 60 Duke",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE65",
+		"model_name": "Beech 65 Queen Air",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE70",
+		"model_name": "Beech 70 Queen Air",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE76",
+		"model_name": "Beech 76 Duchess",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE77",
+		"model_name": "Beech 77 Skipper",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE80",
+		"model_name": "Beech BE-80 Queen Air",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE95",
+		"model_name": "Beechcraft 95 Travel Air",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE99",
+		"model_name": "Beech Airliner 99",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE9L",
+		"model_name": "Beech King Air 90",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BE9T",
+		"model_name": "Beech F90 King Air",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "BL17",
+		"model_name": "Bellanca Viking",
+		"manufacturer": "Bellanca"
+	},
+	{
+		"icao_code": "BL8",
+		"model_name": "Bellanca 8 Scout",
+		"manufacturer": "Bellanca"
+	},
+	{
+		"icao_code": "BLCF",
+		"model_name": "Boeing 747-400LCF Dreamlifter",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "BT36",
+		"model_name": "Beech 36 Bonanza",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "C120",
+		"model_name": "Cessna 120",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C130",
+		"model_name": "Lockheed 130 Hercules",
+		"manufacturer": "Lockheed Martin"
+	},
+	{
+		"icao_code": "C140",
+		"model_name": "Cessna 140",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C150",
+		"model_name": "Cessna 150",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C152",
+		"model_name": "Cessna 152",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C160",
+		"model_name": "Transall C-160",
+		"manufacturer": "Transall"
+	},
+	{
+		"icao_code": "C162",
+		"model_name": "Cessna 162 Skycatcher",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C17",
+		"model_name": "Boeing Globemaster 3",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "C170",
+		"model_name": "Cessna 170",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C172",
+		"model_name": "Cessna Skyhawk 172\/Cutlass",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C175",
+		"model_name": "Cessna 175",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C177",
+		"model_name": "Cessna 177 Cardinal",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C180",
+		"model_name": "Cessna 180 Skywagon",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C182",
+		"model_name": "Cessna Skylane 182",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C185",
+		"model_name": "Cessna 185 Skywagon",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C188",
+		"model_name": "Cessna 188",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C195",
+		"model_name": "Cessna 195",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C206",
+		"model_name": "Cessna 206 Stationair",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C207",
+		"model_name": "Cessna 207 Stationair 7",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C208",
+		"model_name": "Cessna 208 Caravan 1",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C210",
+		"model_name": "Cessna 210 Centurion",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C212",
+		"model_name": "CASA Aviocar",
+		"manufacturer": "CASA"
+	},
+	{
+		"icao_code": "C240",
+		"model_name": "Cessna TTx Model T240",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C25A",
+		"model_name": "Cessna Citation CJ2",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C25B",
+		"model_name": "Cessna Citation CJ3",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C25C",
+		"model_name": "Cessna Citation CJ4",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C25M",
+		"model_name": "Cessna Citation M2",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C303",
+		"model_name": "Cessna 303 Crusader",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C30J",
+		"model_name": "C-130J Super Hercules",
+		"manufacturer": "Lockheed Martin"
+	},
+	{
+		"icao_code": "C310",
+		"model_name": "Cessna 310",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C320",
+		"model_name": "Cessna 320 Skyknight",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C335",
+		"model_name": "Cessna 335",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C340",
+		"model_name": "Cessna 340",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C402",
+		"model_name": "Cessna 401/402",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C404",
+		"model_name": "Cessna 404 Titan",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C414",
+		"model_name": "Cessna Chancellor 414",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C421",
+		"model_name": "Cessna Golden Eagle 421",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C425",
+		"model_name": "Cessna 425 Corsair",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C441",
+		"model_name": "Cessna Conquest",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C500",
+		"model_name": "Cessna 500/Citation I",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C501",
+		"model_name": "Cessna 1SP",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C510",
+		"model_name": "Cessna Citation Mustang",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C525",
+		"model_name": "Cessna CitationJet/CJ1",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C526",
+		"model_name": "Cessna 526 CitationJet",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C550",
+		"model_name": "Cessna Citation II/Bravo",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C551",
+		"model_name": "Cessna Citation II/SP",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C55B",
+		"model_name": "Cessna Citation Bravo",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C560",
+		"model_name": "Cessna Citation V/Ultra/Encore",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C56X",
+		"model_name": "Cessna Excel/XLS",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C650",
+		"model_name": "Cessna III/VI/VII",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C680",
+		"model_name": "Cessna Citation Sovereign",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C68A",
+		"model_name": "Cessna Citation Latitude",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C700",
+		"model_name": "Cessna Citation Longitude",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C72R",
+		"model_name": "Cessna 172RG Cutlass RG",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C750",
+		"model_name": "Cessna Citation X",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C77R",
+		"model_name": "Cessna 177 Cardinal RG",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "C82R",
+		"model_name": "Cessna Skylane RG",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "CH7A",
+		"model_name": "Aeronca 7AC",
+		"manufacturer": "Aeronca"
+	},
+	{
+		"icao_code": "CH7B",
+		"model_name": "Bellanca 7GCBC Citabria",
+		"manufacturer": "Bellanca"
+	},
+	{
+		"icao_code": "CL30",
+		"model_name": "Bombardier Challenger 300",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "CL35",
+		"model_name": "Bombardier Challenger 350",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "CL41",
+		"model_name": "Canadair 41 Tutor",
+		"manufacturer": "Canadair"
+	},
+	{
+		"icao_code": "CL60",
+		"model_name": "Canadair Challenger 600/601/604",
+		"manufacturer": "Canadair"
+	},
+	{ "icao_code": "CN35", "model_name": "CASA CN-235", "manufacturer": "CASA" },
+	{
+		"icao_code": "COL3",
+		"model_name": "Lancair LC-40 Columbia 300",
+		"manufacturer": "Lancair"
+	},
+	{
+		"icao_code": "COL4",
+		"model_name": "Lancair LC-41 Columbia 400",
+		"manufacturer": "Lancair"
+	},
+	{
+		"icao_code": "COUR",
+		"model_name": "HELIO U-10 Super Courier",
+		"manufacturer": "HELIO"
+	},
+	{
+		"icao_code": "CRJ1",
+		"model_name": "Canadair CRJ-100",
+		"manufacturer": "Canadair"
+	},
+	{
+		"icao_code": "CRJ2",
+		"model_name": "Canadair CRJ-200",
+		"manufacturer": "Canadair"
+	},
+	{
+		"icao_code": "CRJ7",
+		"model_name": "Canadair CRJ-700",
+		"manufacturer": "Canadair"
+	},
+	{
+		"icao_code": "CRJ9",
+		"model_name": "Canadair CRJ-900",
+		"manufacturer": "Canadair"
+	},
+	{
+		"icao_code": "CRUZ",
+		"model_name": "CZAW SportCruiser",
+		"manufacturer": "CZAW"
+	},
+	{
+		"icao_code": "CVLP",
+		"model_name": "Convair CV-440 Metropolitan",
+		"manufacturer": "Convair"
+	},
+	{
+		"icao_code": "CVLT",
+		"model_name": "Convair CV-580/600/640, C-131H",
+		"manufacturer": "Convair"
+	},
+	{
+		"icao_code": "D328",
+		"model_name": "Dornier 328 Series",
+		"manufacturer": "Dornier"
+	},
+	{
+		"icao_code": "DA40",
+		"model_name": "Diamond Star DA40",
+		"manufacturer": "Diamond"
+	},
+	{
+		"icao_code": "DA42",
+		"model_name": "Diamond Twin Star",
+		"manufacturer": "Diamond"
+	},
+	{
+		"icao_code": "DC10",
+		"model_name": "Douglas DC 10-10/30/40",
+		"manufacturer": "Douglas"
+	},
+	{
+		"icao_code": "DC3",
+		"model_name": "Douglas DC 3",
+		"manufacturer": "Douglas"
+	},
+	{
+		"icao_code": "DC3S",
+		"model_name": "Douglas Super DC-3",
+		"manufacturer": "Douglas"
+	},
+	{
+		"icao_code": "DC3T",
+		"model_name": "Basler, BT-67 Turbo 67",
+		"manufacturer": "Basler"
+	},
+	{
+		"icao_code": "DC6",
+		"model_name": "Douglas DC 6",
+		"manufacturer": "Douglas"
+	},
+	{
+		"icao_code": "DC87",
+		"model_name": "Douglas DC-8-70",
+		"manufacturer": "Douglas"
+	},
+	{
+		"icao_code": "DC91",
+		"model_name": "Douglas DC 9-10",
+		"manufacturer": "Douglas"
+	},
+	{
+		"icao_code": "DC93",
+		"model_name": "Douglas DC 9-30",
+		"manufacturer": "Douglas"
+	},
+	{
+		"icao_code": "DC95",
+		"model_name": "Douglas DC 9-50",
+		"manufacturer": "Douglas"
+	},
+	{
+		"icao_code": "DH8A",
+		"model_name": "DeHavilland Canada DHC8-100",
+		"manufacturer": "DeHavilland Canada"
+	},
+	{
+		"icao_code": "DH8B",
+		"model_name": "DeHavilland Canada DHC8-200",
+		"manufacturer": "DeHavilland Canada"
+	},
+	{
+		"icao_code": "DH8C",
+		"model_name": "DeHavilland Canada Dash 8/DHC8-300",
+		"manufacturer": "DeHavilland Canada"
+	},
+	{
+		"icao_code": "DH8D",
+		"model_name": "DeHavilland Canada Dash 8/DHC8-400",
+		"manufacturer": "DeHavilland Canada"
+	},
+	{
+		"icao_code": "DHC2",
+		"model_name": "DeHavilland Canada 2 Mk1 Beaver",
+		"manufacturer": "DeHavilland Canada"
+	},
+	{
+		"icao_code": "DHC6",
+		"model_name": "DeHavilland Canada Twin Otter",
+		"manufacturer": "DeHavilland Canada"
+	},
+	{
+		"icao_code": "DHC7",
+		"model_name": "DeHavilland Canada DHC-7",
+		"manufacturer": "DeHavilland Canada"
+	},
+	{
+		"icao_code": "DV20",
+		"model_name": "Diamond 20 Katana",
+		"manufacturer": "Diamond Aircraft Industries"
+	},
+	{
+		"icao_code": "E110",
+		"model_name": "Embraer EMB110 Bandeirante",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E120",
+		"model_name": "Embraer Brasilia EMB 120",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E135",
+		"model_name": "Embraer ERJ 135/140/Legacy",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E145",
+		"model_name": "Embraer ERJ-145",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E170",
+		"model_name": "Embraer 170",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E190",
+		"model_name": "Embraer 190",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E195",
+		"model_name": "Embraer 195",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E290",
+		"model_name": "Embraer 190-E2",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E295",
+		"model_name": "Embraer 195-E2",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E35L",
+		"model_name": "Embraer 135BJ Legacy 600",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E45X",
+		"model_name": "Embraer ERJ 145 XR",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E50P",
+		"model_name": "Embraer 500 Phenom 100",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E545",
+		"model_name": "Embraer EMB-545 Legacy 450",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E550",
+		"model_name": "Legacy 500/Praetor 600",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E55P",
+		"model_name": "Embraer Phenom 300",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E75L",
+		"model_name": "Embraer 175 (Long Wing)",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "E75S",
+		"model_name": "Embraer 175 (Short Wing)",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "EA50",
+		"model_name": "Eclipse 500",
+		"manufacturer": "Eclipse"
+	},
+	{ "icao_code": "ERCO", "model_name": "Ercoupe 415", "manufacturer": "ERCO" },
+	{
+		"icao_code": "EVOT",
+		"model_name": "Lancair Evolution Turbine",
+		"manufacturer": "Embraer"
+	},
+	{
+		"icao_code": "F15",
+		"model_name": "Boeing F-15 Eagle",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "F16",
+		"model_name": "Lockheed F-16 Fighting Falcon",
+		"manufacturer": "Lockheed Martin"
+	},
+	{
+		"icao_code": "F18H",
+		"model_name": "F/A 18 Hornet",
+		"manufacturer": "Lockheed Martin"
+	},
+	{
+		"icao_code": "F18S",
+		"model_name": "FA-18E/F Super Hornet",
+		"manufacturer": "Lockheed Martin"
+	},
+	{
+		"icao_code": "F22",
+		"model_name": "Lockheed Martin L-645 Raptor",
+		"manufacturer": "Lockheed Martin"
+	},
+	{
+		"icao_code": "F2TH",
+		"model_name": "Dassault Falcon 2000",
+		"manufacturer": "Dassault Aviation"
+	},
+	{
+		"icao_code": "F406",
+		"model_name": "Reims-Cessna F406 Caravan II",
+		"manufacturer": "Reims-Cessna"
+	},
+	{
+		"icao_code": "F900",
+		"model_name": "Dassault Falcon 900",
+		"manufacturer": "Dassault Aviation"
+	},
+	{
+		"icao_code": "FA10",
+		"model_name": "Dassault Falcon 10",
+		"manufacturer": "Dassault Aviation"
+	},
+	{
+		"icao_code": "FA20",
+		"model_name": "Dassault Falcon 20",
+		"manufacturer": "Dassault Aviation"
+	},
+	{
+		"icao_code": "FA50",
+		"model_name": "Dassault Falcon 50",
+		"manufacturer": "Dassault Aviation"
+	},
+	{
+		"icao_code": "FA7X",
+		"model_name": "Dassault Falcon 7X",
+		"manufacturer": "Dassault Aviation"
+	},
+	{
+		"icao_code": "FA8X",
+		"model_name": "Dassault Falcon 8X",
+		"manufacturer": "Dassault Aviation"
+	},
+	{
+		"icao_code": "FDCT",
+		"model_name": "Flight Design CT",
+		"manufacturer": "Flight Design"
+	},
+	{
+		"icao_code": "G150",
+		"model_name": "Gulfstream G150",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "G164",
+		"model_name": "Grumman American",
+		"manufacturer": "Grumman American"
+	},
+	{
+		"icao_code": "G280",
+		"model_name": "Gulfstream G280",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "GA5C",
+		"model_name": "Gulfstream Aerospace Gulfstream G7-G500",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "GA6C",
+		"model_name": "Gulfstream Aerospace Gulfstream G7-G600",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "GA7",
+		"model_name": "Gulfstream American GA7",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "GALX",
+		"model_name": "IAI 1126 Galaxy/Gulfstream G200",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "GC1",
+		"model_name": "Globe GC-1 Swift",
+		"manufacturer": "Globe Aircraft"
+	},
+	{
+		"icao_code": "GL5T",
+		"model_name": "Bombardier BD-700 Global 5000",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "GL7T",
+		"model_name": "Bombardier BD-700 Global 7500",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "GLEX",
+		"model_name": "Bombardier BD-700 Global Express",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "GLF2",
+		"model_name": "Gulfstream II",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "GLF3",
+		"model_name": "Gulfstream III",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "GLF4",
+		"model_name": "Gulfstream IV/G400",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "GLF5",
+		"model_name": "Gulfstream V",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "GLF6",
+		"model_name": "Gulfstream G650",
+		"manufacturer": "General Dynamics"
+	},
+	{
+		"icao_code": "H25A",
+		"model_name": "HS 125-1/2/3/400/600",
+		"manufacturer": "British Aerospace"
+	},
+	{
+		"icao_code": "H25B",
+		"model_name": "BAe HS 125/700-800/Hawker 800",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "H25C",
+		"model_name": "BAe/Raytheon HS 125-1000",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "HA4T",
+		"model_name": "Hawker 4000",
+		"manufacturer": "Raytheon"
+	},
+	{
+		"icao_code": "HAWK",
+		"model_name": "BAe T-45 Goshawk",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "HDJT",
+		"model_name": "HONDA HA-420 HondaJet",
+		"manufacturer": "Honda Aviation"
+	},
+	{
+		"icao_code": "HUSK",
+		"model_name": "AVIAT Huskey",
+		"manufacturer": "Aviat"
+	},
+	{
+		"icao_code": "IL76",
+		"model_name": "Ilyushin IL-76",
+		"manufacturer": "Ilyushin"
+	},
+	{
+		"icao_code": "J328",
+		"model_name": "Fairchild Dornier 328 Jet",
+		"manufacturer": "Fairchild Dornier"
+	},
+	{
+		"icao_code": "JS31",
+		"model_name": "BAe 3100 Jetstream 31",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "JS32",
+		"model_name": "BAe Jetstream super 31",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "JS41",
+		"model_name": "BAe Jetstream 41",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "K35R",
+		"model_name": "Boeing KC-135 Stratotanker",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "KODI",
+		"model_name": "Quest Kodiak",
+		"manufacturer": "Quest"
+	},
+	{
+		"icao_code": "L29B",
+		"model_name": "Lockheed Jetstar 2/731",
+		"manufacturer": "Lockheed Martin"
+	},
+	{
+		"icao_code": "L5",
+		"model_name": "Stinson L5 Sentinel",
+		"manufacturer": "Stinson"
+	},
+	{
+		"icao_code": "L8",
+		"model_name": "Luscombe 8",
+		"manufacturer": "Luscombe Aircraft"
+	},
+	{
+		"icao_code": "LA4",
+		"model_name": "Lake LA-4",
+		"manufacturer": "Lake Aircraft"
+	},
+	{
+		"icao_code": "LJ23",
+		"model_name": "Bombardier Learjet 23",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ24",
+		"model_name": "Bombardier Learjet 24",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ25",
+		"model_name": "Bombardier Learjet 25",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ31",
+		"model_name": "Bombardier Learjet 31",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ35",
+		"model_name": "Bombardier Learjet 35/36",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ40",
+		"model_name": "Learjet 40",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ45",
+		"model_name": "Bombardier Learjet 45",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ55",
+		"model_name": "Bombardier Learjet 55",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ60",
+		"model_name": "Bombardier Learjet 60",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ70",
+		"model_name": "Learjet 70",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LJ75",
+		"model_name": "Learjet 75",
+		"manufacturer": "Bombardier"
+	},
+	{
+		"icao_code": "LNC4",
+		"model_name": "Lancair IV",
+		"manufacturer": "Lancair"
+	},
+	{
+		"icao_code": "LNP4",
+		"model_name": "Lancair PropJet IV",
+		"manufacturer": "Lancair"
+	},
+	{
+		"icao_code": "M20P",
+		"model_name": "Mooney M-20C Ranger",
+		"manufacturer": "Mooney"
+	},
+	{
+		"icao_code": "M20T",
+		"model_name": "Mooney M20K Encore/M20M Bravo",
+		"manufacturer": "Mooney"
+	},
+	{ "icao_code": "M5", "model_name": "Maule M-5", "manufacturer": "Maule" },
+	{
+		"icao_code": "MD11",
+		"model_name": "McDonnell Douglas MD-11",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "MD81",
+		"model_name": "McDonnell Douglas MD-81",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "MD82",
+		"model_name": "McDonnell Douglas MD-82",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "MD83",
+		"model_name": "McDonnell Douglas MD-83",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "MD87",
+		"model_name": "McDonnell Douglas MD-87",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "MD88",
+		"model_name": "McDonnell Douglas MD-88",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "MD90",
+		"model_name": "McDonnell Douglas MD-90",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "MU2",
+		"model_name": "Mitsubishi Marquise/Solitaire",
+		"manufacturer": "Mitsubishi"
+	},
+	{
+		"icao_code": "MU30",
+		"model_name": "Mitsubishi Diamond/MU300 Diamond",
+		"manufacturer": "Mitsubishi"
+	},
+	{
+		"icao_code": "NAVI",
+		"model_name": "North American Navion",
+		"manufacturer": "North American Aviation"
+	},
+	{
+		"icao_code": "P180",
+		"model_name": "Piaggio P-180 Avanti",
+		"manufacturer": "Piaggio"
+	},
+	{
+		"icao_code": "P210",
+		"model_name": "Riley Super P210",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "P28A",
+		"model_name": "Piper Cherokee",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "P28B",
+		"model_name": "Piper Turbo Dakota",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "P28R",
+		"model_name": "Cherokee Arrow",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "P28T",
+		"model_name": "Piper 28T Arrow 4",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "P3",
+		"model_name": "Lockheed P-3 Orion",
+		"manufacturer": "Lockheed Martin"
+	},
+	{
+		"icao_code": "P32R",
+		"model_name": "Piper PA-32R Lance/ Saratoga SP",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "P32T",
+		"model_name": "Piper 32T Turbo Lance 2",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "P46T",
+		"model_name": "Piper Malibu Meridian",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "P51",
+		"model_name": "North American Mustang",
+		"manufacturer": "North American Aviation"
+	},
+	{
+		"icao_code": "P68",
+		"model_name": "Vulcan Air P68",
+		"manufacturer": "Vulcan Air"
+	},
+	{
+		"icao_code": "P750",
+		"model_name": "Pacific Aerospace P-750 Xstol",
+		"manufacturer": "Pacific Aerospace"
+	},
+	{
+		"icao_code": "P8",
+		"model_name": "Boeing P-8 Poseidon",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "PA11",
+		"model_name": "Piper PA-11 Cub Special",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA12",
+		"model_name": "Piper 12 Supercruiser",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA16",
+		"model_name": "Piper PA-16 Clipper",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA18",
+		"model_name": "Piper PA-18 Super Cub",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA20",
+		"model_name": "Piper PA-20 Pacer",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA22",
+		"model_name": "Piper PA-22 Tri-Pacer",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA23",
+		"model_name": "Piper PA-23-150/160 Apache",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA24",
+		"model_name": "Piper PA-24 Comanche",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA25",
+		"model_name": "Piper PA-25 Pawnee",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA27",
+		"model_name": "Piper Aztec",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA30",
+		"model_name": "Piper PA-30 Turbo Twin Comanche/Turbo Twin Comanche",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA31",
+		"model_name": "Piper Navajo PA-31",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA32",
+		"model_name": "Piper Cherokee Six",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA34",
+		"model_name": "Piper PA-34 Seneca",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA36",
+		"model_name": "Piper PA-36 Pawnee Brave",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA38",
+		"model_name": "Piper Tomahawk PA38",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA44",
+		"model_name": "Piper Seminole",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PA46",
+		"model_name": "Piper Malibu",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PAT4",
+		"model_name": "Piper PA-31T3-500 T-1040",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PAY1",
+		"model_name": "Piper Cheyenne 1",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PAY2",
+		"model_name": "Piper Cheyenne 2",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PAY3",
+		"model_name": "Piper PA-42-720 Cheyenne 3",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PAY4",
+		"model_name": "Piper Cheyenne 400",
+		"manufacturer": "Piper Aircraft"
+	},
+	{
+		"icao_code": "PC12",
+		"model_name": "Pilatus PC-12",
+		"manufacturer": "Pilatus Aircraft"
+	},
+	{
+		"icao_code": "PC24",
+		"model_name": "Pilatus PC-24",
+		"manufacturer": "Pilatus Aircraft"
+	},
+	{
+		"icao_code": "PRM1",
+		"model_name": "Raytheon Premier 1/390 Premier 1",
+		"manufacturer": "Raytheon Aircraft"
+	},
+	{
+		"icao_code": "R721",
+		"model_name": "Boeing 727-100RE Super 27",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "R722",
+		"model_name": "Boeing 727-200RE Super 27",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "RJ1H",
+		"model_name": "Avro RJ-100 Avroliner",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "RJ85",
+		"model_name": "Avro RJ-85 Avroliner",
+		"manufacturer": "BAe Systems"
+	},
+	{
+		"icao_code": "RV12",
+		"model_name": "Van's RV-12",
+		"manufacturer": "Van's Aircraft"
+	},
+	{
+		"icao_code": "S108",
+		"model_name": "Stinson 108 Voyager",
+		"manufacturer": "Stinson"
+	},
+	{
+		"icao_code": "S22T",
+		"model_name": "Cirrus SR-22 Turbo",
+		"manufacturer": "Cirrus"
+	},
+	{ "icao_code": "SB20", "model_name": "Saab 2000", "manufacturer": "Saab" },
+	{
+		"icao_code": "SBR1",
+		"model_name": "North American Rockwell Sabre 40/60",
+		"manufacturer": "North American Aviation"
+	},
+	{
+		"icao_code": "SBR2",
+		"model_name": "North American Rockwell Sabre 75",
+		"manufacturer": "North American Aviation"
+	},
+	{
+		"icao_code": "SC7",
+		"model_name": "Short Skyvan SC7",
+		"manufacturer": "Short Brothers"
+	},
+	{ "icao_code": "SF34", "model_name": "Saab SF 340", "manufacturer": "Saab" },
+	{
+		"icao_code": "SF50",
+		"model_name": "Cirrus Vision SF50",
+		"manufacturer": "Cirrus"
+	},
+	{
+		"icao_code": "SH33",
+		"model_name": "Shorts 330",
+		"manufacturer": "Short Brothers"
+	},
+	{
+		"icao_code": "SH36",
+		"model_name": "Shorts 360",
+		"manufacturer": "Short Brothers"
+	},
+	{
+		"icao_code": "SR20",
+		"model_name": "Cirrus SR-20",
+		"manufacturer": "Cirrus"
+	},
+	{
+		"icao_code": "SR22",
+		"model_name": "Cirrus SR 22",
+		"manufacturer": "Cirrus"
+	},
+	{
+		"icao_code": "SU95",
+		"model_name": "SUKHOI Superjet 100-95",
+		"manufacturer": "Sukhoi"
+	},
+	{
+		"icao_code": "SW3",
+		"model_name": "Fairchild Swearingen SA-226T/TB Merlin 3",
+		"manufacturer": "Fairchild Dornier"
+	},
+	{
+		"icao_code": "SW4",
+		"model_name": "Swearingen SA-227AT Merlin 4",
+		"manufacturer": "Fairchild Dornier"
+	},
+	{
+		"icao_code": "T210",
+		"model_name": "Cessna T210 Turbo Centurion",
+		"manufacturer": "Cessna"
+	},
+	{
+		"icao_code": "T28",
+		"model_name": "North American T-28 Trojan",
+		"manufacturer": "North American Aviation"
+	},
+	{
+		"icao_code": "T34P",
+		"model_name": "Beech T-34/45 Mentor",
+		"manufacturer": "Beechcraft"
+	},
+	{
+		"icao_code": "T38",
+		"model_name": "Northrop T-38 Talon",
+		"manufacturer": "Northrop Grumman"
+	},
+	{
+		"icao_code": "T6",
+		"model_name": "North American T-6 Texan",
+		"manufacturer": "North American Aviation"
+	},
+	{
+		"icao_code": "TAYB",
+		"model_name": "Taylorcraft BC",
+		"manufacturer": "Taylorcraft"
+	},
+	{
+		"icao_code": "TB20",
+		"model_name": "Socata TB-20 Trinidad",
+		"manufacturer": "Socata"
+	},
+	{
+		"icao_code": "TBM7",
+		"model_name": "Socata TBM-700/700A",
+		"manufacturer": "Socata"
+	},
+	{
+		"icao_code": "TBM8",
+		"model_name": "Socata TBM-850",
+		"manufacturer": "Socata"
+	},
+	{
+		"icao_code": "TBM9",
+		"model_name": "Socata TBM-900",
+		"manufacturer": "Socata"
+	},
+	{
+		"icao_code": "TEX2",
+		"model_name": "Raytheon Texan 2",
+		"manufacturer": "Raytheon"
+	},
+	{
+		"icao_code": "TOBA",
+		"model_name": "Socata TB-10 Tobago",
+		"manufacturer": "Socata"
+	},
+	{
+		"icao_code": "V22",
+		"model_name": "Bell V-22 Osprey",
+		"manufacturer": "Boeing"
+	},
+	{
+		"icao_code": "WW24",
+		"model_name": "IAI 1124 Westwind",
+		"manufacturer": "Israel Aircraft"
+	}
+]

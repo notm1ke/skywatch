@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { clsx, type ClassValue } from "clsx";
-import { FlowStatusMetricKeys } from "./faa";
+import { FlowStatusMetricKeys } from "./traffic";
 
 export type ArgumentType<Func> = Func extends (...args: infer Args) => any ? Args : never;
 

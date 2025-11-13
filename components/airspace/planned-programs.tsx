@@ -41,7 +41,6 @@ export const AirspacePlannedEvents = () => {
 				
 				{planned.length > 0 && (
 					<ScrollArea className="py-2 max-h-[340px]">
-						
 						{planned.map(plan => {
 							const airport = airports.find(airport => airport.iata_code === plan.iataCode);
 							if (!airport) return null;
@@ -61,7 +60,7 @@ export const AirspacePlannedEvents = () => {
 													<div className="text-center">
 														Plan in effect {plan.forecastType}
 														<br />
-														<span className="font-bold font-mono tracking-tighter">{plan.time}</span>
+														<span className="font-semibold font-mono tracking-tighter">{plan.time}</span>
 													</div>
 												</TooltipContent>
 											</Tooltip>

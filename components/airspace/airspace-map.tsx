@@ -6,11 +6,12 @@ import { cn } from "~/lib/utils";
 import { GeoJson } from "~/lib/geo";
 import { useTheme } from "next-themes";
 import { useAirspace } from "./provider";
-import { AirportAdvisory } from "~/lib/faa";
 import { Marker } from "react-map-gl/mapbox";
 import { useAirports } from "../airport-provider";
 import { AirportWithJoins } from "~/lib/airports";
+import { AirportAdvisory, AirportStatus } from "~/lib/faa";
 import { AttributionControl, Layer, NavigationControl, Source } from "react-map-gl/mapbox";
+import { AirspaceMapHoverCard } from "./airspace-map-hover";
 
 type AirspaceProps = {
 	GLOBAL_ID: string;
@@ -57,15 +58,6 @@ const filterOnlyCenters = (geojson: GeoJson<AirspaceProps>) => ({
 		.features
 		.filter(feature => feature.properties.TYPE_CODE === 'ARTCC')
 });
-
-type AirportStatus =
-	| "normal"
-	| "ground_stop"
-	| "ground_delay"
-	| "ops_delay"
-	| "airport_closure"
-	| "freeform"
-	| "deicing";
 	
 const colorForAirportStatus = (status: AirportStatus) => {
 	switch (status) {
@@ -91,12 +83,19 @@ const AirportMarker: React.FC<{ advisory: AirportAdvisory, airport: AirportWithJ
 	}, [advisory]);
 	
 	return (
+		
 		<Marker
 			key={airport.iata_code}
 			latitude={airport.latitude_deg}
 			longitude={airport.longitude_deg}
+			className="cursor-help"
 		>
-			<div className={cn("size-2.5 rounded-md", colorForAirportStatus(status))} />
+			<AirspaceMapHoverCard
+				advisory={advisory}
+				status={status}
+			>
+				<div className={cn("size-2.5 rounded-md", colorForAirportStatus(status))} />
+			</AirspaceMapHoverCard>
 		</Marker>
 	)
 }
