@@ -3,12 +3,12 @@
 import { TowerControl } from "lucide-react";
 import { usePageControls } from "~/lib/page";
 import { ThemeToggle } from "./theme-toggle";
-import { AnimatedTabs, AnimatedTabItem } from "./ui/animated-tabs";
 import { GitHubButton } from "./github-button";
+import { AnimatedTabs, AnimatedTabItem } from "./ui/animated-tabs";
 
 const NavLinks: AnimatedTabItem[] = [
 	{ content: "US Airspace", tabType: "airspace", href: "/" },
-	{ content: "Flights", tabType: "cancellations", href: "/cancellations" },
+	// { content: "Airports", tabType: "airports", href: "/airports" },
 ];
 
 export const Header = () => {

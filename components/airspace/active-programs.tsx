@@ -1,5 +1,7 @@
-import { useAirspace } from "./provider"
+import { useAirspace } from "./provider";
+import { Skeleton } from "../ui/skeleton";
 import { AirportAdvisory } from "~/lib/faa";
+import { ErrorSection } from "./error-section";
 import { DelayProgram } from "./programs/delay";
 import { shortenAirportName } from "~/lib/utils";
 import { useAirports } from "../airport-provider";
@@ -120,14 +122,63 @@ const programDisclosureContent = (advisory: AirportAdvisory) => {
 
 export const ActivePrograms = () => {
 	const { airports } = useAirports();
-	const { advisories, loading, error } = useAirspace();
+	const { advisories, loading, error, refresh} = useAirspace();
 	
 	if (loading) return (
-		<>loading</>
+		<div>
+			<div className="flex flex-row px-3 py-2 justify-between">
+				<span className="text-md font-semibold pointer-events-none">
+					Active Interruptions
+				</span>
+				<div className="flex px-2 text-sm items-center rounded-sm font-mono pointer-events-none">
+					<Skeleton className="h-[25px] w-10 rounded-sm" />
+				</div>
+			</div>
+			<div className="border-t">
+				<ScrollArea className="min-h-auto h-[559px] max-h-[800px]">
+					{Array(5).fill(null).map((_, index) => (
+						<div
+							key={`active-programs-skeleton-${index}`}
+							className="group flex flex-row justify-between px-3 pb-3 pt-3 cursor-not-allowed border-b"
+						>
+							<div>
+								<div className="flex items-center space-x-3">
+									<Skeleton className="h-[25px] w-7 rounded-sm" />
+									<Skeleton className="h-[25px] w-32 rounded-sm" />
+								</div>
+							</div>
+							<div className="flex items-center space-x-3">
+								<Skeleton className="h-[25px] w-6 rounded-sm" />
+								<Skeleton className="h-[25px] w-24 rounded-sm" />
+							</div>
+						</div>
+					))}
+				</ScrollArea>
+			</div>
+		</div>
 	);
 	
 	if (error) return (
-		<>error</>
+		<div>
+			<div className="flex flex-row px-3 py-2 justify-between">
+				<span className="text-md font-semibold pointer-events-none">
+					Active Interruptions
+				</span>
+				<div className="flex px-2 text-sm items-center rounded-sm font-mono pointer-events-none">
+					<Skeleton className="h-[25px] w-10 rounded-sm" />
+				</div>
+			</div>
+			<div className="border-t">
+				<ScrollArea className="min-h-auto h-[559px] max-h-[800px]">
+					<ErrorSection
+						title="Error loading active interruptions"
+						className="border-t rounded-none border-solid"
+						error={error?.message}
+						refresh={refresh}
+					/>
+				</ScrollArea>
+			</div>
+		</div>
 	);
 	
 	return (

@@ -21,8 +21,8 @@ export const ThemeToggle = () => {
 				
 				return (
 					<Button variant="ghost" onClick={() => toggleTheme(nextTheme)}>
-						{effective === 'dark' && <Moon className="size-5" />}
-						{effective === 'light' && <Sun className="size-5" />}
+						{effective === 'dark' && <Moon className="size-5.5" />}
+						{effective === 'light' && <Sun className="size-5.5" />}
 					</Button>
 				);
 			}}

@@ -1,7 +1,10 @@
 import { toast } from "sonner";
 import { unwrap } from "~/lib/actions";
+import { Skeleton } from "../ui/skeleton";
 import { useEffect, useState } from "react";
+import { ErrorSection } from "./error-section";
 import { Label, Pie, PieChart } from "recharts";
+import { shortNumberFormatter } from "~/lib/utils";
 import { CancellationStats, fetchCancellationStats } from "~/lib/faa";
 
 import {
@@ -28,13 +31,13 @@ const chartConfig = {
 export const CancellationsPieChart: React.FC = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [cancellations, setCancellations] = useState<CancellationStats | null>(null);
+	const [stats, setStats] = useState<CancellationStats | null>(null);
 	
 	const refresh = () => {
 		setLoading(true);
 		fetchCancellationStats()
 			.then(unwrap)
-			.then(setCancellations)
+			.then(setStats)
 			.catch(err => {
 				setError(err.message);
 				toast('Error fetching cancellations:', {
@@ -52,12 +55,51 @@ export const CancellationsPieChart: React.FC = () => {
 		refresh();
 	}, []);
 	
-	if (loading) return <>loading</>;
-	if (error || !cancellations) return <>error</>;
+	if (loading) return (
+		<div>
+			<div className="flex flex-row px-3 py-2 justify-between border-b">
+				<div className="text-md font-semibold pointer-events-none">
+					Flight Statuses
+				</div>
+				<div className="flex px-2 text-sm items-center rounded-sm font-mono tabular-nums">
+					<Skeleton className="w-12 h-6 rounded" />
+				</div>
+			</div>
+
+			<ChartContainer
+				config={chartConfig}
+				className="mx-auto aspect-square max-h-[250px] relative"
+			>
+				<div className="flex items-center justify-center w-full h-full relative">
+					<Skeleton className="w-40 h-40 rounded-full" />
+					<div className="absolute w-20 h-20 rounded-full bg-white dark:bg-background pointer-events-none z-40" />
+				</div>
+			</ChartContainer>
+		</div>
+	);
+	
+	if (error || !stats) return (
+		<div>
+			<div className="flex flex-row px-3 py-2 justify-between border-b">
+				<div className="text-md font-semibold pointer-events-none">
+					Flight Statuses
+				</div>
+				<div className="flex px-2 text-sm items-center rounded-sm font-mono tabular-nums">
+					<Skeleton className="w-12 h-6 rounded" />
+				</div>
+			</div>
+
+			<ErrorSection
+				title="Error loading flight stats"
+				error={error}
+				refresh={refresh}
+			/>
+		</div>
+	);
 	
 	const chartData = [
-		{ type: "cancellations", count: cancellations.cancelled, fill: "var(--color-red-400)" },
-		{ type: "normal", count: cancellations.total, fill: "var(--color-green-400)" }
+		{ type: "cancellations", count: stats.cancelled, fill: "var(--color-red-400)" },
+		{ type: "normal", count: stats.total, fill: "var(--color-green-400)" }
 	];
 	
 	return (
@@ -67,7 +109,7 @@ export const CancellationsPieChart: React.FC = () => {
 					Flight Statuses
 				</span>
 				<div className="flex px-2 text-sm items-center rounded-sm bg-zinc-300 dark:bg-zinc-800 font-mono tabular-nums pointer-events-none">
-					{/*<TotalBadge mode={mode} response={chart} />*/}
+					{shortNumberFormatter.format(stats.total)}
 				</div>
 			</div>
 			<ChartContainer
@@ -106,7 +148,7 @@ export const CancellationsPieChart: React.FC = () => {
 												y={viewBox.cy! - 6}
 												className="fill-foreground text-[26px] font-bold font-mono tracking-tighter"
 											>
-												{cancellations.interrupted.toFixed(2)}%
+												{stats.interrupted.toFixed(2)}%
 											</tspan>
 											<tspan
 												x={viewBox.cx}

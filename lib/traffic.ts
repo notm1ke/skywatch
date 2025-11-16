@@ -35,51 +35,22 @@ const Airspaces = [
 export type CommonPaxAircraftType = typeof CommonPaxAircraft[number];
 
 const CommonPaxAircraft = [
-	"A319", // airbus
-	"A320",
-	"A321",
-	"A333",
-	"A338",
-	"A339",
-	"A359",
-	"A35K",
-	"A388",
-	"BCS1",
-	"BCS2",
-	"B37M", // boeing
-	"B38M",
-	"B39M",
-	"B712",
-	"B737",
-	"B738",
-	"B739",
-	"B744",
-	"B748",
-	"B752",
-	"B753",
-	"B762",
-	"B763",
-	"B764",
-	"B772",
-	"B773",
-	"B77L",
-	"B77W",
-	"B788",
-	"B789",
-	"B78X",
-	"CRJ1", // bombardier
-	"CRJ2",
-	"CRJ7",
-	"CRJ9",
-	"E135", // embraer
-	"E145",
-	"E170",
-	"E195",
-	"E290",
-	"E295",
-	"E45X",
-	"E75L",
-	"E75S"
+	// airbus
+	"A319", "A320", "A321", "A333", "A338", "A339", "A359", "A35K", "A388", "BCS1", "BCS2",
+	// boeing
+	"B37M","B38M","B39M","B712","B737","B738","B739","B744","B748","B752","B753","B762","B763","B764","B772","B773","B77L","B77W","B788","B789","B78X",
+	// bombardier
+	"CRJ1", "CRJ2", "CRJ7", "CRJ9", "E135",
+	// embraer
+	"E145", "E170", "E195", "E290", "E295", "E45X", "E75L", "E75S"
+] as const;
+
+export type CommonAirlineType = typeof CommonAirlines[number];
+
+const CommonAirlines = [
+	"AAL", "SWA", "DAL", "UAL", "FDX", "ASA", "JBU", "UPS", "NKS",
+	"FFT", "AAY", "HAL", "BAW", "DLH", "UAE", "QTR", "ACA", "AFR",
+	"KLM", "ANA", "THY", "CPA", "SIA", "EVA", "ETH"
 ] as const;
 
 export type FlowMetricType = "STATUS" | "CENTER" | "FIX";
