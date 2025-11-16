@@ -10,8 +10,9 @@ import { Marker } from "react-map-gl/mapbox";
 import { useAirports } from "../airport-provider";
 import { AirportWithJoins } from "~/lib/airports";
 import { AirportAdvisory, AirportStatus } from "~/lib/faa";
-import { AttributionControl, Layer, NavigationControl, Source } from "react-map-gl/mapbox";
 import { AirspaceMapHoverCard } from "./airspace-map-hover";
+import { AttributionControl, Layer, NavigationControl, Source } from "react-map-gl/mapbox";
+import { useIsMobile } from "~/hooks/use-mobile";
 
 type AirspaceProps = {
 	GLOBAL_ID: string;
@@ -105,10 +106,25 @@ export const AirspaceMap: React.FC = () => {
 	const { advisories } = useAirspace();
 	const { resolvedTheme: theme } = useTheme();
 	
+	const isMobile = useIsMobile();
 	const centers = useMemo(() =>
 		filterOnlyCenters(Boundaries as unknown as GeoJson<AirspaceProps>),
 		[Boundaries]
 	);
+	
+	const initialView = useMemo(() => {
+		if (isMobile) return {
+			latitude: 26.183575146480564,
+			longitude: -97.46394501005533,
+			zoom: 2.25
+		};
+		
+		return {
+			latitude: 40,
+			longitude: -100,
+			zoom: 3.25
+		};
+	}, [isMobile]);
 	
 	const airportMarkers = useMemo(
 		() => advisories
@@ -144,15 +160,11 @@ export const AirspaceMap: React.FC = () => {
 	}, [theme]);
 	
 	return (
-		<div className="w-full min-h-[600px] h-full relative overflow-hidden">
+		<div className="w-full min-h-[400px] sm:min-h-[600px] h-full relative overflow-hidden">
 			<div className="absolute inset-0">
 				<Map
 					mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-					initialViewState={{
-						latitude: 40,
-						longitude: -100,
-						zoom: 3.25
-					}}
+					initialViewState={initialView}
 					projection="mercator"
 					interactiveLayerIds={['airspace']}
 					attributionControl={false}

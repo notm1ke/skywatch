@@ -54,6 +54,7 @@ export const padWithZero = (number: number) => number.toString().padStart(2, '0'
 export const shortenAirportName = (name: string) => {
 	return name
 		.replaceAll("International", "Intl")
+		.replaceAll("Intercontinental", "Intl")
 		.replaceAll("National", "Ntl")
 		.replaceAll("County", "Cnty")
 		.replaceAll("Metropolitan", "Metro")
@@ -144,4 +145,8 @@ export const flowCenterColors = (center: string) => {
 		case "ZTL": return "var(--color-zinc-600)";
 		default: return "var(--color-blue-400)";
 	}
+}
+
+export const hasOpenBackdrop = () => {
+	return document.body.querySelector('[role="dialog"], [data-backdrop], .backdrop') !== null;
 }

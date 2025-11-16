@@ -10,9 +10,9 @@ import { ChevronRight, Snowflake } from "lucide-react";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { GroundStopProgram } from "./programs/ground-stop";
 import { GroundDelayProgram } from "./programs/ground-delay";
+import { AirportClosureProgram } from "./programs/airport-closure";
 import { SpecialAdvisoryProgram } from "./programs/special-advisory";
 import { Disclosure, DisclosureContent, DisclosureTrigger } from "../ui/disclosure";
-import { AirportClosureProgram } from "./programs/airport-closure";
 
 enum Priority {
 	Normal,

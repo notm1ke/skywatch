@@ -1,5 +1,6 @@
 "use client";
 
+import { Searchbar } from "./search";
 import { TowerControl } from "lucide-react";
 import { usePageControls } from "~/lib/page";
 import { ThemeToggle } from "./theme-toggle";
@@ -20,9 +21,12 @@ export const Header = () => {
 					<TowerControl className="size-7" />
 					<span className="text-2xl font-serif font-normal tracking-tight">Skywatch</span>
 				</div>
-				<div className="flex flex-items-center gap-2">
-					<ThemeToggle />
-					<GitHubButton />
+				<div className="flex flex-items-center sm:gap-2">
+					<Searchbar />
+					<div className="gap-2">
+						<ThemeToggle />
+						<GitHubButton />
+					</div>
 				</div>
 			</div>
 

@@ -6,8 +6,8 @@ import { CancellationsPieChart } from "./cancellations";
 
 export const AirspaceTab = () => {
 	return (
-		<div className="flex flex-row">
-			<div className="basis-2/3">
+		<div className="flex flex-col sm:flex-row">
+			<div className="basis-full sm:basis-2/3">
 				<div className="grid grid-cols-1 sm:grid-cols-3">
 					<div className="sm:col-span-3">
 						<AirspaceMap />
@@ -20,7 +20,7 @@ export const AirspaceTab = () => {
 					</div>
 				</div>
 			</div>
-			<div className="basis-1/3 border-l">
+			<div className="sm:basis-1/3 border-l">
 				<ActivePrograms />
 				<AirspacePlannedEvents />
 			</div>
