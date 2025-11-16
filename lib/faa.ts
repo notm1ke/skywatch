@@ -25,7 +25,7 @@ export type AirportAdvisory = {
 	airportId: string; // IATA
 	groundStop?: GroundStopAdvisory;
 	groundDelay?: GroundDelayAdvisory;
-	airportClosure?: any;
+	airportClosure?: AirportClosureAdvisory;
 	freeForm?: FreeFormAdvisory;
 	arrivalDelay?: DelayAdvisory;
 	departureDelay?: DelayAdvisory;
@@ -34,6 +34,19 @@ export type AirportAdvisory = {
 	airportLongName: string;
 	latitude: string;
 	longitude: string;
+}
+
+export type AirportClosureAdvisory = {
+	id: string;
+	airportId: string; // IATA
+	createdAt: string;
+	updatedAt: string;
+	startTime: string;
+	endTime: string;
+	simpleText: string;
+	text: string;
+	notamNumber: number;
+	issuedDate: string;
 }
 
 export type GroundDelayAdvisory = {

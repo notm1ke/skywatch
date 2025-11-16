@@ -12,6 +12,7 @@ import { GroundStopProgram } from "./programs/ground-stop";
 import { GroundDelayProgram } from "./programs/ground-delay";
 import { SpecialAdvisoryProgram } from "./programs/special-advisory";
 import { Disclosure, DisclosureContent, DisclosureTrigger } from "../ui/disclosure";
+import { AirportClosureProgram } from "./programs/airport-closure";
 
 enum Priority {
 	Normal,
@@ -45,7 +46,7 @@ const programIndicator = (advisory: AirportAdvisory) => {
 	switch (priority) {
 		case Priority.AirportClosure: return (
 			<div className="flex gap-2 items-center text-sm">
-				<div className="size-3 bg-red-400 animate-pulse" />
+				<div className="size-3 bg-red-400 animate-pulse rounded-[30%]" />
 				Airport Closure
 			</div>
 		)
@@ -102,7 +103,7 @@ const programDisclosureContent = (advisory: AirportAdvisory) => {
 	const priority = computePriority(advisory);
 	switch (priority) {
 		case Priority.AirportClosure:
-			return <></>
+			return <AirportClosureProgram advisory={advisory} />
 		case Priority.GroundStop:
 			return <GroundStopProgram advisory={advisory} />
 		case Priority.GroundDelay:

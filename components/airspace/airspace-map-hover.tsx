@@ -4,13 +4,14 @@ import { DeicingProgram } from "./programs/deicing";
 import { AirportAdvisory, AirportStatus } from "~/lib/faa";
 import { GroundStopProgram } from "./programs/ground-stop";
 import { GroundDelayProgram } from "./programs/ground-delay";
+import { AirportClosureProgram } from "./programs/airport-closure";
 import { SpecialAdvisoryProgram } from "./programs/special-advisory";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 
 const hoverCardContent = (advisory: AirportAdvisory, status: AirportStatus) => {
 	switch (status) {
 		case 'airport_closure':
-			return <></>
+			return <AirportClosureProgram advisory={advisory} />
 		case 'ground_stop':
 			return <GroundStopProgram advisory={advisory} />
 		case 'ground_delay':
