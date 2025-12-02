@@ -181,7 +181,7 @@ const ScrollMask = ({
           } as React.CSSProperties
         }
         className={cn(
-          "pointer-events-none absolute inset-0 z-10",
+          "pointer-events-none absolute inset-0",
           "before:absolute before:inset-x-0 before:top-0 before:transition-[height,opacity] before:duration-300 before:content-['']",
           "after:absolute after:inset-x-0 after:bottom-0 after:transition-[height,opacity] after:duration-300 after:content-['']",
           "before:h-(--top-fade-height) after:h-(--bottom-fade-height)",

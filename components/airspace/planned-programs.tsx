@@ -2,9 +2,17 @@ import { useAirspace } from "./provider";
 import { ClockCheck } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { ScrollArea } from "../ui/scroll-area";
-import { ErrorSection } from "./error-section";
+import { ErrorSection } from "../error-section";
 import { useAirports } from "../airport-provider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+
+import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle
+} from "../ui/empty";
 
 export const AirspacePlannedEvents = () => {
 	const { airports } = useAirports();
@@ -106,7 +114,7 @@ export const AirspacePlannedEvents = () => {
 				)}
 				
 				{planned.length > 0 && (
-					<ScrollArea className="py-2 max-h-[340px]">
+					<ScrollArea className="py-2 h-[252px]">
 						{planned.map((plan, i) => {
 							const airport = airports.find(airport => airport.iata_code === plan.iataCode);
 							if (!airport) return null;

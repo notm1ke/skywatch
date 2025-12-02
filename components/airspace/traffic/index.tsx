@@ -1,11 +1,11 @@
 import { toast } from "sonner";
 import { unwrap } from "~/lib/actions";
-import { ErrorSection } from "../error-section";
 import { TrafficByCenterChart } from "./by-center";
 import { TrafficByStatusChart } from "./by-status";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useEffect, useMemo, useState } from "react";
 import { TrafficByAircraftChart } from "./by-aircraft";
+import { ErrorSection } from "~/components/error-section";
 import { ArrivalCapacityChart } from "./arrival-capacity";
 import { DataPoint, fetchAggregatedTrafficFlow, TrafficFlow } from "~/lib/traffic";
 import { ArgumentType, cn, formatFaaTime, shortNumberFormatter } from "~/lib/utils";

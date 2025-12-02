@@ -5,7 +5,7 @@ import { Resolved, ThemeSelection, ThemeToggler } from "./ui/theme-toggler";
 
 export const ThemeToggle = () => {
 	const { theme, resolvedTheme, setTheme } = useTheme();
-	
+
 	return (
 		<ThemeToggler
 			theme={theme as ThemeSelection}
@@ -14,13 +14,16 @@ export const ThemeToggle = () => {
 			direction="ttb"
 		>
 			{({ effective, toggleTheme }) => {
-				const nextTheme =
-					effective === 'dark'
-						? 'light'
-						: 'dark';
-				
+				const nextTheme = effective === 'dark'
+					? 'light'
+					: 'dark';
+
 				return (
-					<Button variant="ghost" onClick={() => toggleTheme(nextTheme)}>
+					<Button
+						variant="ghost"
+						className="cursor-pointer"
+						onClick={() => toggleTheme(nextTheme)}
+					>
 						{effective === 'dark' && <Moon className="size-5.5" />}
 						{effective === 'light' && <Sun className="size-5.5" />}
 					</Button>

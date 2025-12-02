@@ -42,7 +42,7 @@ export const GroundStopProgram: React.FC<{ advisory: AirportAdvisory }> = ({ adv
 	return (
 		<div className="flex flex-col space-y-2">
 			<div className="flex flex-row justify-between">
-				<div className="text-sm">Impacting Condition</div>
+				<div className="text-sm">Reason</div>
 				<div className="text-sm tabular-nums font-mono tracking-tighter">
 					{capitalizeFirst(advisory.groundStop!.impactingCondition)}
 				</div>

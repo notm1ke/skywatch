@@ -136,7 +136,7 @@ export const Searchbar: React.FC = () => {
 					<motion.div
 						ref={triggerRef}
 						layoutId="find"
-						className="group relative flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-w-[324px]"
+						className="group relative flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent/60 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-w-[324px] cursor-pointer"
 					>
 						<motion.div
 							initial={{ opacity: 0, filter: "blur(4px)" }}
@@ -159,7 +159,8 @@ export const Searchbar: React.FC = () => {
 							transition={{ duration: 0.3, delay: 0.2 }}
 						>
 							<KbdGroup>
-								<Kbd>⌘K</Kbd>
+								<Kbd>⌘</Kbd>
+								<Kbd>K</Kbd>
 							</KbdGroup>
 						</motion.div>
 					</motion.div>

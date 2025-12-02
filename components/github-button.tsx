@@ -26,7 +26,7 @@ const GitHubIcon: React.FC<IconProps> = ({ className }) => (
 
 export const GitHubButton = () => (
 	<Link href={REPO_LINK} target="_blank" rel="noopener noreferrer">
-		<Button variant="ghost">
+		<Button variant="ghost" className="cursor-pointer">
 			<GitHubIcon className="size-5.5 [&>path]:fill-[#24292f] dark:[&>path]:fill-white" />
 		</Button>
 	</Link>

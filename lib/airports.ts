@@ -30,4 +30,22 @@ export const fetchAirports = async () => okAsync(
 			airline_hubs: true,
 		},
 	})
+);
+
+export const fetchAirportByIata = async (iata_code: string) => okAsync(
+	prisma.airport.findFirst({
+		where: {
+			iata_code,
+			scheduled_service: "yes",
+			type: {
+				notIn: ["seaplane_base", "closed", "heliport", "balloonport"],
+			},
+		},
+		include: {
+			runways: true,
+			frequencies: true,
+			navaids: true,
+			airline_hubs: true,
+		}
+	})
 )

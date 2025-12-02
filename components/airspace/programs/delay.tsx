@@ -1,8 +1,7 @@
 import { useMemo } from "react";
-import { Separator } from "~/components/ui/separator";
 import { AirportAdvisory, DelayAdvisory } from "~/lib/faa";
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "lucide-react";
-import { capitalizeFirst, cn, delayReason, getLatestTimeValue } from "~/lib/utils";
+import { capitalizeFirst, cn, delayReason, getLatestTimeValue, parseDelayTime } from "~/lib/utils";
 
 type DelayProgramType = "arrivals" | "departures";
 type DelayProgramMode = "both" | "arrivals" | "departures";
@@ -10,22 +9,6 @@ type DelayProgramMode = "both" | "arrivals" | "departures";
 type ProgramDetailsProps = {
 	delayProgram: DelayAdvisory;
 };
-
-const parseDelayTime = (time: string) => {
-	if (!time) return '';
-
-	const hoursMatch = time.match(/(\d+)\s*hour/);
-	const minutesMatch = time.match(/(\d+)\s*minute/);
-
-	const hours = hoursMatch ? hoursMatch[1] : '';
-	const minutes = minutesMatch ? minutesMatch[1] : '';
-
-	if (hours && minutes) return `${hours}h ${minutes}m`;
-	if (hours)            return `${hours}h`;
-	if (minutes)          return `${minutes}m`;
-	
-	return '';
-}
 
 const computeRange = (min: string, max: string) => {
 	if (!min || !max) return '';

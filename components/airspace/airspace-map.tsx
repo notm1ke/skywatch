@@ -7,12 +7,12 @@ import { GeoJson } from "~/lib/geo";
 import { useTheme } from "next-themes";
 import { useAirspace } from "./provider";
 import { Marker } from "react-map-gl/mapbox";
+import { useIsMobile } from "~/hooks/use-mobile";
 import { useAirports } from "../airport-provider";
 import { AirportWithJoins } from "~/lib/airports";
 import { AirportAdvisory, AirportStatus } from "~/lib/faa";
 import { AirspaceMapHoverCard } from "./airspace-map-hover";
 import { AttributionControl, Layer, NavigationControl, Source } from "react-map-gl/mapbox";
-import { useIsMobile } from "~/hooks/use-mobile";
 
 type AirspaceProps = {
 	GLOBAL_ID: string;
@@ -84,17 +84,13 @@ const AirportMarker: React.FC<{ advisory: AirportAdvisory, airport: AirportWithJ
 	}, [advisory]);
 	
 	return (
-		
 		<Marker
 			key={airport.iata_code}
 			latitude={airport.latitude_deg}
 			longitude={airport.longitude_deg}
-			className="cursor-help"
+			className="cursor-help animate-fade-in"
 		>
-			<AirspaceMapHoverCard
-				advisory={advisory}
-				status={status}
-			>
+			<AirspaceMapHoverCard advisory={advisory}>
 				<div className={cn("size-2.5 rounded-md", colorForAirportStatus(status))} />
 			</AirspaceMapHoverCard>
 		</Marker>

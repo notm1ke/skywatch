@@ -2,7 +2,7 @@ import { toast } from "sonner";
 import { unwrap } from "~/lib/actions";
 import { Skeleton } from "../ui/skeleton";
 import { useEffect, useState } from "react";
-import { ErrorSection } from "./error-section";
+import { ErrorSection } from "../error-section";
 import { Label, Pie, PieChart } from "recharts";
 import { shortNumberFormatter } from "~/lib/utils";
 import { CancellationStats, fetchCancellationStats } from "~/lib/faa";

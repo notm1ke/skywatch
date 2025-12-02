@@ -1,18 +1,29 @@
+import Link from "next/link";
+
 import { useAirspace } from "./provider";
 import { Skeleton } from "../ui/skeleton";
 import { AirportAdvisory } from "~/lib/faa";
-import { ErrorSection } from "./error-section";
+import { ErrorSection } from "../error-section";
 import { DelayProgram } from "./programs/delay";
 import { shortenAirportName } from "~/lib/utils";
 import { useAirports } from "../airport-provider";
 import { DeicingProgram } from "./programs/deicing";
-import { ChevronRight, Snowflake } from "lucide-react";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { GroundStopProgram } from "./programs/ground-stop";
 import { GroundDelayProgram } from "./programs/ground-delay";
 import { AirportClosureProgram } from "./programs/airport-closure";
 import { SpecialAdvisoryProgram } from "./programs/special-advisory";
+import { ChevronRight, CircleArrowRight, Snowflake } from "lucide-react";
 import { Disclosure, DisclosureContent, DisclosureTrigger } from "../ui/disclosure";
+
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuLabel,
+	ContextMenuSeparator,
+	ContextMenuTrigger
+} from "../ui/context-menu";
 
 enum Priority {
 	Normal,
@@ -41,7 +52,7 @@ const computePriority = (advisory: AirportAdvisory) => {
 const sortOrder = (a: AirportAdvisory, b: AirportAdvisory) =>
 	computePriority(b) - computePriority(a);
 
-const programIndicator = (advisory: AirportAdvisory) => {
+export const programIndicator = (advisory: AirportAdvisory) => {
 	const priority = computePriority(advisory);
 	switch (priority) {
 		case Priority.AirportClosure: return (
@@ -99,7 +110,7 @@ const programIndicator = (advisory: AirportAdvisory) => {
 	}
 }
 
-const programDisclosureContent = (advisory: AirportAdvisory) => {
+export const programContent = (advisory: AirportAdvisory) => {
 	const priority = computePriority(advisory);
 	switch (priority) {
 		case Priority.AirportClosure:
@@ -123,7 +134,7 @@ const programDisclosureContent = (advisory: AirportAdvisory) => {
 
 export const ActivePrograms = () => {
 	const { airports } = useAirports();
-	const { advisories, loading, error, refresh} = useAirspace();
+	const { advisories, loading, error, refresh } = useAirspace();
 	
 	if (loading) return (
 		<div>
@@ -193,33 +204,48 @@ export const ActivePrograms = () => {
 				</div>
 			</div>
 			<div className="border-t">
-				<ScrollArea className="min-h-auto h-[559px] max-h-[800px]">
+				<ScrollArea className="min-h-auto h-[559px] max-h-[800px]" maskHeight={20}>
 					{advisories.sort(sortOrder).map(advisory => {
 						const airport = airports.find(airport => airport.iata_code === advisory.airportId);
 						if (!airport) return null;
 						
 						return (
-							<Disclosure key={advisory.airportId} className="border-b">
-								<DisclosureTrigger>
-									<div className="group flex flex-row justify-between px-3 pb-3 pt-3 cursor-pointer hover:bg-muted/30 transition-colors duration-150 ease-out">
-										<div>
-											<div className="flex items-center">
-												<ChevronRight className="size-4 mr-2 text-zinc-500 transition-transform duration-200 ease-in-out rotate-0 group-aria-expanded:rotate-90" />
-												<span className="text-sm font-bold font-mono px-2 bg-zinc-300 dark:bg-zinc-700 mr-2">{airport.iata_code}</span>
-												<span className="text-sm font-bold">{shortenAirportName(airport.name)}</span>
+							<ContextMenu key={`interruption-${advisory.airportId}`}>
+								<Disclosure className="border-b">
+									<DisclosureTrigger>
+										<ContextMenuTrigger asChild>
+											<div className="group flex flex-row justify-between px-3 pb-3 pt-3 cursor-pointer hover:bg-muted/30 transition-colors duration-150 ease-out">
+												<div>
+													<div className="flex items-center">
+														<ChevronRight className="size-4 mr-2 text-zinc-500 transition-transform duration-200 ease-in-out rotate-0 group-aria-expanded:rotate-90" />
+														<span className="text-sm font-bold font-mono px-2 bg-zinc-300 dark:bg-zinc-700 mr-2">{airport.iata_code}</span>
+														<span className="text-sm font-bold">{shortenAirportName(airport.name)}</span>
+													</div>
+												</div>
+												<div className="flex items-center">{programIndicator(advisory)}</div>
 											</div>
+										</ContextMenuTrigger>
+									</DisclosureTrigger>
+									<DisclosureContent>
+										<div className="border-t border-spacing-x-5 border-dashed" />
+										<div className="p-3">
+											{programContent(advisory)}
+											<ScrollBar orientation="vertical" />
 										</div>
-										<div className="flex items-center">{programIndicator(advisory)}</div>
-									</div>
-								</DisclosureTrigger>
-								<DisclosureContent>
-									<div className="border-t border-spacing-x-5 border-dashed" />
-									<div className="p-3">
-										{programDisclosureContent(advisory)}
-										<ScrollBar orientation="vertical" />
-									</div>
-								</DisclosureContent>
-							</Disclosure>
+									</DisclosureContent>
+								</Disclosure>
+								<ContextMenuContent>
+									<ContextMenuLabel>
+										{shortenAirportName(airport.name)}
+									</ContextMenuLabel>
+									<ContextMenuSeparator />
+									<ContextMenuItem asChild>
+										<Link prefetch href={`/airports/${airport.iata_code}`}>
+											<CircleArrowRight /> View Airport
+										</Link>
+									</ContextMenuItem>
+								</ContextMenuContent>
+							</ContextMenu>
 						);
 					})}
 				</ScrollArea>

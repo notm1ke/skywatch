@@ -21,7 +21,7 @@ export const shortNumberFormatter = new Intl.NumberFormat('en', {
 export const formatFaaTime = (raw: string) => {
 	if (!raw) return 'Today';
 	const hour = (parseInt(raw.slice(0, 2)) % 12)
-	return (hour === 0 ? '12' : padWithZero(hour)) + ':' + raw.slice(2) + ' ' + (raw < '1200' ? 'am' : 'pm');
+	return (hour === 0 ? '12' : hour.toString().padStart(2, '0')) + ':' + raw.slice(2) + ' ' + (raw < '1200' ? 'am' : 'pm');
 }
 
 export const capitalizeFirst = (input: string) =>
@@ -30,6 +30,17 @@ export const capitalizeFirst = (input: string) =>
 		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(' ');
 
+
+export const padZero = (input: string) => {
+	if (!/^[0-9]+$/g.test(input)) return input;
+	
+	const int = parseInt(input);
+	if (isNaN(int)) return input;
+	if (int < 10) return `0${int}`;
+	
+	return int.toString();
+}
+	
 export const safeParseJson = <T>(str?: string): T | null => {
 	if (!str) return null;
 
@@ -49,8 +60,6 @@ export const getUrlDomain = (url: string, fallback  = '') => {
 	}
 }
 
-export const padWithZero = (number: number) => number.toString().padStart(2, '0');
-
 export const shortenAirportName = (name: string) => {
 	return name
 		.replaceAll("International", "Intl")
@@ -59,7 +68,8 @@ export const shortenAirportName = (name: string) => {
 		.replaceAll("County", "Cnty")
 		.replaceAll("Metropolitan", "Metro")
 		.replaceAll("Airport", "")
-		.replaceAll(/\/.*$/g, "");
+		.replaceAll(/\/.*$/g, "")
+		.trim();
 };
 
 export const delayReason = (raw: string) => {
@@ -70,6 +80,22 @@ export const delayReason = (raw: string) => {
 	if (raw.toLowerCase().includes('staffing') || raw.toLowerCase().includes('staff'))
 		return "Staffing";
 	return raw;
+}
+
+export const parseDelayTime = (time: string) => {
+	if (!time) return '';
+
+	const hoursMatch = time.match(/(\d+)\s*hour/);
+	const minutesMatch = time.match(/(\d+)\s*minute/);
+
+	const hours = hoursMatch ? hoursMatch[1] : '';
+	const minutes = minutesMatch ? minutesMatch[1] : '';
+
+	if (hours && minutes) return `${hours}h ${minutes}m`;
+	if (hours)            return `${hours}h`;
+	if (minutes)          return `${minutes}m`;
+	
+	return '';
 }
 
 export const getLatestTimeValue = (time: number, delimiter = ', ', short = true, top?: number) => {

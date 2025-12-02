@@ -4,9 +4,6 @@ import { AirportAdvisory } from "~/lib/faa";
 import { getLatestTimeValue } from "~/lib/utils";
 
 export const AirportClosureProgram: React.FC<{ advisory: AirportAdvisory }> = ({ advisory }) => (
-	// <pre className="max-w-[100px] text-blue-300">
-	// 	{JSON.stringify(advisory, null, 2)}
-	// </pre>
 	<div className="flex flex-col space-y-2">
 		<div className="flex flex-row justify-between">
 			<div className="text-sm">NOTAM</div>
