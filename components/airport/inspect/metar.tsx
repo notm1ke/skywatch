@@ -102,41 +102,56 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 								{cToF(metar.temp)}°F ({metar.temp}°C)
 							</span>
 						</div>
-						<div className="flex justify-between">
-							<span className="text-black/70 dark:text-white/40">Dew Point:</span>
-							<span className="text-black/90 dark:text-white/90 font-mono">
-								{cToF(metar.dewp)}°F ({metar.dewp}°C)
-							</span>
-						</div>
+						
 						<div className="flex justify-between">
 							<span className="text-black/70 dark:text-white/40">Visibility:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
 								{formatVisibility(metar.visib)}
 							</span>
 						</div>
+						
+						<div className="flex justify-between">
+							<span className="text-black/70 dark:text-white/40">Dew Point:</span>
+							<span className="text-black/90 dark:text-white/90 font-mono">
+								{cToF(metar.dewp)}°F ({metar.dewp}°C)
+							</span>
+						</div>
+						
+						<div className="flex justify-between">
+							<span className="text-black/70 dark:text-white/40">Flight Rules:</span>
+							<span className="text-black/90 dark:text-white/90 font-mono">{getFlightRulesLabel(metar.fltCat)}</span>
+						</div>
+						
+						<div className="flex justify-between">
+							<span className="text-black/70 dark:text-white/40">Altimeter:</span>
+							<span className="text-black/90 dark:text-white/90 font-mono">{(metar.altim / 33.8639).toFixed(2)} inHg</span>
+						</div>
+						
 						<div className="flex justify-between">
 							<span className="text-black/70 dark:text-white/40">Wind:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
 								{metar.wdir != null
 									? `${metar.wdir.toString().padStart(3, "0")}° at ${metar.wspd}kt`
 									: `${metar.wspd}kt`}
-								{metar.wgst && ` G${metar.wgst}kt`}
 							</span>
 						</div>
-						<div className="flex justify-between">
-							<span className="text-black/70 dark:text-white/40">Altimeter:</span>
-							<span className="text-black/90 dark:text-white/90 font-mono">{(metar.altim / 33.8639).toFixed(2)} inHg</span>
-						</div>
+						
 						{metar.slp && (
 							<div className="flex justify-between">
-								<span className="text-black/70 dark:text-white/40">Sea Level Pressure:</span>
+								<span className="text-black/70 dark:text-white/40">Sea Level:</span>
 								<span className="text-black/90 dark:text-white/90 font-mono">{(metar.slp / 33.8639).toFixed(1)} inHg</span>
 							</div>
 						)}
-						<div className="flex justify-between">
-							<span className="text-black/70 dark:text-white/40">Flight Rules:</span>
-							<span className="text-black/90 dark:text-white/90 font-mono">{getFlightRulesLabel(metar.fltCat)}</span>
-						</div>
+						
+						{metar.wgst && (
+							<div className="flex justify-between">
+								<span className="text-black/70 dark:text-white/40">Gust:</span>
+								<span className="text-black/90 dark:text-white/90 font-mono">
+									{metar.wgst}kt
+								</span>
+							</div>
+						)}
+						
 						{metar.wxString && (
 							<div className="flex justify-between">
 								<span className="text-black/70 dark:text-white/40">Weather:</span>
@@ -339,7 +354,7 @@ export const MeterologicalReport: React.FC<MeterologicalReportProps> = ({ airpor
 									: `${metar.wspd}kt`}
 							</div>
 							<div className="font-mono text-sm text-black/80 dark:text-white/90">
-								{metar.wgst && `Gust ${metar.wgst}kt`}
+								{metar.wgst && `${metar.wgst}kt gust`}
 							</div>
 						</div>
 					</div>
