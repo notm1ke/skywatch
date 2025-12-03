@@ -51,7 +51,7 @@ const getBoundedAirportName = (name: string) => {
 
 export default async function Image({ params }: { params: Promise<Params> }) {
 	const slug = await params;
-	const airport = await fetchAirportByIata(slug.iata)
+	const airport = await fetchAirportByIata(slug.iata.toUpperCase())
 		.then(unwrap)
 		.catch(() => null);
 	

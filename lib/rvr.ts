@@ -3,7 +3,7 @@
 import { redis } from "./redis";
 import { prisma } from "./prisma";
 import { safeParseJson } from "./utils";
-import { okAsync, raise } from "./actions";
+import { ok, okAsync, raise } from "./actions";
 
 export type RvrRunwayProbeValue = {
 	/**
@@ -45,12 +45,18 @@ export const fetchRvrForAirport = async (iata_code: string) => {
 	const airport = await prisma.airport.findFirst({
 		where: { iata_code }
 	});
-
+	
 	if (!airport) return raise("Airport not found");
+	if (!airport?.supports_rvr) return ok({
+		iata: airport.iata_code!,
+		updatedAt: Date.now(),
+		runways: []
+	});
+	
 	return okAsync(
 		redis.get(`airport:${airport.iata_code!}:rvr`)
 			.then(raw => {
-				if (!raw) throw new Error('No RVR information for Airport');
+				if (!raw) throw new Error("Upstream error while retrieving RVR information")
 				return safeParseJson<RvrResponse>(raw);
 			}),
 		err => err.message ?? "Unknown error"

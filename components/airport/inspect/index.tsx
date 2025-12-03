@@ -8,6 +8,7 @@ import { AirportWithJoins } from "~/lib/airports";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useAirports } from "~/components/airport-provider";
 import { useAirspace } from "~/components/airspace/provider";
+import { MeterologicalReport } from "./metar";
 
 const useScopedAdvisories = (iata: string): [AirportAdvisory | undefined, boolean] => {
 	const { advisories, loading } = useAirspace();
@@ -72,6 +73,7 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 					</div>*/}
 				</div>
 				<div className="sm:basis-1/3 border-l">
+					<MeterologicalReport airport={airport} />
 					<RunwayConditions airport={airport} />
 				</div>
 			</div>

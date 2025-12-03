@@ -14,7 +14,7 @@ export async function generateMetadata(
 	{ params }: Params
 ): Promise<Metadata> {
 	const { iata } = await params;
-	const airport = await fetchAirportByIata(iata)
+	const airport = await fetchAirportByIata(iata.toUpperCase())
 		.then(unwrap)
 		.catch(() => null);
 	
