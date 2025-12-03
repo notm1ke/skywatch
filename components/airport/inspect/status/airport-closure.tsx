@@ -49,8 +49,6 @@ export const ClosureProgram: React.FC<{ airport: AirportWithJoins, advisory: Air
 					)}
 				</span>
 				
-				<Separator className="bg-red-500/10" orientation="vertical" />
-				
 				<Dialog>
 					<DialogTrigger className="flex flex-row space-x-1 text-sm items-center">
 						<Button variant="ghost" size="icon-sm">

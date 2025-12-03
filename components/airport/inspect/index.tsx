@@ -4,11 +4,11 @@ import { AirportMap } from "./map";
 import { StatusRibbon } from "./status";
 import { AirportAdvisory } from "~/lib/faa";
 import { RunwayConditions } from "./runways";
+import { MeterologicalReport } from "./metar";
 import { AirportWithJoins } from "~/lib/airports";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useAirports } from "~/components/airport-provider";
 import { useAirspace } from "~/components/airspace/provider";
-import { MeterologicalReport } from "./metar";
 
 const useScopedAdvisories = (iata: string): [AirportAdvisory | undefined, boolean] => {
 	const { advisories, loading } = useAirspace();

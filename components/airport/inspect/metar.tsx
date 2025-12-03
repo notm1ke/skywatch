@@ -97,25 +97,25 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 					</h3>
 					<div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
 						<div className="flex justify-between">
-							<span className="text-black/40 dark:text-white/40">Temperature:</span>
+							<span className="text-black/70 dark:text-white/40">Temperature:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
 								{cToF(metar.temp)}°F ({metar.temp}°C)
 							</span>
 						</div>
 						<div className="flex justify-between">
-							<span className="text-black/40 dark:text-white/40">Dew Point:</span>
+							<span className="text-black/70 dark:text-white/40">Dew Point:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
 								{cToF(metar.dewp)}°F ({metar.dewp}°C)
 							</span>
 						</div>
 						<div className="flex justify-between">
-							<span className="text-black/40 dark:text-white/40">Visibility:</span>
+							<span className="text-black/70 dark:text-white/40">Visibility:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
-								{metar.visib === "10+" ? ">10 SM" : `${metar.visib} SM`}
+								{formatVisibility(metar.visib)}
 							</span>
 						</div>
 						<div className="flex justify-between">
-							<span className="text-black/40 dark:text-white/40">Wind:</span>
+							<span className="text-black/70 dark:text-white/40">Wind:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
 								{metar.wdir != null
 									? `${metar.wdir.toString().padStart(3, "0")}° at ${metar.wspd}kt`
@@ -124,22 +124,22 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 							</span>
 						</div>
 						<div className="flex justify-between">
-							<span className="text-black/40 dark:text-white/40">Altimeter:</span>
+							<span className="text-black/70 dark:text-white/40">Altimeter:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">{(metar.altim / 33.8639).toFixed(2)} inHg</span>
 						</div>
 						{metar.slp && (
 							<div className="flex justify-between">
-								<span className="text-black/40 dark:text-white/40">Sea Level Pressure:</span>
+								<span className="text-black/70 dark:text-white/40">Sea Level Pressure:</span>
 								<span className="text-black/90 dark:text-white/90 font-mono">{(metar.slp / 33.8639).toFixed(1)} inHg</span>
 							</div>
 						)}
 						<div className="flex justify-between">
-							<span className="text-black/40 dark:text-white/40">Flight Rules:</span>
+							<span className="text-black/70 dark:text-white/40">Flight Rules:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">{getFlightRulesLabel(metar.fltCat)}</span>
 						</div>
 						{metar.wxString && (
 							<div className="flex justify-between">
-								<span className="text-black/40 dark:text-white/40">Weather:</span>
+								<span className="text-black/70 dark:text-white/40">Weather:</span>
 								<span className="text-black/90 dark:text-white/90 font-mono">{metar.wxString}</span>
 							</div>
 						)}
@@ -152,7 +152,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 							<CloudRain className="h-3.5 w-3.5" />
 							Cloud Layers
 						</h3>
-						<div className="grid grid-cols-2 gap-x-4 gap-y-1">
+						<div className="flex flex-col space-y-1">
 							{metar.clouds.map((cloud, idx) => (
 								<div key={idx} className="text-xs text-black/70 dark:text-white/70 font-mono flex justify-between">
 									<span>{getCloudCoverLabel(cloud.cover)}</span>
@@ -172,7 +172,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 						<div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
 							{metar.maxT != null && (
 								<div className="flex justify-between">
-									<span className="text-black/40 dark:text-white/40">Max Temp:</span>
+									<span className="text-black/70 dark:text-white/40">Max Temp:</span>
 									<span className="text-black/90 dark:text-white/90 font-mono">
 										{cToF(metar.maxT)}°F ({metar.maxT}°C)
 									</span>
@@ -180,7 +180,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 							)}
 							{metar.minT != null && (
 								<div className="flex justify-between">
-									<span className="text-black/40 dark:text-white/40">Min Temp:</span>
+									<span className="text-black/70 dark:text-white/40">Min Temp:</span>
 									<span className="text-black/90 dark:text-white/90 font-mono">
 										{cToF(metar.minT)}°F ({metar.minT}°C)
 									</span>
@@ -188,25 +188,25 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 							)}
 							{metar.precip != null && (
 								<div className="flex justify-between">
-									<span className="text-black/40 dark:text-white/40">Precip (1hr):</span>
+									<span className="text-black/70 dark:text-white/40">Precip (1hr):</span>
 									<span className="text-black/90 dark:text-white/90 font-mono">{metar.precip.toFixed(2)} in</span>
 								</div>
 							)}
 							{metar.pcp3hr != null && (
 								<div className="flex justify-between">
-									<span className="text-black/40 dark:text-white/40">Precip (3hr):</span>
+									<span className="text-black/70 dark:text-white/40">Precip (3hr):</span>
 									<span className="text-black/90 dark:text-white/90 font-mono">{metar.pcp3hr.toFixed(2)} in</span>
 								</div>
 							)}
 							{metar.pcp6hr != null && (
 								<div className="flex justify-between">
-									<span className="text-black/40 dark:text-white/40">Precip (6hr):</span>
+									<span className="text-black/70 dark:text-white/40">Precip (6hr):</span>
 									<span className="text-black/90 dark:text-white/90 font-mono">{metar.pcp6hr.toFixed(2)} in</span>
 								</div>
 							)}
 							{metar.presTend != null && (
 								<div className="flex justify-between">
-									<span className="text-black/40 dark:text-white/40">Pressure (3hr):</span>
+									<span className="text-black/70 dark:text-white/40">Pressure (3hr):</span>
 									<span className="text-black/90 dark:text-white/90 font-mono">
 										{metar.presTend > 0 ? "+" : ""}
 										{metar.presTend} mb
@@ -215,7 +215,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 							)}
 							{metar.snow != null && (
 								<div className="flex justify-between">
-									<span className="text-black/40 dark:text-white/40">Snow Depth:</span>
+									<span className="text-black/70 dark:text-white/40">Snow Depth:</span>
 									<span className="text-black/90 dark:text-white/90 font-mono">{(metar.snow / 100).toFixed(1)} in</span>
 								</div>
 							)}
@@ -372,14 +372,23 @@ export const MeterologicalReport: React.FC<MeterologicalReportProps> = ({ airpor
 							<CloudRain className="h-4 w-4 text-slate-600 dark:text-slate-400 mt-0.5 shrink-0" />
 							<div className="flex-1 min-w-0">
 								<div className="text-xs text-black/60 dark:text-white/80 mb-1">Clouds</div>
-								<div className="space-y-0.5">
-									{metar.clouds.map((cloud, idx) => (
-										<div key={idx} className="flex flex-row space-x-2 text-xs text-black/80 dark:text-white/90 font-mono">
-											<div className="px-2 bg-blue-300 dark:bg-blue-500 rounded-md">{formatAltToFL(cloud.base)}</div>
-											<span>{getCloudCoverLabel(cloud.cover)}</span>
-										</div>
-									))}
-								</div>
+								
+								{metar.clouds.length === 0 && (
+									<div className="font-mono text-sm text-black/80 dark:text-white/90">
+										None
+									</div>
+								)}
+								
+								{metar.clouds.length > 0 && (
+									<div className="space-y-0.5">
+										{metar.clouds.map((cloud, idx) => (
+											<div key={idx} className="flex flex-row space-x-2 text-xs text-black/80 dark:text-white/90 font-mono">
+												<div className="px-2 bg-blue-300 dark:bg-blue-500 rounded-md">{formatAltToFL(cloud.base)}</div>
+												<span>{getCloudCoverLabel(cloud.cover)}</span>
+											</div>
+										))}
+									</div>
+								)}
 							</div>
 						</div>
 					)}
