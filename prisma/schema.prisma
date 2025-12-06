@@ -1,10 +1,12 @@
 generator client {
    provider = "prisma-client"
    output   = "./generated"
+   previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
    provider = "postgresql"
+   url      = env("DATABASE_URL")
 }
 
 generator json {
@@ -32,6 +34,8 @@ model Airport {
    wikipedia_link    String?
    keywords          String?
    supports_rvr      Boolean @default(false)
+   supports_precheck Boolean @default(false)
+   supports_clear    Boolean @default(false)
    timezone          String?
 
    frequencies  AirportFrequency[]

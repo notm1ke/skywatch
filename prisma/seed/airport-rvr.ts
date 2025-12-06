@@ -28,7 +28,7 @@ await prisma.$transaction(
 	iatas
 		.filter(iata => tracked.includes(iata))
 		.map(iata_code => {
-			console.log(` - ${iata_code}..`);
+			console.log(` - ${iata_code}`);
 			return prisma.airport.update({
 				where: { iata_code },
 				data: { supports_rvr: true }

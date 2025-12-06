@@ -28,15 +28,15 @@ const AirportIataIcon = ({ iata }: { iata: string }) => {
 };
 
 export type AirportMetadata = {
-	iata_code?: string;
-	icao_code?: string;
-	name?: string;
-	state?: string;
-	stateAbbrev?: string;
-	municipality?: string;
+	iata_code?: string | null;
+	icao_code?: string | null;
+	name?: string | null;
+	state?: string | null;
+	stateAbbrev?: string | null;
+	municipality?: string | null;
 }
 
-export const airportResults: SearchResultGenerator<AirportWithJoins, AirportMetadata> = (data: AirportWithJoins[]): SearchResult[] => 
+export const airportResults: SearchResultGenerator<AirportWithJoins, AirportMetadata> = (data: AirportWithJoins[]): SearchResult<AirportMetadata>[] => 
 	data
 		.filter(airport => airport.iata_code)
 		.map(airport => ({

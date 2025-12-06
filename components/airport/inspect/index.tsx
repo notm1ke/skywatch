@@ -1,6 +1,7 @@
 "use client";
 
 import { StatusRibbon } from "./status";
+import { TsaWaitTimes, TsaWaitTimesSkeletonLoader } from "./tsa-wait";
 import { AirportAdvisory } from "~/lib/faa";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
@@ -85,6 +86,7 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 				</div>
 				<div className="sm:basis-1/3 border-l">
 					<MetarSkeletonLoader />
+					<TsaWaitTimesSkeletonLoader />
 					<RunwaysSkeletonLoader />
 				</div>
 			</div>
@@ -128,14 +130,13 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 	);
 	
 	return (
-		<div className="h-screen overflow-hidden">
+		<div className="min-h-screen overflow-hidden">
 			<AirportMap airport={airport} />
 			<AdvisoryRibbon airport={airport} />
 			
 			<div className="flex flex-col sm:flex-row">
 				<div className="basis-full sm:basis-2/3">
 					<div>
-						
 					</div>
 					{/*<div className="grid grid-cols-1 sm:grid-cols-3">
 						<div className="sm:col-span-3">
@@ -151,6 +152,7 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 				</div>
 				<div className="sm:basis-1/3 border-l">
 					<MeteorologicalReport airport={airport} />
+					<TsaWaitTimes airport={airport} />
 					<RunwayConditions airport={airport} />
 				</div>
 			</div>
