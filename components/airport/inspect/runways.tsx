@@ -325,7 +325,7 @@ const Tutorial: React.FC<PropsWithChildren> = ({ children }) => (
 	</Dialog>
 );
 
-const SkeletonLoader: React.FC<RunwayConditionsProps> = ({ airport }) => (
+export const RunwaysSkeletonLoader: React.FC<Partial<RunwayConditionsProps>> = ({ airport }) => (
 	<div className="border-b border-white/10">
 		<div className="flex flex-row px-3 py-2 justify-between">
 			<div className="flex flex-row space-x-2 items-center">
@@ -451,7 +451,7 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 		[airport.runways, rvr]
 	);
 	
-	if (loading) return <SkeletonLoader airport={airport} />;
+	if (loading) return <RunwaysSkeletonLoader airport={airport} />;
 	if (!rvr || error) return (
 		<div className="border-b border-white/10">
 			<style>{chevronAnimationStyles}</style>

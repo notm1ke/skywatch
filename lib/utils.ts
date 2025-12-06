@@ -65,7 +65,7 @@ export const shortenAirportName = (name: string) => {
 		.replaceAll("International", "Intl")
 		.replaceAll("Intercontinental", "Intl")
 		.replaceAll("National", "Ntl")
-		.replaceAll("County", "Cnty")
+		.replaceAll("County", "")
 		.replaceAll("Metropolitan", "Metro")
 		.replaceAll("Airport", "")
 		.replaceAll(/\/.*$/g, "")
@@ -75,9 +75,11 @@ export const shortenAirportName = (name: string) => {
 export const delayReason = (raw: string) => {
 	if (/:wx$/g.test(raw.toLowerCase()))
 		return "Weather";
+	if (raw.toLowerCase().includes("multi-taxi"))
+		return "Taxiway Congestion";
 	if (/:(vol|volume|minutes in trail)$/g.test(raw.toLowerCase()) || raw.toLowerCase().includes('demand'))
 		return "Traffic Volume";
-	if (raw.toLowerCase().includes('staffing') || raw.toLowerCase().includes('staff'))
+	if (raw.toLowerCase().includes('staff'))
 		return "Staffing";
 	return raw;
 }

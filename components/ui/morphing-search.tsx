@@ -141,7 +141,7 @@ function SearchTrigger({
 	}
 	
 	useEffect(() => {
-		if (triggerRef.current) {
+		if (triggerRef?.current) {
 			const rect = triggerRef.current.getBoundingClientRect()
 			context.setTriggerRect(rect)
 		}

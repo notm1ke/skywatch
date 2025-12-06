@@ -27,11 +27,6 @@ import {
 	FileText,
 	Gauge,
 	Plane,
-	Tally1,
-	Tally2,
-	Tally3,
-	Tally4,
-	Tally5,
 	ThermometerSun,
 	TrendingUp,
 	Wind
@@ -258,9 +253,80 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 			</div>
 		</DialogContent>
 	</Dialog>
+);
+
+export const MetarSkeletonLoader = () => (
+	<div className="border-b border-white/10">
+		<div className="flex flex-row px-3 py-2 justify-between">
+			<div className="flex flex-row space-x-2 items-center">
+				<span className="text-md font-semibold pointer-events-none">
+					Meteorological Report
+				</span>
+			</div>
+			<Skeleton className="h-6 w-6 rounded" />
+		</div>
+
+		<div className="p-3 border-t">
+			<div className="grid grid-cols-3 gap-3">
+				<div className="flex items-start gap-2">
+					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
+					<div className="flex-1 min-w-0">
+						<Skeleton className="h-3 w-20 mb-1.5" />
+						<Skeleton className="h-4 w-24 mb-1" />
+						<Skeleton className="h-3 w-16" />
+					</div>
+				</div>
+
+				<div className="flex items-start gap-2">
+					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
+					<div className="flex-1 min-w-0">
+						<Skeleton className="h-3 w-12 mb-1.5" />
+						<Skeleton className="h-4 w-28 mb-1" />
+						<Skeleton className="h-4 w-16" />
+					</div>
+				</div>
+
+				<div className="flex items-start gap-2">
+					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
+					<div className="flex-1 min-w-0">
+						<Skeleton className="h-3 w-16 mb-1.5" />
+						<Skeleton className="h-4 w-20" />
+					</div>
+				</div>
+
+				<div className="flex items-start gap-2">
+					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
+					<div className="flex-1 min-w-0">
+						<Skeleton className="h-3 w-16 mb-1.5" />
+						<Skeleton className="h-4 w-24 mb-1" />
+						<Skeleton className="h-3 w-28" />
+					</div>
+				</div>
+
+				<div className="flex items-start gap-2">
+					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
+					<div className="flex-1 min-w-0">
+						<Skeleton className="h-3 w-14 mb-1.5" />
+						<div className="space-y-1">
+							<Skeleton className="h-5 w-32" />
+							<Skeleton className="h-5 w-28" />
+						</div>
+					</div>
+				</div>
+
+				<div className="flex items-start gap-2">
+					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
+					<div className="flex-1 min-w-0">
+						<Skeleton className="h-3 w-24 mb-1.5" />
+						<Skeleton className="h-4 w-16" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 )
 
-export const MeterologicalReport: React.FC<MeterologicalReportProps> = ({ airport }) => {
+export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airport }) => {
 	const [metar, setMetar] = useState<MetarResponse | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
@@ -287,7 +353,8 @@ export const MeterologicalReport: React.FC<MeterologicalReportProps> = ({ airpor
 		refresh();
 	}, []);
 	
-	if (loading) return <>loading</>;
+	if (loading) return <MetarSkeletonLoader />;
+	
 	if (!metar || error) return (
 		<div className="border-b border-white/10">
 			<div className="flex flex-row px-3 py-2 justify-between">
@@ -301,7 +368,7 @@ export const MeterologicalReport: React.FC<MeterologicalReportProps> = ({ airpor
 
 			<div className="border-t">
 				<ErrorSection
-					title="Error loading runway conditions"
+					title="Error loading meteorological report"
 					className="border-t rounded-none border-solid"
 					error={error?.message}
 					refresh={refresh}
@@ -322,7 +389,7 @@ export const MeterologicalReport: React.FC<MeterologicalReportProps> = ({ airpor
 					<Button
 						variant="ghost"
 						size="sm"
-						className="h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10 text-black/60 dark:text-white/60 hover:text-black/90 dark:hover:text-white/90"
+						className="h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10 text-black/60 dark:text-white/60 hover:text-black/90 dark:hover:text-white/90 cursor-pointer"
 					>
 						<FileText className="h-3.5 w-3.5" />
 					</Button>
@@ -376,7 +443,7 @@ export const MeterologicalReport: React.FC<MeterologicalReportProps> = ({ airpor
 							<div className="font-mono text-sm text-black/80 dark:text-white/90">{(metar.altim / 33.8639).toFixed(2)} inHg</div>
 							{metar.slp && (
 								<div className="text-xs text-black/40 dark:text-white/40 mt-0.5">
-									Sea Level: {(metar.slp / 33.8639).toFixed(1)} inHG
+									Sea Level: {(metar.slp / 33.8639).toFixed(1)} inHg
 								</div>
 							)}
 						</div>

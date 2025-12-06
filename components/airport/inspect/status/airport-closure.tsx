@@ -51,7 +51,7 @@ export const ClosureProgram: React.FC<{ airport: AirportWithJoins, advisory: Air
 				
 				<Dialog>
 					<DialogTrigger className="flex flex-row space-x-1 text-sm items-center">
-						<Button variant="ghost" size="icon-sm">
+						<Button variant="ghost" size="icon-sm" className="cursor-pointer">
 							<Info />
 						</Button>
 					</DialogTrigger>

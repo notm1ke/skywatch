@@ -8,7 +8,7 @@ export const AirspaceMapHoverCard: React.FC<PropsWithChildren<{ advisory: Airpor
 	return (
 		<HoverCard>
 			<HoverCardTrigger>{children}</HoverCardTrigger>
-			<HoverCardContent className="w-full max-w-[525px]">
+			<HoverCardContent className="min-w-[calc(100%+8rem)] max-w-[525px]">
 				<div className="flex flex-col divide-y-2 space-y-2">
 					<div className="flex flex-row space-x-2 pb-2 items-start">
 						<span className="bg-zinc-300 dark:bg-zinc-700 px-1.5 rounded-md font-mono font-bold">

@@ -37,7 +37,6 @@ export const Searchbar: React.FC = () => {
 	const [results, setResults] = useState<SearchResult<any>[]>([]);
 
 	const debouncedQuery = useDebounce(searchQuery, 300);
-	const triggerRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -121,7 +120,7 @@ export const Searchbar: React.FC = () => {
 				duration: 0.5,
 			}}
 		>
-			<SearchTrigger triggerRef={triggerRef}>
+			<SearchTrigger triggerRef={inputRef}>
 				{isMobile && (
 					<Button
 						variant="ghost"
@@ -134,7 +133,6 @@ export const Searchbar: React.FC = () => {
 
 				{!isMobile && (
 					<motion.div
-						ref={triggerRef}
 						layoutId="find"
 						className="group relative flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent/60 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-w-[324px] cursor-pointer"
 					>

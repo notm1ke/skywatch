@@ -3,7 +3,6 @@ import { AirportAdvisory, DelayAdvisory } from "~/lib/faa";
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "lucide-react";
 import { capitalizeFirst, cn, delayReason, getLatestTimeValue, parseDelayTime } from "~/lib/utils";
 
-type DelayProgramType = "arrivals" | "departures";
 type DelayProgramMode = "both" | "arrivals" | "departures";
  
 type ProgramDetailsProps = {
