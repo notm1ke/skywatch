@@ -1,7 +1,6 @@
 "use client";
 
 import { StatusRibbon } from "./status";
-import { TsaWaitTimes, TsaWaitTimesSkeletonLoader } from "./tsa-wait";
 import { AirportAdvisory } from "~/lib/faa";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
@@ -13,6 +12,7 @@ import { useAirspace } from "~/components/airspace/provider";
 import { AirportMap, AirportMapSkeletonLoader } from "./map";
 import { RunwayConditions, RunwaysSkeletonLoader } from "./runways";
 import { MetarSkeletonLoader, MeteorologicalReport } from "./metar";
+import { TsaWaitTimes, TsaWaitTimesSkeletonLoader } from "./tsa-wait";
 
 import {
 	Empty,

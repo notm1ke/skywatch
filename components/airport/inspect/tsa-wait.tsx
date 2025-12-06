@@ -82,61 +82,61 @@ export const TsaWaitTimesSkeletonLoader: React.FC<{ airport?: AirportWithJoins }
 				</div>
 			)}
 		</div>
-		<div className="p-3 border-t">
+		<div className="p-3 border-t border-zinc-200 dark:border-zinc-800">
 			<div className="mb-4">
-				<div className="text-xs text-zinc-500 mb-1">Wait Time</div>
-				<div className="flex flex-row space-x-1 items-center text-2xl font-bold tabular-nums text-white">
+				<div className="text-xs text-zinc-400 dark:text-zinc-500 mb-1">Wait Time</div>
+				<div className="flex flex-row space-x-1 items-center text-2xl font-bold tabular-nums text-zinc-900 dark:text-white">
 					<Skeleton className="w-12 h-8" />
 				</div>
-				<div className="text-xs text-zinc-500 mt-1">
+				<div className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
 					<Skeleton className="w-20 h-4" />
 				</div>
 			</div>
-			
+
 			<div className="space-y-2">
-				<div className="grid grid-cols-12 gap-1 text-[10px] text-zinc-500">
+				<div className="grid grid-cols-12 gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
 					<span>12a</span>
-					<span></span>
+					<span />
 					<span>2a</span>
-					<span></span>
+					<span />
 					<span>4a</span>
-					<span></span>
+					<span />
 					<span>6a</span>
-					<span></span>
+					<span />
 					<span>8a</span>
-					<span></span>
+					<span />
 					<span>10a</span>
-					<span></span>
+					<span />
 				</div>
-				
+
 				<div className="grid grid-cols-12 gap-1">
 					{Array.from({ length: 12 }).map((_, index) => (
-						<Skeleton key={`am-${index}`} className="aspect-square size-10 rounded-sm cursor-pointer border border-zinc-800" />
+						<Skeleton key={`am-${index}`} className="aspect-square size-10 rounded-sm cursor-pointer border border-zinc-200 dark:border-zinc-800" />
 					))}
 				</div>
-				
-				<div className="grid grid-cols-12 gap-1 text-[10px] text-zinc-500">
+
+				<div className="grid grid-cols-12 gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
 					<span>12p</span>
-					<span></span>
+					<span />
 					<span>2p</span>
-					<span></span>
+					<span />
 					<span>4p</span>
-					<span></span>
+					<span />
 					<span>6p</span>
-					<span></span>
+					<span />
 					<span>8p</span>
-					<span></span>
+					<span />
 					<span>10p</span>
-					<span></span>
+					<span />
 				</div>
-				
+
 				<div className="grid grid-cols-12 gap-1">
 					{Array.from({ length: 12 }).map((_, index) => (
-						<Skeleton key={`pm-${index}`} className="aspect-square size-10 rounded-sm cursor-pointer border border-zinc-800" />
+						<Skeleton key={`pm-${index}`} className="aspect-square size-10 rounded-sm cursor-pointer border border-zinc-200 dark:border-zinc-800" />
 					))}
 				</div>
-				
-				<div className="flex items-center justify-end text-xs text-zinc-500 dark:text-zinc-500 mt-4 space-x-3">
+
+				<div className="flex items-center justify-end text-xs text-zinc-400 dark:text-zinc-500 mt-4 space-x-3">
 					<span>Less</span>
 					<div className="flex gap-0.5">
 						{[0, 5, 10, 15, 20].map(waitTime => (
@@ -211,35 +211,33 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 			: currentHourData.waitTime;
 
 	return (
-		<div className="border-b border-white/10">
+		<div className="border-b border-zinc-200 dark:border-white/10">
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">
 						TSA Wait Times
 					</span>
 				</div>
-				
+
 				{(airport.supports_precheck || airport.supports_clear) && (
 					<div className="flex flex-row items-center space-x-1">
 						{airport.supports_precheck && (
 							<SecurityIcon
 								tooltip={(
 									<>
-										<span className="font-bold">{airport.iata_code}</span>{" "}
-										has TSA PreCheck® lanes at it&apos;s checkpoints.
+										{airport.iata_code} has TSA PreCheck® lanes at it&apos;s checkpoints.
 									</>
 								)}
 							>
 								<PrecheckIcon className="w-10 h-4" />
 							</SecurityIcon>
 						)}
-						
+
 						{airport.supports_clear && (
 							<SecurityIcon
 								tooltip={(
 									<>
-										<span className="font-bold">{airport.iata_code}</span>{" "}
-										has Clear+ lanes at certain TSA checkpoints, verify using airport signage.
+										{airport.iata_code} has Clear+ lanes at certain TSA checkpoints, verify using airport signage.
 									</>
 								)}
 							>
@@ -249,42 +247,54 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 					</div>
 				)}
 			</div>
-			
-			<div className="p-3 border-t">
+
+			<div className="p-3 border-t border-zinc-200 dark:border-zinc-800">
 				<div className="mb-4">
-					<div className="text-xs text-zinc-500 mb-1">Wait Time</div>
-					<div className="flex flex-row space-x-1 items-center text-2xl font-bold tabular-nums text-white">
-						<SlidingNumber value={displayedWaitTime} />{" "}
-						<span className="-mt-0.5">min</span>
+					<div className="text-xs text-zinc-400 dark:text-zinc-500 mb-1">Wait Time</div>
+					<div className="flex flex-row items-center text-2xl font-bold tabular-nums text-zinc-900 dark:text-white">
+						<motion.div
+							layout
+							className="flex flex-row items-center"
+							transition={{ duration: 0.2 }}
+						>
+							<SlidingNumber value={displayedWaitTime} />
+						</motion.div>
+						<motion.span
+							layout
+							transition={{ duration: 0.2 }}
+							className="ml-1"
+						>
+							min
+						</motion.span>
 					</div>
-					<div className="text-xs text-zinc-500 mt-1">
+					<div className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
 						{debouncedHoverCell !== null
 							? `at ${localizeHour(hourlyData[debouncedHoverCell].hour)}`
 							: "Estimated wait right now"}
 					</div>
 				</div>
-	
+
 				<div className="space-y-2">
-					<div className="grid grid-cols-12 gap-1 text-[10px] text-zinc-500">
+					<div className="grid grid-cols-12 gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
 						<span>12a</span>
-						<span></span>
+						<span />
 						<span>2a</span>
-						<span></span>
+						<span />
 						<span>4a</span>
-						<span></span>
+						<span />
 						<span>6a</span>
-						<span></span>
+						<span />
 						<span>8a</span>
-						<span></span>
+						<span />
 						<span>10a</span>
-						<span></span>
+						<span />
 					</div>
-	
+
 					<div className="grid grid-cols-12 gap-1">
 						{hourlyData.slice(0, 12).map((item, index) => (
 							<motion.div
 								key={`am-${index}`}
-								className="aspect-square rounded-sm cursor-pointer border border-zinc-800"
+								className="aspect-square rounded-sm cursor-pointer border border-zinc-200 dark:border-zinc-800"
 								style={{ backgroundColor: getColor(item.waitTime) }}
 								onMouseEnter={() => setHoveredCell(index)}
 								onMouseLeave={() => setHoveredCell(null)}
@@ -294,27 +304,27 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 							/>
 						))}
 					</div>
-	
-					<div className="grid grid-cols-12 gap-1 text-[10px] text-zinc-500">
+
+					<div className="grid grid-cols-12 gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
 						<span>12p</span>
-						<span></span>
+						<span />
 						<span>2p</span>
-						<span></span>
+						<span />
 						<span>4p</span>
-						<span></span>
+						<span />
 						<span>6p</span>
-						<span></span>
+						<span />
 						<span>8p</span>
-						<span></span>
+						<span />
 						<span>10p</span>
-						<span></span>
+						<span />
 					</div>
-	
+
 					<div className="grid grid-cols-12 gap-1">
 						{hourlyData.slice(12, 24).map((item, index) => (
 							<motion.div
 								key={`pm-${index}`}
-								className="aspect-square rounded-sm cursor-pointer border border-zinc-800"
+								className="aspect-square rounded-sm cursor-pointer border border-zinc-200 dark:border-zinc-800"
 								style={{ backgroundColor: getColor(item.waitTime) }}
 								onMouseEnter={() => setHoveredCell(index + 12)}
 								onMouseLeave={() => setHoveredCell(null)}
@@ -324,8 +334,8 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 							/>
 						))}
 					</div>
-					
-					<div className="flex items-center justify-end text-xs text-zinc-500 dark:text-zinc-500 mt-4 space-x-3">
+
+					<div className="flex items-center justify-end text-xs text-zinc-400 dark:text-zinc-500 mt-4 space-x-3">
 						<span>Less</span>
 						<div className="flex gap-0.5">
 							{[0, 5, 10, 15, 20].map(waitTime => (

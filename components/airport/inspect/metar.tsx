@@ -80,7 +80,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 		<DialogTrigger asChild>
 			{children}
 		</DialogTrigger>
-		<DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white dark:bg-zinc-950 border-black/10 dark:border-white/10">
+		<DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white dark:bg-zinc-950 border-border dark:border-white/10">
 			<DialogHeader>
 				<DialogTitle className="text-black dark:text-white">Full Weather Report</DialogTitle>
 			</DialogHeader>
@@ -235,8 +235,8 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 
 				<div>
 					<h3 className="text-xs font-semibold text-black/80 dark:text-white/80 mb-1.5 uppercase tracking-wide">Meteorological Aerodrome Report (METAR)</h3>
-					<div className="bg-gray-100/40 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded p-2">
-						<div className="text-xs font-mono text-black/70 dark:text-white/70 leading-relaxed break-words">{metar.rawOb}</div>
+					<div className="bg-gray-100/40 dark:bg-black/40 border border-border dark:border-white/10 rounded p-2">
+						<div className="text-xs font-mono text-black/70 dark:text-white/70 leading-relaxed wrap-break-word">{metar.rawOb}</div>
 					</div>
 				</div>
 
@@ -245,8 +245,8 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 						<h3 className="text-xs font-semibold text-black/80 dark:text-white/80 mb-1.5 uppercase tracking-wide">
 							Terminal Aerodrome Forecast (TAF)
 						</h3>
-						<div className="bg-gray-100/40 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded p-2">
-							<div className="text-xs font-mono text-black/70 dark:text-white/70 leading-relaxed break-words">{metar.rawTaf}</div>
+						<div className="bg-gray-100/40 dark:bg-black/40 border border-border dark:border-white/10 rounded p-2">
+							<div className="text-xs font-mono text-black/70 dark:text-white/70 leading-relaxed wrap-break-word">{metar.rawTaf}</div>
 						</div>
 					</div>
 				)}
@@ -378,7 +378,7 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 	);
 	
 	return (
-		<div className="border-b border-white/10">
+		<div className="border-b border-border">
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">
