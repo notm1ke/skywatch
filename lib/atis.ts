@@ -190,8 +190,39 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 		description: "Navigation method allowing aircraft to fly any desired path using GPS or other systems."
 	})),
 	{
+		patterns: [/APCH\s+(\d{1,2}[LCR]?)/gi],
+		color: styling("gray"),
+		tooltip: (match) => ({
+			title: "Approach Runway",
+			description: "Indicates this runway is currently configured for arriving aircraft.",
+			detail: `Runway ${match[1]}`
+		})
+	},
+	{
 		patterns: [
-			/VISUAL\s+APCH/gi,
+			/SIMUL(TANEOUS)?\s?(VIS|VISUAL|INSTR|INSTRUMENT)?\s+AP(PROA)?CH(E)?S/gi,
+			/SIMULAPP/gi
+		],
+		color: styling("blue"),
+		tooltip: () => ({
+			title: "Simultaneous Approaches",
+			description: "Multiple aircraft approaching parallel or intersecting runways at the same time."
+		})
+	},
+	{
+		patterns: [
+			/SIMUL(TANEOUS)?\s?(VIS|VISUAL|INSTR|INSTRUMENT)?\s+DEP(ARTURE)?S/gi,
+			/SIMULDEP/gi
+		],
+		color: styling("blue"),
+		tooltip: () => ({
+			title: "Simultaneous Departures",
+			description: "Multiple aircraft departing parallel or intersecting runways at the same time."
+		})
+	},
+	{
+		patterns: [
+			/VISUAL\s+APCH(S)?/gi,
 			/VISUAL\s+APPROACH/gi,
 			/\bCVFP\b/gi,
 			/\bVIS\b/gi,
@@ -203,36 +234,14 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 		})
 	},
 	{
-		patterns: [/APCH\s+(\d{1,2}[LCR]?)/gi],
+		patterns: [
+			/INST(R)?\s+APCH(S)?/gi,
+			/INSTRUMENT\s+APPROACH/gi,
+		],
 		color: styling("gray"),
-		tooltip: (match) => ({
-			title: "Approach Runway",
-			description: "Indicates this runway is currently configured for arriving aircraft.",
-			detail: `Runway ${match[1]}`
-		})
-	},
-	{
-		patterns: [
-			/SIMUL\s+APCHS/gi,
-			/SIMULTANEOUS\s+APCHS/gi,
-			/SIMULAPP/gi
-		],
-		color: styling("blue"),
 		tooltip: () => ({
-			title: "Simultaneous Approaches",
-			description: "Multiple aircraft approaching parallel or intersecting runways at the same time."
-		})
-	},
-	{
-		patterns: [
-			/SIMUL\s+DEPS/gi,
-			/SIMULTANEOUS\s+DEPS/gi,
-			/SIMULDEP/gi
-		],
-		color: styling("blue"),
-		tooltip: () => ({
-			title: "Simultaneous Departures",
-			description: "Multiple aircraft departing parallel or intersecting runways at the same time."
+			title: "Instrument Approach",
+			description: "Approach conducted under IFR using instrument navigation aids."
 		})
 	},
 	createSimpleKeyword(["OTS", "OUT OF SERVICE"], true, "red", () => ({
@@ -280,9 +289,10 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 	})),
 	{
 		patterns: [
-			/\b(\d\s?\/\s?\d\s?\/\s?\d)\b/gi
+			/\b(\d\s?\/\s?\d\s?\/\s?\d)\b/gi,
+			/COND\s?CODE\s?,\s?([0-9]\s?){3}/gi
 		],
-		color: styling("gray"),
+		color: styling("purple"),
 		tooltip: (match) => ({
 			title: "Runway Condition Codes",
 			description: "Assessment of runway braking action: 6 (dry) to 0 (nil), for touchdown/rollout/turnoff zones.",
@@ -368,7 +378,11 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 	createSimpleKeyword(["VFR"], true, "blue", () => ({
 		"title": "Visual Flight Rules",
 		"description": "Rules for flying in visual meteorological conditions."
-	}))
+	})),
+	createSimpleKeyword(["RNP"], true, "blue", () => ({
+		"title": "Required Navigation Performance",
+		"description": "Performance-based navigation system that provides aircraft with a specified level of navigation accuracy."
+	})),
 ]
 
 export type AnnotatedAtisSegment = {
