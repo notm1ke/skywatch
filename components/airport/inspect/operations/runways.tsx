@@ -1,16 +1,13 @@
-import moment from "moment-timezone";
-
 import { toast } from "sonner";
 import { unwrap } from "~/lib/actions";
+import { CircleHelp } from "lucide-react";
 import { cn, padZero } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { AirportWithJoins } from "~/lib/airports";
-import { CircleHelp, Clock4 } from "lucide-react";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ErrorSection } from "~/components/error-section";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
 import {
 	fetchRvrForAirport,
@@ -121,205 +118,207 @@ const getChevronBackground = (trend: string, visibilityFt: number) => {
 const Tutorial: React.FC<PropsWithChildren> = ({ children }) => (
 	<Dialog>
 		<DialogTrigger asChild>{children}</DialogTrigger>
-		<DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+		<DialogContent>
 			<DialogHeader>
 				<DialogTitle>Runway Visual Range</DialogTitle>
 			</DialogHeader>
-
-			<div className="space-y-6 text-sm">
-				<div>
-					<h3 className="font-semibold text-base mb-2">What is RVR?</h3>
-					<p className="text-zinc-700 dark:text-zinc-400">
-						Runway Visual Range (RVR) measures how far pilots can see down the runway, critical for takeoffs and
-						landings in low visibility conditions like fog, rain, or snow.
-					</p>
-				</div>
-
-				<div>
-					<h3 className="font-semibold text-base mb-3">Measurement Points</h3>
-					<p className="text-zinc-700 dark:text-zinc-400 mb-3">Each runway is measured at three locations:</p>
-
-					<div className="flex flex-col space-y-2">
-						<div className="flex flex-row">
-							<div className="font-mono text-lime-700 dark:text-lime-300 font-semibold min-w-24">Touchdown</div>
-							<div className="text-zinc-700 dark:text-zinc-400">Where aircraft wheels first contact the runway</div>
-						</div>
-						<div className="flex flex-row">
-							<div className="font-mono text-lime-700 dark:text-lime-300 font-semibold min-w-24">Midpoint</div>
-							<div className="text-zinc-700 dark:text-zinc-400">The middle of the runway</div>
-						</div>
-						<div className="flex flex-row">
-							<div className="font-mono text-lime-700 dark:text-lime-300 font-semibold min-w-24">Rollout</div>
-							<div className="text-zinc-700 dark:text-zinc-400">The far end where aircraft complete their landing roll</div>
-						</div>
+			<ScrollArea className="max-w-2xl max-h-[80vh]">
+				<div className="space-y-6 text-sm pr-2">
+					<div>
+						<h3 className="font-semibold text-base mb-2">What is RVR?</h3>
+						<p className="text-zinc-700 dark:text-zinc-400">
+							Runway Visual Range (RVR) measures how far pilots can see down the runway, critical for takeoffs and
+							landings in low visibility conditions like fog, rain, or snow.
+						</p>
 					</div>
-				</div>
-
-				<div>
-					<h3 className="font-semibold text-base mb-3">Color Coding</h3>
-					<p className="text-zinc-700 dark:text-zinc-400 mb-3">Visibility ranges are color-coded based on operational minimums:</p>
-
-					<div className="space-y-2">
-						<div className="flex items-center gap-3">
-							<div className="w-16 h-6 bg-emerald-500/30 border border-emerald-500 rounded" />
-							<div className="text-zinc-700 dark:text-zinc-400">
-								<span className="text-emerald-700 dark:text-emerald-300 font-semibold">&gt;6,000 ft</span> - Excellent visibility
+	
+					<div>
+						<h3 className="font-semibold text-base mb-3">Measurement Points</h3>
+						<p className="text-zinc-700 dark:text-zinc-400 mb-3">Each runway is measured at three locations:</p>
+	
+						<div className="flex flex-col space-y-2">
+							<div className="flex flex-row">
+								<div className="font-mono text-lime-700 dark:text-lime-300 font-semibold min-w-24">Touchdown</div>
+								<div className="text-zinc-700 dark:text-zinc-400">Where aircraft wheels first contact the runway</div>
 							</div>
-						</div>
-						<div className="flex items-center gap-3">
-							<div className="w-16 h-6 bg-lime-500/30 border border-lime-500 rounded" />
-							<div className="text-zinc-700 dark:text-zinc-400">
-								<span className="text-lime-700 dark:text-lime-300 font-semibold">2,500-6,000 ft</span> - Good visibility
+							<div className="flex flex-row">
+								<div className="font-mono text-lime-700 dark:text-lime-300 font-semibold min-w-24">Midpoint</div>
+								<div className="text-zinc-700 dark:text-zinc-400">The middle of the runway</div>
 							</div>
-						</div>
-						<div className="flex items-center gap-3">
-							<div className="w-16 h-6 bg-yellow-500/30 border border-yellow-500 rounded" />
-							<div className="text-zinc-700 dark:text-zinc-400">
-								<span className="text-yellow-700 dark:text-yellow-300 font-semibold">1,300-2,400 ft</span> - Marginal visibility
-							</div>
-						</div>
-						<div className="flex items-center gap-3">
-							<div className="w-16 h-6 bg-orange-500/30 border border-orange-500 rounded" />
-							<div className="text-zinc-700 dark:text-zinc-400">
-								<span className="text-orange-700 dark:text-orange-300 font-semibold">800-1,200 ft</span> - Low visibility
-							</div>
-						</div>
-						<div className="flex items-center gap-3">
-							<div className="w-16 h-6 bg-red-500/30 border border-red-500 rounded" />
-							<div className="text-zinc-700 dark:text-zinc-400">
-								<span className="text-red-700 dark:text-red-300 font-semibold">&lt;800 ft</span> - Very low visibility
+							<div className="flex flex-row">
+								<div className="font-mono text-lime-700 dark:text-lime-300 font-semibold min-w-24">Rollout</div>
+								<div className="text-zinc-700 dark:text-zinc-400">The far end where aircraft complete their landing roll</div>
 							</div>
 						</div>
 					</div>
-				</div>
-
-				<div>
-					<h3 className="font-semibold text-base mb-3">Visibility Trends</h3>
-					<p className="text-zinc-700 dark:text-zinc-400 mb-3">
-						Animated chevron patterns show whether visibility is improving or deteriorating:
-					</p>
-
-					<div className="space-y-3">
-						<div>
-							<div className="text-xs text-zinc-500 uppercase tracking-wide mb-1.5">Increasing</div>
-							<div className="flex gap-0.5 h-10">
-								<div className="flex-1 bg-yellow-500/30 border border-yellow-500 flex items-center justify-center relative overflow-hidden">
-									<div
-										className="absolute inset-0 chevron-bg-increasing"
-										style={{
-											backgroundImage: getChevronBackground("increasing", 1800).backgroundImage,
-											backgroundRepeat: "no-repeat",
-											backgroundPosition: "center 0",
-											backgroundSize: "100% 120px",
-										}}
-									/>
-									<div className="text-sm font-mono font-semibold text-yellow-700 dark:text-yellow-300 relative z-10">1,800 ft</div>
-								</div>
-								<div className="flex-1 bg-yellow-500/30 border border-yellow-500 flex items-center justify-center relative overflow-hidden">
-									<div
-										className="absolute inset-0 chevron-bg-increasing"
-										style={{
-											backgroundImage: getChevronBackground("increasing", 2000).backgroundImage,
-											backgroundRepeat: "no-repeat",
-											backgroundPosition: "center 0",
-											backgroundSize: "100% 120px",
-										}}
-									/>
-									<div className="text-sm font-mono font-semibold text-yellow-700 dark:text-yellow-300 relative z-10">2,000 ft</div>
-								</div>
-								<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center relative overflow-hidden">
-									<div
-										className="absolute inset-0 chevron-bg-increasing"
-										style={{
-											backgroundImage: getChevronBackground("increasing", 2600).backgroundImage,
-											backgroundRepeat: "no-repeat",
-											backgroundPosition: "center 0",
-											backgroundSize: "100% 120px",
-										}}
-									/>
-									<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300 relative z-10">2,600 ft</div>
+	
+					<div>
+						<h3 className="font-semibold text-base mb-3">Color Coding</h3>
+						<p className="text-zinc-700 dark:text-zinc-400 mb-3">Visibility ranges are color-coded based on operational minimums:</p>
+	
+						<div className="space-y-2">
+							<div className="flex items-center gap-3">
+								<div className="w-16 h-6 bg-emerald-500/30 border border-emerald-500 rounded" />
+								<div className="text-zinc-700 dark:text-zinc-400">
+									<span className="text-emerald-700 dark:text-emerald-300 font-semibold">&gt;6,000 ft</span> - Excellent visibility
 								</div>
 							</div>
-							<p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1.5">
-								Upward chevrons indicate visibility is <span className="text-lime-700 dark:text-lime-300">improving</span> - conditions
-								are getting better
-							</p>
-						</div>
-
-						<div>
-							<div className="text-xs text-zinc-500 uppercase tracking-wide mb-1.5">Decreasing</div>
-							<div className="flex gap-0.5 h-10">
-								<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center relative overflow-hidden">
-									<div
-										className="absolute inset-0 chevron-bg-decreasing"
-										style={{
-											backgroundImage: getChevronBackground("decreasing", 3000).backgroundImage,
-											backgroundRepeat: "no-repeat",
-											backgroundPosition: "center -10px",
-											backgroundSize: "100% 120px",
-										}}
-									/>
-									<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300 relative z-10">3,000 ft</div>
-								</div>
-								<div className="flex-1 bg-yellow-500/30 border border-yellow-500 flex items-center justify-center relative overflow-hidden">
-									<div
-										className="absolute inset-0 chevron-bg-decreasing"
-										style={{
-											backgroundImage: getChevronBackground("decreasing", 2200).backgroundImage,
-											backgroundRepeat: "no-repeat",
-											backgroundPosition: "center -10px",
-											backgroundSize: "100% 120px",
-										}}
-									/>
-									<div className="text-sm font-mono font-semibold text-yellow-700 dark:text-yellow-300 relative z-10">2,200 ft</div>
-								</div>
-								<div className="flex-1 bg-yellow-500/30 border border-yellow-500 flex items-center justify-center relative overflow-hidden">
-									<div
-										className="absolute inset-0 chevron-bg-decreasing"
-										style={{
-											backgroundImage: getChevronBackground("decreasing", 1600).backgroundImage,
-											backgroundRepeat: "no-repeat",
-											backgroundPosition: "center -10px",
-											backgroundSize: "100% 120px",
-										}}
-									/>
-									<div className="text-sm font-mono font-semibold text-yellow-700 dark:text-yellow-300 relative z-10">1,600 ft</div>
+							<div className="flex items-center gap-3">
+								<div className="w-16 h-6 bg-lime-500/30 border border-lime-500 rounded" />
+								<div className="text-zinc-700 dark:text-zinc-400">
+									<span className="text-lime-700 dark:text-lime-300 font-semibold">2,500-6,000 ft</span> - Good visibility
 								</div>
 							</div>
-							<p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1.5">
-								Downward chevrons indicate visibility is <span className="text-orange-700 dark:text-orange-300">deteriorating</span> -
-								conditions are getting worse
-							</p>
-						</div>
-
-						<div>
-							<div className="text-xs text-zinc-500 uppercase tracking-wide mb-1.5">Steady</div>
-							<div className="flex gap-0.5 h-10">
-								<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center">
-									<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300">4,200 ft</div>
-								</div>
-								<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center">
-									<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300">4,000 ft</div>
-								</div>
-								<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center">
-									<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300">3,800 ft</div>
+							<div className="flex items-center gap-3">
+								<div className="w-16 h-6 bg-yellow-500/30 border border-yellow-500 rounded" />
+								<div className="text-zinc-700 dark:text-zinc-400">
+									<span className="text-yellow-700 dark:text-yellow-300 font-semibold">1,300-2,400 ft</span> - Marginal visibility
 								</div>
 							</div>
-							<p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1.5">
-								No chevron pattern indicates visibility is <span className="text-zinc-700 dark:text-zinc-300">steady</span> -
-								conditions are stable
-							</p>
+							<div className="flex items-center gap-3">
+								<div className="w-16 h-6 bg-orange-500/30 border border-orange-500 rounded" />
+								<div className="text-zinc-700 dark:text-zinc-400">
+									<span className="text-orange-700 dark:text-orange-300 font-semibold">800-1,200 ft</span> - Low visibility
+								</div>
+							</div>
+							<div className="flex items-center gap-3">
+								<div className="w-16 h-6 bg-red-500/30 border border-red-500 rounded" />
+								<div className="text-zinc-700 dark:text-zinc-400">
+									<span className="text-red-700 dark:text-red-300 font-semibold">&lt;800 ft</span> - Very low visibility
+								</div>
+							</div>
 						</div>
 					</div>
+	
+					<div>
+						<h3 className="font-semibold text-base mb-3">Visibility Trends</h3>
+						<p className="text-zinc-700 dark:text-zinc-400 mb-3">
+							Animated chevron patterns show whether visibility is improving or deteriorating:
+						</p>
+	
+						<div className="space-y-3">
+							<div>
+								<div className="text-xs text-zinc-500 uppercase tracking-wide mb-1.5">Increasing</div>
+								<div className="flex gap-0.5 h-10">
+									<div className="flex-1 bg-yellow-500/30 border border-yellow-500 flex items-center justify-center relative overflow-hidden">
+										<div
+											className="absolute inset-0 chevron-bg-increasing"
+											style={{
+												backgroundImage: getChevronBackground("increasing", 1800).backgroundImage,
+												backgroundRepeat: "no-repeat",
+												backgroundPosition: "center 0",
+												backgroundSize: "100% 120px",
+											}}
+										/>
+										<div className="text-sm font-mono font-semibold text-yellow-700 dark:text-yellow-300 relative z-10">1,800 ft</div>
+									</div>
+									<div className="flex-1 bg-yellow-500/30 border border-yellow-500 flex items-center justify-center relative overflow-hidden">
+										<div
+											className="absolute inset-0 chevron-bg-increasing"
+											style={{
+												backgroundImage: getChevronBackground("increasing", 2000).backgroundImage,
+												backgroundRepeat: "no-repeat",
+												backgroundPosition: "center 0",
+												backgroundSize: "100% 120px",
+											}}
+										/>
+										<div className="text-sm font-mono font-semibold text-yellow-700 dark:text-yellow-300 relative z-10">2,000 ft</div>
+									</div>
+									<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center relative overflow-hidden">
+										<div
+											className="absolute inset-0 chevron-bg-increasing"
+											style={{
+												backgroundImage: getChevronBackground("increasing", 2600).backgroundImage,
+												backgroundRepeat: "no-repeat",
+												backgroundPosition: "center 0",
+												backgroundSize: "100% 120px",
+											}}
+										/>
+										<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300 relative z-10">2,600 ft</div>
+									</div>
+								</div>
+								<p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1.5">
+									Upward chevrons indicate visibility is <span className="text-lime-700 dark:text-lime-300">improving</span> - conditions
+									are getting better
+								</p>
+							</div>
+	
+							<div>
+								<div className="text-xs text-zinc-500 uppercase tracking-wide mb-1.5">Decreasing</div>
+								<div className="flex gap-0.5 h-10">
+									<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center relative overflow-hidden">
+										<div
+											className="absolute inset-0 chevron-bg-decreasing"
+											style={{
+												backgroundImage: getChevronBackground("decreasing", 3000).backgroundImage,
+												backgroundRepeat: "no-repeat",
+												backgroundPosition: "center -10px",
+												backgroundSize: "100% 120px",
+											}}
+										/>
+										<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300 relative z-10">3,000 ft</div>
+									</div>
+									<div className="flex-1 bg-yellow-500/30 border border-yellow-500 flex items-center justify-center relative overflow-hidden">
+										<div
+											className="absolute inset-0 chevron-bg-decreasing"
+											style={{
+												backgroundImage: getChevronBackground("decreasing", 2200).backgroundImage,
+												backgroundRepeat: "no-repeat",
+												backgroundPosition: "center -10px",
+												backgroundSize: "100% 120px",
+											}}
+										/>
+										<div className="text-sm font-mono font-semibold text-yellow-700 dark:text-yellow-300 relative z-10">2,200 ft</div>
+									</div>
+									<div className="flex-1 bg-yellow-500/30 border border-yellow-500 flex items-center justify-center relative overflow-hidden">
+										<div
+											className="absolute inset-0 chevron-bg-decreasing"
+											style={{
+												backgroundImage: getChevronBackground("decreasing", 1600).backgroundImage,
+												backgroundRepeat: "no-repeat",
+												backgroundPosition: "center -10px",
+												backgroundSize: "100% 120px",
+											}}
+										/>
+										<div className="text-sm font-mono font-semibold text-yellow-700 dark:text-yellow-300 relative z-10">1,600 ft</div>
+									</div>
+								</div>
+								<p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1.5">
+									Downward chevrons indicate visibility is <span className="text-orange-700 dark:text-orange-300">deteriorating</span> -
+									conditions are getting worse
+								</p>
+							</div>
+	
+							<div>
+								<div className="text-xs text-zinc-500 uppercase tracking-wide mb-1.5">Steady</div>
+								<div className="flex gap-0.5 h-10">
+									<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center">
+										<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300">4,200 ft</div>
+									</div>
+									<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center">
+										<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300">4,000 ft</div>
+									</div>
+									<div className="flex-1 bg-lime-500/30 border border-lime-500 flex items-center justify-center">
+										<div className="text-sm font-mono font-semibold text-lime-700 dark:text-lime-300">3,800 ft</div>
+									</div>
+								</div>
+								<p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1.5">
+									No chevron pattern indicates visibility is <span className="text-zinc-700 dark:text-zinc-300">steady</span> -
+									conditions are stable
+								</p>
+							</div>
+						</div>
+					</div>
+	
 				</div>
-
-				<div className="flex justify-end pt-2">
-					<DialogClose asChild>
-						<Button type="button" variant="secondary">
-							Got it
-						</Button>
-					</DialogClose>
-				</div>
+				<ScrollBar orientation="vertical" className="-mr-5" />
+			</ScrollArea>
+			<div className="flex justify-end pt-2">
+				<DialogClose asChild>
+					<Button type="button" variant="secondary">
+						Got it
+					</Button>
+				</DialogClose>
 			</div>
 		</DialogContent>
 	</Dialog>
@@ -333,11 +332,19 @@ export const RunwaysSkeletonLoader: React.FC<Partial<RunwayConditionsProps>> = (
 					Runway Conditions
 				</span>
 			</div>
-			<Skeleton className="h-6 w-24" />
+			<Tutorial>
+				<Button
+					variant="ghost"
+					size="sm"
+					className="h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10 text-black/60 dark:text-white/60 hover:text-black/90 dark:hover:text-white/90 cursor-pointer"
+				>
+					<CircleHelp className="h-3.5 w-3.5" />
+				</Button>
+			</Tutorial>
 		</div>
 
 		<div className="border-t divide-y divide-white/10">
-			<ScrollArea className="min-h-[200px] h-[307px]">
+			<ScrollArea className="h-[235px]">
 				{Array.from({ length: airport?.runways?.length ?? 4 }).map((_, index) => (
 					<div key={index} className="p-3">
 						<div className="flex items-center justify-between gap-6">
@@ -461,18 +468,20 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 					<span className="text-md font-semibold pointer-events-none">
 						Runway Conditions
 					</span>
-					
-					<Tutorial>
-						<button className="text-muted-foreground hover:text-zinc-300 transition-colors cursor-pointer">
-							<CircleHelp className="h-3.5 w-3.5" />
-						</button>
-					</Tutorial>
 				</div>
-				<Skeleton className="h-6 w-24" />
+				<Tutorial>
+					<Button
+						variant="ghost"
+						size="sm"
+						className="h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10 text-black/60 dark:text-white/60 hover:text-black/90 dark:hover:text-white/90 cursor-pointer"
+					>
+						<CircleHelp className="h-3.5 w-3.5" />
+					</Button>
+				</Tutorial>
 			</div>
 
 			<div className="border-t">
-				<ScrollArea className="min-h-[200px] h-[307px]">
+				<ScrollArea className="h-[235px]">
 					<ErrorSection
 						title="Error loading runway conditions"
 						className="border-t rounded-none border-solid"
@@ -483,8 +492,6 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 			</div>
 		</div>
 	);
-	
-	const updatedTime = moment(rvr.updatedAt);
 
 	return (
 		<div className="border-b border-white/10">
@@ -496,27 +503,20 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 						Runway Conditions
 					</span>
 					
-					<Tutorial>
-						<button className="text-muted-foreground hover:text-zinc-300 transition-colors cursor-pointer">
-							<CircleHelp className="h-3.5 w-3.5" />
-						</button>
-					</Tutorial>
 				</div>
-				<Tooltip delayDuration={200}>
-					<TooltipTrigger>
-						<div className="flex px-2 text-sm items-center gap-2 rounded-sm bg-zinc-300 dark:bg-zinc-800 font-mono tabular-nums cursor-help">
-							<Clock4 className="size-3.5" />
-							<span>{updatedTime.format('h:mm A')}</span>
-						</div>
-					</TooltipTrigger>
-					<TooltipContent align="end">
-						Last updated {updatedTime.format('MMM Do, YYYY [at] h:mm A')}
-					</TooltipContent>
-				</Tooltip>
+				<Tutorial>
+					<Button
+						variant="ghost"
+						size="sm"
+						className="h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10 text-black/60 dark:text-white/60 hover:text-black/90 dark:hover:text-white/90 cursor-pointer"
+					>
+						<CircleHelp className="h-3.5 w-3.5" />
+					</Button>
+				</Tutorial>
 			</div>
 
 			<div className="border-t divide-y divide-white/10">
-				<ScrollArea className="min-h-[200px] h-[310px]">
+				<ScrollArea className="h-[265px]">
 					{runways.map(rwy => (
 						<div key={rwy.name} className="p-3 not-first:border-t">
 							<div className="flex items-center justify-between gap-6">

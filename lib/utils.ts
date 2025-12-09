@@ -178,3 +178,35 @@ export const flowCenterColors = (center: string) => {
 export const hasOpenBackdrop = () => {
 	return document.body.querySelector('[role="dialog"], [data-backdrop], .backdrop') !== null;
 }
+
+export const phonetic = (char: string) => {
+	switch (char.toLowerCase()) {
+		case "a": return "alpha";
+		case "b": return "bravo";
+		case "c": return "charlie";
+		case "d": return "delta";
+		case "e": return "echo";
+		case "f": return "foxtrot";
+		case "g": return "golf";
+		case "h": return "hotel";
+		case "i": return "india";
+		case "j": return "juliet";
+		case "k": return "kilo";
+		case "l": return "lima";
+		case "m": return "mike";
+		case "n": return "november";
+		case "o": return "oscar";
+		case "p": return "papa";
+		case "q": return "quebec";
+		case "r": return "romeo";
+		case "s": return "sierra";
+		case "t": return "tango";
+		case "u": return "uniform";
+		case "v": return "victor";
+		case "w": return "whiskey";
+		case "x": return "xray";
+		case "y": return "yankee";
+		case "z": return "zulu";
+		default: return char;
+	}
+}

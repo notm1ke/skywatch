@@ -192,7 +192,7 @@ export const DelayProgram: React.FC<{ airport: AirportWithJoins, advisory: Airpo
 	const { title, dialogTitle, Icon } = delayTitle(mode);
 	
 	return (
-		<div className="sticky top-0 z-10 border-y border-orange-500/20 bg-orange-500/10 px-4.5 py-3 backdrop-blur-sm decoration-orange-600">
+		<div className="sticky top-0 border-y border-orange-500/20 bg-orange-500/10 px-4.5 py-3 backdrop-blur-sm decoration-orange-600">
 			<div className="flex items-center gap-3 justify-between">
 				<div className="flex flex-row space-x-3">
 					<span className="flex flex-row items-center gap-2 text-sm font-semibold text-orange-400">
@@ -220,8 +220,12 @@ export const DelayProgram: React.FC<{ airport: AirportWithJoins, advisory: Airpo
 					
 					<Dialog>
 						<DialogTrigger className="flex flex-row space-x-1 text-sm items-center">
-							<Button variant="ghost" size="icon-sm" className="cursor-pointer">
-								<Info />
+							<Button
+								variant="ghost"
+								size="sm"
+								className="h-6 w-6 p-0 cursor-pointer"
+							>
+								<Info className="h-3.5 w-3.5" />
 							</Button>
 						</DialogTrigger>
 						<DialogContent>

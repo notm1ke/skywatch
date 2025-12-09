@@ -1,18 +1,23 @@
 "use client";
 
 import { StatusRibbon } from "./status";
+import { TabSwitcher } from "./switcher";
 import { AirportAdvisory } from "~/lib/faa";
 import { useRouter } from "next/navigation";
+import { useAirportInspector } from "./store";
 import { Button } from "~/components/ui/button";
 import { ArrowLeft, Plane } from "lucide-react";
 import { AirportWithJoins } from "~/lib/airports";
 import { Skeleton } from "~/components/ui/skeleton";
+import { InspectorOperationsTab } from "./operations";
 import { useAirports } from "~/components/airport-provider";
 import { useAirspace } from "~/components/airspace/provider";
 import { AirportMap, AirportMapSkeletonLoader } from "./map";
-import { RunwayConditions, RunwaysSkeletonLoader } from "./runways";
 import { MetarSkeletonLoader, MeteorologicalReport } from "./metar";
 import { TsaWaitTimes, TsaWaitTimesSkeletonLoader } from "./tsa-wait";
+
+// todo
+import { RunwaysSkeletonLoader } from "./operations/runways";
 
 import {
 	Empty,
@@ -60,6 +65,7 @@ const AdvisoryRibbon: React.FC<{ airport: AirportWithJoins }> = ({ airport }) =>
 
 export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 	const { airports, loading } = useAirports();
+	const { tab } = useAirportInspector();
 	const { back } = useRouter();
 	
 	if (loading) return (
@@ -69,6 +75,7 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 			
 			<div className="flex flex-col sm:flex-row">
 				<div className="basis-full sm:basis-2/3">
+					<TabSwitcher />
 					<div>
 						
 					</div>
@@ -137,7 +144,9 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 			<div className="flex flex-col sm:flex-row">
 				<div className="basis-full sm:basis-2/3">
 					<div>
+						<TabSwitcher />
 					</div>
+					{tab === "operations" && <InspectorOperationsTab airport={airport} />}
 					{/*<div className="grid grid-cols-1 sm:grid-cols-3">
 						<div className="sm:col-span-3">
 							<AirspaceMap />
@@ -153,7 +162,7 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 				<div className="sm:basis-1/3 border-l">
 					<MeteorologicalReport airport={airport} />
 					<TsaWaitTimes airport={airport} />
-					<RunwayConditions airport={airport} />
+					{/*<RunwayConditions airport={airport} />*/}
 				</div>
 			</div>
 		</div>

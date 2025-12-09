@@ -29,7 +29,7 @@ export const SpecialAdvisoryProgram: React.FC<{ airport: AirportWithJoins, advis
 	const expiry = moment.utc(advisory.freeForm!.endTime);
 	
 	return (
-		<div className="sticky top-0 z-10 border-y border-blue-500/20 bg-blue-500/10 px-4.5 py-3 backdrop-blur-sm">
+		<div className="sticky top-0 border-y border-blue-500/20 bg-blue-500/10 px-4.5 py-3 backdrop-blur-sm">
 			<div className="flex items-center gap-3 justify-between">
 				<span className="flex flex-row items-center gap-2 text-sm font-semibold text-blue-400">
 					<Megaphone className="size-4" />
@@ -40,8 +40,12 @@ export const SpecialAdvisoryProgram: React.FC<{ airport: AirportWithJoins, advis
 					
 					<Dialog>
 						<DialogTrigger className="flex flex-row space-x-1 text-sm items-center">
-							<Button variant="ghost" size="icon-sm" className="cursor-pointer">
-								<Info />
+							<Button
+								variant="ghost"
+								size="sm"
+								className="h-6 w-6 p-0 cursor-pointer"
+							>
+								<Info className="h-3.5 w-3.5" />
 							</Button>
 						</DialogTrigger>
 						<DialogContent>

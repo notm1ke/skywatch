@@ -74,7 +74,7 @@ const CenterBadge: React.FC<{ center: string }> = ({ center }) => (
 )
 
 export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: AirportAdvisory }> = ({ airport, advisory }) => (
-	<div className="sticky top-0 z-10 border-y border-orange-700/20 bg-orange-700/10 px-4.5 py-3 backdrop-blur-sm">
+	<div className="sticky top-0 border-y border-orange-700/20 bg-orange-700/10 px-4.5 py-3 backdrop-blur-sm">
 		<div className="flex items-center gap-3 justify-between">
 			<span className="flex flex-row items-center gap-2 text-sm font-semibold text-orange-600">
 				<CircleOff className="size-4" />
@@ -92,8 +92,12 @@ export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: 
 				</span>
 				<Dialog>
 					<DialogTrigger className="flex flex-row space-x-1 text-sm items-center">
-						<Button variant="ghost" size="icon-sm" className="cursor-pointer">
-							<Info />
+						<Button
+							variant="ghost"
+							size="sm"
+							className="h-6 w-6 p-0 cursor-pointer"
+						>
+							<Info className="h-3.5 w-3.5" />
 						</Button>
 					</DialogTrigger>
 					<DialogContent>

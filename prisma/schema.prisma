@@ -33,6 +33,7 @@ model Airport {
    home_link         String?
    wikipedia_link    String?
    keywords          String?
+   supports_atis     Boolean @default(false)
    supports_rvr      Boolean @default(false)
    supports_precheck Boolean @default(false)
    supports_clear    Boolean @default(false)

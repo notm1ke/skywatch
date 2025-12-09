@@ -33,10 +33,17 @@ for (const airport of Object.keys(airports)) {
 			ilike ${name}
 			limit 1
 	`;
+	
 	if (match?.length !== 1) {
 		console.warn(`No match for ${airport}`)
 		continue;
 	}
+	
+	// todo: if match, take `airport` and fetch https://www.clearme.com/all-locations/{airport}
+	// scrape the page, get the terminal info and hours, store it in a new field under `airport`
+	// so we can display inline info on the airport inspector page somewhere - need to figure out plan
+	// for displaying rich tsa checkpoint info via the checkpoints API (maybe find some extra info
+	// somewhere for precheck specific things too)
 	
 	const { iata_code } = match[0];
 	await prisma.airport.update({
