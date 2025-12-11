@@ -6,8 +6,9 @@
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build && bun run build:db",
-		"build:db": "bun run db:push && bun run db:seed",
+		"build:db": "bun run db:gen && bun run db:push && bun run db:seed",
 		"start": "next start",
+		"db:gen": "bunx prisma generate",
 		"db:seed": "bunx prisma db seed",
 		"db:push": "bunx prisma migrate deploy",
 		"lint": "eslint"
