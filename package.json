@@ -15,6 +15,7 @@
 	},
 	"dependencies": {
 		"@openpanel/nextjs": "^1.0.8",
+		"@prisma/adapter-pg": "^7.1.0",
 		"@prisma/client": "^6.19.0",
 		"@radix-ui/react-avatar": "^1.1.11",
 		"@radix-ui/react-context-menu": "^2.2.16",
