@@ -3,26 +3,16 @@ import moment from "moment-timezone";
 
 import { Effect } from "effect";
 import { prisma } from "~/lib/prisma";
-import { FatalError, sleep } from "workflow";
+import { FatalError } from "workflow";
 import { AirportTrafficFlow, TrafficFlowResponse } from "~/lib/traffic";
 
 // https://github.com/vercel/workflow/discussions/66#discussioncomment-14809207
 
-export async function airportTrafficCron(once: boolean) {
+export async function airportTrafficCron() {
 	"use workflow";
 	
-	if (once) {
-		const flows = await fetchTrafficFlows();
-		await commit(flows);
-		return;
-	}
-	
-	console.log("Airport traffic sync task scheduled.");
-	while (true) {
-		const flows = await fetchTrafficFlows();
-		await commit(flows);
-		sleep("1 hour");
-	}
+	const flows = await fetchTrafficFlows();
+	await commit(flows);
 }
 
 async function fetchTrafficFlows(): Promise<Array<TrafficFlowResponse | null>> {

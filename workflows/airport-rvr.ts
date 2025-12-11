@@ -4,24 +4,14 @@ import { load } from "cheerio";
 import { Effect } from "effect";
 import { redis } from "~/lib/redis";
 import { prisma } from "~/lib/prisma";
-import { FatalError, sleep } from "workflow";
+import { FatalError } from "workflow";
 import { RvrResponse, RvrRunwayProbeValue } from "~/lib/rvr";
 
-export async function airportRvrCron(once: boolean) {
+export async function airportRvrCron() {
 	"use workflow";
 
-	if (once) {
-		const info = await fetchRvrInfo();
-		await commit(info);
-		return;
-	}
-
-	console.log("Airport RVR sync task scheduled.");
-	while (true) {
-		const info = await fetchRvrInfo();
-		await commit(info);
-		sleep("15 minutes");
-	}
+	const info = await fetchRvrInfo();
+	await commit(info);
 }
 
 type ProbeType =

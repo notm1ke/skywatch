@@ -1,35 +1,34 @@
 import { redis } from "~/lib/redis";
+import { NextApiResponse } from "next";
 import { getRun, start } from "workflow/api";
 import { NextRequest, NextResponse } from "next/server";
 import { airportRvrCron } from "~/workflows/airport-rvr";
 
-const env = process.env.NODE_ENV;
-
-export const GET = async (req: NextRequest) => {
-	const searchParams = req.nextUrl.searchParams;
-	if (searchParams.has('once') && env !== 'production') {
-		await start(airportRvrCron, [true]);
-		return NextResponse.json(
-			{ message: "Job scheduled" },
-			{ status: 201 }
-		);
+export const GET = async (req: NextRequest, res: NextApiResponse) => {
+	if (req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
+		return res.status(401).end('Unauthorized');
 	}
 	
 	const instanceId = await redis.get('airspace:rvr:instanceId');
 	if (instanceId) {
 		const run = getRun(instanceId);
-		if (run) return NextResponse.json(
-			{ message: "Ok" },
-			{ status: 200 }
-		);
+		if (run) {
+			const status = await run.status;
+			if (status === "running") return NextResponse.json(
+				{ message: "Workflow currently running" },
+				{ status: 200 }
+			);
+			
+			if (status === "pending" || status === "paused") await run.cancel();
+		}
 		
 		await redis.del('airspace:rvr:instanceId');
 	}
 	
-	const instance = await start(airportRvrCron, [false]);
+	const instance = await start(airportRvrCron);
 	await redis.set('airspace:rvr:instanceId', instance.runId);
 	return NextResponse.json(
-		{ message: "Job scheduled" },
+		{ message: "Job invoked" },
 		{ status: 201 }
 	);
 }
