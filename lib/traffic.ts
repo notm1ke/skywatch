@@ -266,6 +266,36 @@ const ValidModes = [
 	'arrival_capacity'
 ] as const;
 
+export type TopAirportsByTraffic = {
+	top10: Array<{
+		iata_code: string;
+		iso_region: string;
+		name: string;
+		flights: number;
+	}>;
+	total: number;
+}
+
+export const fetchTopTenAirports = async () => okAsync(
+	prisma.$transaction([
+		prisma.$queryRaw<TopAirportsByTraffic['top10']>`
+			SELECT t.iata_code, a.iso_region, a.name, sum(t.total_flights)::int as flights
+			FROM airport_traffic t
+			JOIN airports a ON t.iata_code = a.iata_code
+			GROUP BY t.iata_code, a.name, a.iso_region
+			ORDER BY SUM(total_flights) DESC
+			LIMIT 10
+		`,
+		prisma.airportTrafficFlow.aggregate({
+			_sum: {
+				total_flights: true
+			}
+		})
+	]).then(([top10, total]) => ({
+		top10, total: total._sum.total_flights
+	})) as Promise<TopAirportsByTraffic>
+);
+
 export const fetchAggregatedTrafficFlow = async (mode: AggMode) => {
 	if (!ValidModes.includes(mode)) return raise('Bad request');
 

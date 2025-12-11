@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: "Skywatch",
-	description: "Aviation-related monitoring relating to the Government Shutdown",
+	description: "United States Airspace Monitoring",
 };
 
 export default function RootLayout({

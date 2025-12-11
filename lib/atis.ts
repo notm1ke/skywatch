@@ -290,13 +290,13 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 	{
 		patterns: [
 			/\b(\d\s?\/\s?\d\s?\/\s?\d)\b/gi,
-			/COND\s?CODE\s?,\s?([0-9]\s?){3}/gi
+			/COND(ITION)?\s?CODES?\s?,\s?([0-9]\s?)([0-9]\s?)([0-9])/gi
 		],
 		color: styling("purple"),
 		tooltip: (match) => ({
 			title: "Runway Condition Codes",
 			description: "Assessment of runway braking action: 6 (dry) to 0 (nil), for touchdown/rollout/turnoff zones.",
-			detail: `Codes: ${match[1]}`
+			detail: `Condition: ${match.slice(-3).join(' ')}`
 		})
 	},
 	createSimpleKeyword(["PAPI"], true, "blue", () => ({
@@ -404,8 +404,7 @@ export const parseAtisText = (text: string): AnnotatedAtisSegment[] => {
 		color: string;
 		tooltip: any;
 	}> = [];
-
-	// Find all matches across all glossary entries
+	
 	atisGlossary.forEach((entry) => {
 		entry.patterns.forEach((pattern) => {
 			const regex = new RegExp(pattern.source, pattern.flags);

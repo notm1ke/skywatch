@@ -1,6 +1,4 @@
-import { PrismaClient } from "~/prisma/generated/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "~/lib/prisma";
 
 const TARGETS = [
 	'https://davidmegginson.github.io/ourairports-data/airports.csv',
@@ -343,40 +341,42 @@ const upsertAirportNavs = async (
 	console.log(`Finished processing ${usData.length - ignoreCount} airport navaid${(usData.length - ignoreCount) === 1 ? '' : 's'} in ${(Date.now() - start).toFixed(2)}ms.`);
 }
 
-const start = Date.now();
-console.log("Starting airport data sync...");
-
-try {
-	let ignored = new Set<string>();
-	let usAirports: Record<string, string>[] = [];
-	for (const target of TARGETS) {
-		console.log(`Fetching data from ${target}...`);
-
-		const response = await fetch(target);
-		if (!response.ok) throw new Error(
-			`Failed to fetch ${target}: ${response.status} ${response.statusText}`
-		);
-
-		const csv = await response.text();
-		const rows = parseCSV(csv);
-		if (rows.length === 0) {
-			console.warn(`No data found in ${target}`);
-			continue;
+export const seedAirports = async () => {
+	const start = Date.now();
+	console.log("Starting airport data sync...");
+	
+	try {
+		let ignored = new Set<string>();
+		let usAirports: Record<string, string>[] = [];
+		for (const target of TARGETS) {
+			console.log(`Fetching data from ${target}...`);
+	
+			const response = await fetch(target);
+			if (!response.ok) throw new Error(
+				`Failed to fetch ${target}: ${response.status} ${response.statusText}`
+			);
+	
+			const csv = await response.text();
+			const rows = parseCSV(csv);
+			if (rows.length === 0) {
+				console.warn(`No data found in ${target}`);
+				continue;
+			}
+	
+			if (target.includes('airports.csv')) {
+				usAirports = rows.filter(row => row.iso_country === 'US');
+				ignored = await upsertAirports(usAirports);
+			}
+			
+			// console.log(ignored);
+			if (target.includes('airport-frequencies.csv')) await upsertAirportFrequencies(rows, usAirports, ignored);
+			if (target.includes('runways.csv')) await upsertAirportRunways(rows, usAirports, ignored);
+			if (target.includes('navaids.csv')) await upsertAirportNavs(rows, usAirports, ignored);
 		}
-
-		if (target.includes('airports.csv')) {
-			usAirports = rows.filter(row => row.iso_country === 'US');
-			ignored = await upsertAirports(usAirports);
-		}
-		
-		// console.log(ignored);
-		if (target.includes('airport-frequencies.csv')) await upsertAirportFrequencies(rows, usAirports, ignored);
-		if (target.includes('runways.csv')) await upsertAirportRunways(rows, usAirports, ignored);
-		if (target.includes('navaids.csv')) await upsertAirportNavs(rows, usAirports, ignored);
+	
+		console.log(`Airport sync completed in ${(Date.now() - start).toFixed(2)}ms.`);
+	} catch (error) {
+		console.error("Error during airport data sync:", error);
+		throw error;
 	}
-
-	console.log(`Airport sync completed in ${(Date.now() - start).toFixed(2)}ms.`);
-} catch (error) {
-	console.error("Error during airport data sync:", error);
-	throw error;
 }

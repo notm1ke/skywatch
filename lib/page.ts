@@ -2,7 +2,8 @@ import { create } from "zustand";
 
 export type TabType =
 	| "airspace"
-	| "airports";
+	| "airports"
+	| "statistics";
 
 type PageControlState = {
 	activeTab: TabType;

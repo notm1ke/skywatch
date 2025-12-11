@@ -152,11 +152,17 @@ model AirportTrafficFlowRecord {
    @@map("airport_traffic_record")
 }
 
+enum AirportHubType {
+   hub
+   focus_city
+}
+
 model AirportAirlineHub {
    airline_iata String
    airport_iata String
    airport      Airport  @relation(fields: [airport_iata], references: [iata_code])
    terminals    String[]
+   type         AirportHubType
 
    @@unique([airline_iata, airport_iata])
    @@map("airport_airline_hubs")
