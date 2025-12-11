@@ -1,12 +1,14 @@
 import { redis } from "~/lib/redis";
-import { NextApiResponse } from "next";
 import { getRun, start } from "workflow/api";
 import { NextRequest, NextResponse } from "next/server";
 import { airportRvrCron } from "~/workflows/airport-rvr";
 
-export const GET = async (req: NextRequest, res: NextApiResponse) => {
+export const GET = async (req: NextRequest) => {
 	if (req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
-		return res.status(401).end('Unauthorized');
+		return NextResponse.json(
+			{ message: "Unauthorized" },
+			{ status: 401 }
+		);
 	}
 	
 	const instanceId = await redis.get('airspace:rvr:instanceId');
