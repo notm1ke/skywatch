@@ -24,22 +24,20 @@ export const ThemeToggle = () => {
 			setTheme={setTheme}
 			direction="ttb"
 		>
-			{({ effective, toggleTheme }) => {
-				const nextTheme = effective === 'dark'
-					? 'light'
-					: 'dark';
-
-				return (
-					<Button
-						variant="ghost"
-						className="cursor-pointer"
-						onClick={() => toggleTheme(nextTheme)}
-					>
-						{effective === 'dark' && <Moon className="size-5.5" />}
-						{effective === 'light' && <Sun className="size-5.5" />}
-					</Button>
-				);
-			}}
+			{({ effective, toggleTheme }) => (
+				<Button
+					variant="ghost"
+					className="cursor-pointer"
+					onClick={() => toggleTheme(
+						effective === "dark"
+							? "light"
+							: "dark"
+					)}
+				>
+					<Moon className="size-5.5 dark:hidden" />
+					<Sun className="size-5.5 hidden dark:block" />
+				</Button>
+			)}
 		</ThemeToggler>
 	)
 }
