@@ -325,7 +325,7 @@ const Tutorial: React.FC<PropsWithChildren> = ({ children }) => (
 );
 
 export const RunwaysSkeletonLoader: React.FC<Partial<RunwayConditionsProps>> = ({ airport }) => (
-	<div className="border-b border-white/10">
+	<div className="border-b border-border">
 		<div className="flex flex-row px-3 py-2 justify-between">
 			<div className="flex flex-row space-x-2 items-center">
 				<span className="text-md font-semibold pointer-events-none">
@@ -381,7 +381,7 @@ export const RunwaysSkeletonLoader: React.FC<Partial<RunwayConditionsProps>> = (
 const ProbeIndicator: React.FC<{ data: RvrProbe, target: RvrProbeType }> = ({ data, target }) => {
 	const probe = data[target];
 	if (!probe) return (
-		<div className="flex-1 border flex items-center justify-center relative overflow-hidden bg-zinc-400 dark:bg-zinc-800 border-zinc-500 dark:border-zinc-700">
+		<div className="flex-1 border flex items-center justify-center relative overflow-hidden bg-zinc-300 dark:bg-zinc-800 border-zinc-400 dark:border-zinc-700">
 			<div className="text-xs font-mono font-semibold relative">
 				N/A
 			</div>
@@ -459,10 +459,9 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 	);
 	
 	if (loading) return <RunwaysSkeletonLoader airport={airport} />;
+	
 	if (!rvr || error) return (
-		<div className="border-b border-white/10">
-			<style>{chevronAnimationStyles}</style>
-
+		<div className="border-b border-border">
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">
@@ -494,7 +493,7 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 	);
 
 	return (
-		<div className="border-b border-white/10">
+		<div className="border-b border-border">
 			<style>{chevronAnimationStyles}</style>
 
 			<div className="flex flex-row px-3 py-2 justify-between">
@@ -516,7 +515,7 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 			</div>
 
 			<div className="border-t divide-y divide-white/10">
-				<ScrollArea className="h-[265px]">
+				<ScrollArea className="sm:h-[265px]">
 					{runways.map(rwy => (
 						<div key={rwy.name} className="p-3 not-first:border-t">
 							<div className="flex items-center justify-between gap-6">
@@ -529,7 +528,7 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 									</div>
 								</div>
 	
-								<div className="shrink-0 w-80">
+								<div className="shrink-0 w-60 sm:w-80">
 									{!rwy.rvrData && (
 										<div className="text-sm text-zinc-500 text-right">
 											No RVR data

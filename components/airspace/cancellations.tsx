@@ -103,7 +103,7 @@ export const CancellationsPieChart: React.FC = () => {
 	];
 	
 	return (
-		<div>
+		<div className="border-t sm:border-t-0">
 			<div className="flex flex-row px-3 py-2 justify-between border-b">
 				<span className="text-md font-semibold pointer-events-none">
 					Flight Statuses

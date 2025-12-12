@@ -42,10 +42,10 @@ const getCloudCoverLabel = (cover: CloudCover) => {
 		case "SCT": return "Scattered"
 		case "BKN": return "Broken"
 		case "OVC": return "Overcast"
-		
+
 		case "SKC":
 		case "CLR": return "Clear"
-		
+
 		default:    return cover
 	}
 }
@@ -65,7 +65,7 @@ const formatVisibility = (visibility: string | number) => {
 		if (!visibility.includes("+")) return visibility + " SM";
 		return `>${visibility.replace("+", "")} SM`;
 	}
-	
+
 	return `${visibility} SM`;
 }
 
@@ -80,7 +80,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 		<DialogTrigger asChild>
 			{children}
 		</DialogTrigger>
-		<DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white dark:bg-zinc-950 border-border dark:border-white/10">
+		<DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white dark:bg-zinc-950 border-border">
 			<DialogHeader>
 				<DialogTitle className="text-black dark:text-white">Full Weather Report</DialogTitle>
 			</DialogHeader>
@@ -97,31 +97,31 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 								{cToF(metar.temp)}°F ({metar.temp}°C)
 							</span>
 						</div>
-						
+
 						<div className="flex justify-between">
 							<span className="text-black/70 dark:text-white/40">Visibility:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
 								{formatVisibility(metar.visib)}
 							</span>
 						</div>
-						
+
 						<div className="flex justify-between">
 							<span className="text-black/70 dark:text-white/40">Dew Point:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
 								{cToF(metar.dewp)}°F ({metar.dewp}°C)
 							</span>
 						</div>
-						
+
 						<div className="flex justify-between">
 							<span className="text-black/70 dark:text-white/40">Flight Rules:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">{getFlightRulesLabel(metar.fltCat)}</span>
 						</div>
-						
+
 						<div className="flex justify-between">
 							<span className="text-black/70 dark:text-white/40">Altimeter:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">{(metar.altim / 33.8639).toFixed(2)} inHg</span>
 						</div>
-						
+
 						<div className="flex justify-between">
 							<span className="text-black/70 dark:text-white/40">Wind:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
@@ -130,14 +130,14 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 									: `${metar.wspd}kt`}
 							</span>
 						</div>
-						
+
 						{metar.slp && (
 							<div className="flex justify-between">
 								<span className="text-black/70 dark:text-white/40">Sea Level:</span>
 								<span className="text-black/90 dark:text-white/90 font-mono">{(metar.slp / 33.8639).toFixed(1)} inHg</span>
 							</div>
 						)}
-						
+
 						{metar.wgst && (
 							<div className="flex justify-between">
 								<span className="text-black/70 dark:text-white/40">Gust:</span>
@@ -146,7 +146,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 								</span>
 							</div>
 						)}
-						
+
 						{metar.wxString && (
 							<div className="flex justify-between">
 								<span className="text-black/70 dark:text-white/40">Weather:</span>
@@ -235,7 +235,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 
 				<div>
 					<h3 className="text-xs font-semibold text-black/80 dark:text-white/80 mb-1.5 uppercase tracking-wide">Meteorological Aerodrome Report (METAR)</h3>
-					<div className="bg-gray-100/40 dark:bg-black/40 border border-border dark:border-white/10 rounded p-2">
+					<div className="bg-gray-100/40 dark:bg-black/40 border border-border rounded p-2">
 						<div className="text-xs font-mono text-black/70 dark:text-white/70 leading-relaxed wrap-break-word">{metar.rawOb}</div>
 					</div>
 				</div>
@@ -245,7 +245,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 						<h3 className="text-xs font-semibold text-black/80 dark:text-white/80 mb-1.5 uppercase tracking-wide">
 							Terminal Aerodrome Forecast (TAF)
 						</h3>
-						<div className="bg-gray-100/40 dark:bg-black/40 border border-border dark:border-white/10 rounded p-2">
+						<div className="bg-gray-100/40 dark:bg-black/40 border border-border rounded p-2">
 							<div className="text-xs font-mono text-black/70 dark:text-white/70 leading-relaxed wrap-break-word">{metar.rawTaf}</div>
 						</div>
 					</div>
@@ -256,7 +256,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 );
 
 export const MetarSkeletonLoader = () => (
-	<div className="border-b border-white/10">
+	<div className="border-b border-border">
 		<div className="flex flex-row px-3 py-2 justify-between">
 			<div className="flex flex-row space-x-2 items-center">
 				<span className="text-md font-semibold pointer-events-none">
@@ -330,7 +330,7 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 	const [metar, setMetar] = useState<MetarResponse | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
-	
+
 	const refresh = () => {
 		setLoading(true);
 		fetchWeatherReport(airport.iata_code!)
@@ -348,15 +348,15 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 			})
 			.finally(() => setLoading(false));
 	}
-	
+
 	useEffect(() => {
 		refresh();
 	}, []);
-	
+
 	if (loading) return <MetarSkeletonLoader />;
-	
+
 	if (!metar || error) return (
-		<div className="border-b border-white/10">
+		<div className="border-b border-border">
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">
@@ -376,7 +376,7 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 			</div>
 		</div>
 	);
-	
+
 	return (
 		<div className="border-b border-border">
 			<div className="flex flex-row px-3 py-2 justify-between">
@@ -454,13 +454,13 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 							<CloudRain className="h-4 w-4 text-slate-600 dark:text-slate-400 mt-0.5 shrink-0" />
 							<div className="flex-1 min-w-0">
 								<div className="text-xs text-black/60 dark:text-white/80 mb-1">Clouds</div>
-								
+
 								{metar.clouds.length === 0 && (
 									<div className="font-mono text-sm text-black/80 dark:text-white/90">
 										None
 									</div>
 								)}
-								
+
 								{metar.clouds.length > 0 && (
 									<div className="space-y-0.5">
 										{metar.clouds.map((cloud, idx) => (

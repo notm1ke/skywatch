@@ -135,8 +135,8 @@ export const TrafficFlowChart = () => {
 				<div className="flex flex-row items-center gap-1 pl-1">
 					<Skeleton className="h-5 w-40" />
 				</div>
-				<div className="flex px-2 text-sm items-center rounded-sm bg-zinc-300 dark:bg-zinc-800 font-mono tabular-nums">
-					<Skeleton className="h-5 w-12" />
+				<div className="flex text-sm items-center rounded-sm font-mono tabular-nums">
+					<Skeleton className="h-6 w-14" />
 				</div>
 			</div>
 			<div className={cn(!false && "p-2 mt-2")}>

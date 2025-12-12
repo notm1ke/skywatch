@@ -34,7 +34,7 @@ enum Priority {
 	DualDelay,
 	GroundDelay,
 	GroundStop,
-	AirportClosure,
+	AirportClosure
 }
 
 const computePriority = (advisory: AirportAdvisory) => {
@@ -204,7 +204,7 @@ export const ActivePrograms = () => {
 				</div>
 			</div>
 			<div className="border-t">
-				<ScrollArea className="min-h-auto h-[559px] max-h-[800px]" maskHeight={20}>
+				<ScrollArea className="sm:min-h-auto h-[300px] sm:h-[559px] sm:max-h-[800px]" maskHeight={20}>
 					{advisories.sort(sortOrder).map(advisory => {
 						const airport = airports.find(airport => airport.iata_code === advisory.airportId);
 						if (!airport) return null;

@@ -39,7 +39,7 @@ export const SpecialAdvisoryProgram: React.FC<{ airport: AirportWithJoins, advis
 					<span>Until {expiry.format(expiry.isSame(moment.utc(), 'date') ? 'h:mm A' : 'MMM Do, h:mm A')}</span>
 					
 					<Dialog>
-						<DialogTrigger className="flex flex-row space-x-1 text-sm items-center">
+						<DialogTrigger asChild className="flex flex-row space-x-1 text-sm items-center">
 							<Button
 								variant="ghost"
 								size="sm"

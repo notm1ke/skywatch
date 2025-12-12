@@ -80,6 +80,7 @@ const RibbonInfo: React.FC<{ advisory: AirportAdvisory, mode: DelayType }> = ({ 
 		</span>
 	);
 	
+	// todo: both
 	return <></>;
 }
 
@@ -132,7 +133,7 @@ const SingleModeInfo: React.FC<{ advisory: AirportAdvisory }> = ({ advisory }) =
 			<Item variant="outline">
 				<ItemHeader>
 					<Avatar>
-						<AvatarFallback className="bg-green-600">
+						<AvatarFallback className="bg-green-300 dark:bg-green-500">
 							<ClockArrowDown className="size-4.5 text-white" />
 						</AvatarFallback>
 					</Avatar>
@@ -148,7 +149,7 @@ const SingleModeInfo: React.FC<{ advisory: AirportAdvisory }> = ({ advisory }) =
 			<Item variant="outline">
 				<ItemHeader>
 					<Avatar>
-						<AvatarFallback className="bg-red-500">
+						<AvatarFallback className="bg-red-300 dark:bg-red-500">
 							<ClockArrowUp className="size-4.5 text-white" />
 						</AvatarFallback>
 					</Avatar>
@@ -164,7 +165,7 @@ const SingleModeInfo: React.FC<{ advisory: AirportAdvisory }> = ({ advisory }) =
 			<Item variant="outline">
 				<ItemHeader>
 					<Avatar>
-						<AvatarFallback className="bg-amber-500">
+						<AvatarFallback className="bg-amber-300 dark:bg-amber-500">
 							<ClockFading className="size-4.5 text-white" />
 						</AvatarFallback>
 					</Avatar>
@@ -211,6 +212,8 @@ export const DelayProgram: React.FC<{ airport: AirportWithJoins, advisory: Airpo
 							)}
 						</span>
 					)}
+					
+					{/* todo: both */}
 				</div>
 				<div className="flex font-mono text-sm text-orange-400 items-center gap-3 h-4">
 					<RibbonInfo
@@ -219,7 +222,7 @@ export const DelayProgram: React.FC<{ airport: AirportWithJoins, advisory: Airpo
 					/>
 					
 					<Dialog>
-						<DialogTrigger className="flex flex-row space-x-1 text-sm items-center">
+						<DialogTrigger asChild className="flex flex-row space-x-1 text-sm items-center">
 							<Button
 								variant="ghost"
 								size="sm"

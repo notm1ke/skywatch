@@ -1,13 +1,15 @@
 "use client";
 
 import { motion } from "motion/react";
-import { SearchIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMobile } from "../mobile-provider";
 import { Button } from "~/components/ui/button";
-import { useIsMobile } from "~/hooks/use-mobile";
 import { useAirports } from "../airport-provider";
 import { cn, hasOpenBackdrop } from "~/lib/utils";
+import { CircleX, SearchIcon } from "lucide-react";
 import { useDebounce } from "~/hooks/use-debounce";
 import { Kbd, KbdGroup } from "~/components/ui/kbd";
+import { TabType, usePageControls } from "~/lib/page";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { airportPredicates, airportResults } from "./airports";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
@@ -21,6 +23,7 @@ export type SearchResult<T> = {
 	icon: ReactNode;
 	href: string;
 	type: "airport" | "page";
+	tabTarget: TabType;
 	metadata: T;
 }
 
@@ -28,7 +31,10 @@ export type SearchResultGenerator<T, M> = (data: T[]) => SearchResult<M>[];
 export type SearchResultPredicate<T> = Array<(query: string, item: SearchResult<T>) => boolean>;
 
 export const Searchbar: React.FC = () => {
-	const isMobile = useIsMobile();
+	const router = useRouter();
+	
+	const { mobile, pending } = useMobile();
+	const { setActiveTab } = usePageControls();
 
 	const { airports } = useAirports();
 	const [isOpen, setIsOpen] = useState(false);
@@ -74,7 +80,10 @@ export const Searchbar: React.FC = () => {
 	useEffect(() => {
 		if (isOpen) {
 			setSelected(0);
+			return;
 		}
+		
+		setSearchQuery("");
 	}, [isOpen]);
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -108,8 +117,17 @@ export const Searchbar: React.FC = () => {
 
 	const handleItemClick = () => {
 		const item = selected !== null ? results[selected] : null;
-		if (item) window.location.href = item.href;
+		if (item) {
+			setActiveTab(item.tabTarget);
+			setIsOpen(false);
+			
+			setTimeout(() => {
+				router.push(item.href);
+			}, 50);
+		}
 	};
+	
+	if (pending) return null;
 
 	return (
 		<Search
@@ -121,8 +139,8 @@ export const Searchbar: React.FC = () => {
 				duration: 0.5,
 			}}
 		>
-			<SearchTrigger triggerRef={triggerRef}>
-				{isMobile && (
+			<SearchTrigger suppressHydrationWarning asChild={mobile} triggerRef={triggerRef}>
+				{mobile && (
 					<Button
 						variant="ghost"
 						size="icon"
@@ -132,7 +150,7 @@ export const Searchbar: React.FC = () => {
 					</Button>
 				)}
 
-				{!isMobile && (
+				{!mobile && (
 					<motion.div
 						ref={triggerRef}
 						layoutId="find"
@@ -166,7 +184,7 @@ export const Searchbar: React.FC = () => {
 					</motion.div>
 				)}
 			</SearchTrigger>
-			<SearchContent className="rounded-xl border border-border bg-background! w-[400px] p-0">
+			<SearchContent asMobile={mobile} className="rounded-xl border border-border bg-background! w-[400px] p-0">
 				<motion.div
 					layoutId="find"
 					className="flex items-center gap-2 px-2 py-4 border-b border-border"
@@ -182,7 +200,19 @@ export const Searchbar: React.FC = () => {
 						onKeyDown={handleKeyDown}
 						className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
 					/>
-					<Kbd className="mr-3">Esc</Kbd>
+					
+					<Kbd className="hidden sm:inline mr-3">Esc</Kbd>
+					
+					{mobile && (
+						<Button
+							variant="ghost"
+							size="sm"
+							className={cn("hidden mr-3 h-6 w-6 p-0 cursor-pointer", searchQuery.length > 0 && "inline")}
+							onClick={() => setSearchQuery("")}
+						>
+							<CircleX className="h-3.5 w-3.5" />
+						</Button>
+					)}
 				</motion.div>
 
 				<motion.div

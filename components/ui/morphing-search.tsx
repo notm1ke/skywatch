@@ -200,11 +200,13 @@ function SearchTrigger({
 
 export type SearchContentProps = {
 	children: React.ReactNode;
+	asMobile?: boolean;
 	className?: string;
 } & React.ComponentProps<typeof motion.div>;
 
 function SearchContent({
 	children,
+	asMobile,
 	className,
 	...props
 }: SearchContentProps) {
@@ -243,29 +245,34 @@ function SearchContent({
 		}
 	}, [context.isOpen, children, contentDimensions]);
 	
-	const style: React.CSSProperties =
-		context.triggerRect && contentDimensions.width > 0
-			? (() => {
-					const trigger = context.triggerRect;
-					const content = contentDimensions;
-					const centerX =
-						trigger.left + trigger.width / 2 - content.width / 2;
-					const idealTop =
-						trigger.top + trigger.height / 2 - content.height / 2;
-					const maxUpwardExpansion = 5;
-					const constrainedTop = Math.max(
-						trigger.top - maxUpwardExpansion,
-						idealTop,
-					);
-					
-					return {
-						position: "fixed",
-						top: constrainedTop,
-						left: centerX,
-						transformOrigin: "center",
-					};
-				})()
-			: {};
+	const style: React.CSSProperties = context.triggerRect && contentDimensions.width > 0
+		? (() => {
+			const trigger = context.triggerRect;
+			const content = contentDimensions;
+			const maxUpwardExpansion = 5;
+			const idealTop = trigger.top + trigger.height / 2 - content.height / 2;
+			const constrainedTop = Math.max(
+				trigger.top - maxUpwardExpansion,
+				idealTop,
+			);
+			
+			if (asMobile) return {
+				position: "fixed",
+				top: constrainedTop,
+				left: 0,
+				transformOrigin: "center",
+			};
+			
+			const centerX = trigger.left + trigger.width / 2 - content.width / 2;
+			
+			return {
+				position: "fixed",
+				top: constrainedTop,
+				left: centerX,
+				transformOrigin: "center",
+			};
+		})()
+		: {};
 
 	return (
 		<AnimatePresence>

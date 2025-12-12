@@ -55,10 +55,10 @@ const ExtensionIndicator: React.FC<{ extensionProbability: string }> = ({ extens
 			: Tally1;
 	
 	const color = extensionProbability === 'HIGH'
-		? 'bg-red-500'
+		? 'bg-red-300 dark:bg-red-500'
 		: extensionProbability === 'MEDIUM'
-			? 'bg-yellow-500'
-			: 'bg-green-500';
+			? 'bg-yellow-300 dark:bg-yellow-500'
+			: 'bg-green-300 dark:bg-green-500';
 	
 	return (
 		<AvatarFallback className={cn(color)}>
@@ -91,7 +91,7 @@ export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: 
 					)}
 				</span>
 				<Dialog>
-					<DialogTrigger className="flex flex-row space-x-1 text-sm items-center">
+					<DialogTrigger asChild className="flex flex-row space-x-1 text-sm items-center">
 						<Button
 							variant="ghost"
 							size="sm"
@@ -127,7 +127,7 @@ export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: 
 							<Item variant="outline">
 								<ItemHeader>
 									<Avatar>
-										<AvatarFallback className="bg-red-500">
+										<AvatarFallback className="bg-red-300 dark:bg-red-500">
 											<ClockAlert className="size-4.5 text-white" />
 										</AvatarFallback>
 									</Avatar>
@@ -143,7 +143,7 @@ export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: 
 							<Item variant="outline">
 								<ItemHeader>
 									<Avatar>
-										<AvatarFallback className="bg-green-600">
+										<AvatarFallback className="bg-green-300 dark:bg-green-600">
 											<ClockCheck className="size-4.5 text-white" />
 										</AvatarFallback>
 									</Avatar>
@@ -197,7 +197,7 @@ export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: 
 								<ItemHeader>
 									<Avatar>
 										<AvatarImage src={`https://www.google.com/s2/favicons?domain=${advisory.groundStop!.advisoryUrl}&sz=128`} />
-										<AvatarFallback className="bg-blue-500">
+										<AvatarFallback className="bg-blue-300 dark:bg-blue-500">
 											<Link2 className="size-5" />
 										</AvatarFallback>
 									</Avatar>

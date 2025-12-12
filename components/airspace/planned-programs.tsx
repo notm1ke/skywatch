@@ -1,6 +1,7 @@
 import { useAirspace } from "./provider";
 import { ClockCheck } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
+import { useMobile } from "../mobile-provider";
 import { ScrollArea } from "../ui/scroll-area";
 import { ErrorSection } from "../error-section";
 import { useAirports } from "../airport-provider";
@@ -16,6 +17,7 @@ import {
 
 export const AirspacePlannedEvents = () => {
 	const { airports } = useAirports();
+	const { mobile } = useMobile();
 	const { planned, loading, error, refresh } = useAirspace();
 	
 	if (loading) return (
@@ -142,7 +144,9 @@ export const AirspacePlannedEvents = () => {
 											{/*<span className="text-sm font-bold">{shortenAirportName(airport.name)}</span>*/}
 										</div>
 									</div>
-									<div className="text-sm">{plan.eventType}</div>
+									<div className="text-sm">
+										{mobile ? plan.eventType.replace("Program", "") : plan.eventType}
+									</div>
 								</div>
 							);
 						})}

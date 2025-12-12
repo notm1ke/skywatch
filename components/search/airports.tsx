@@ -46,6 +46,7 @@ export const airportResults: SearchResultGenerator<AirportWithJoins, AirportMeta
 			href: `/airports/${airport.iata_code}`,
 			icon: <AirportIataIcon iata={airport.iata_code!} />,
 			type: "airport",
+			tabTarget: "airports",
 			metadata: {
 				iata_code: airport.iata_code,
 				icao_code: airport.icao_code,

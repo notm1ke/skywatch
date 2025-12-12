@@ -11,7 +11,7 @@ export const GroundDelayProgram: React.FC<{ airport: AirportWithJoins, advisory:
 					<ClockAlert className="size-4" />
 					Ground Delay
 				</span>
-				<span className="text-sm text-orange-400/70">
+				<span className="hidden sm:flex text-sm text-orange-400/70">
 					{capitalizeFirst(delayReason(advisory!.groundDelay!.impactingCondition).toLowerCase())}
 				</span>
 			</div>

@@ -5,10 +5,11 @@ import { fetchAirportByIata } from "~/lib/airports";
 import { capitalizeFirst, shortenAirportName } from "~/lib/utils";
 
 export const size = {
-	width: 1200,
-	height: 630,
+	width: 800,
+	height: 400,
 };
 
+export const runtime = "edge";
 export const contentType = "image/png";
 
 type Params = {
@@ -67,23 +68,21 @@ export default async function Image({ params }: { params: Promise<Params> }) {
 	return new ImageResponse(
 		<div
 			tw="flex h-full bg-white"
-			style={{
-				fontFamily: "Inter"
-			}}
+			style={{ fontFamily: "Inter" }}
 		>
 			<div
 				tw="flex flex-col justify-between p-16 mb-6"
-				style={{ width: "780px" }}
+				style={{ width: "800px" }}
 			>
 				<div tw="flex flex-col">
-					<div tw="flex text-2xl font-semibold text-sky-800 mb-12 items-center">
+					<div tw="flex text-3xl font-bold text-sky-800 mb-12 items-center">
 						<svg
-							width="24"
-							height="24"
+							width="30"
+							height="30"
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							strokeWidth="2"
+							strokeWidth="1.5"
 							strokeLinecap="round"
 							strokeLinejoin="round"
 							// @ts-expect-error satori lib type conflicts with react dom types
@@ -97,7 +96,8 @@ export default async function Image({ params }: { params: Promise<Params> }) {
 							<path d="M12 6V2" />
 							<path d="M13 2h-2" />
 						</svg>
-						Skywatch
+						
+						<span style={{ fontFamily: "InstrumentSerif" }}>Skywatch</span>
 					</div>
 
 					<div
@@ -114,63 +114,57 @@ export default async function Image({ params }: { params: Promise<Params> }) {
 
 				<div tw="flex justify-between mt-10" style={{ width: "100%" }}>
 					<div tw="flex flex-col">
-						<div tw="flex text-3xl font-bold text-gray-900">{country}</div>
+						<div
+							tw="flex text-3xl font-bold text-gray-900"
+							style={{ fontFamily: "JetBrainsMono" }}
+						>
+							{country}
+						</div>
 						<div tw="flex text-base text-gray-400 mt-1">Country</div>
 					</div>
 					<div tw="flex flex-col">
-						<div tw="flex text-3xl font-bold text-gray-900">{designation}</div>
+						<div
+							tw="flex text-3xl font-bold text-gray-900"
+							style={{ fontFamily: "JetBrainsMono" }}
+						>
+							{designation}
+						</div>
 						<div tw="flex text-base text-gray-400 mt-1">Airport Type</div>
 					</div>
 					<div tw="flex flex-col">
-						<div tw="flex text-3xl font-bold text-gray-900">{airport.elevation_ft!.toLocaleString()} ft</div>
-						<div tw="flex text-base text-gray-400 mt-1">Elevation</div>
+						<div
+							tw="flex text-3xl font-bold text-gray-900"
+							style={{ fontFamily: "JetBrainsMono" }}
+						>
+							{airport.elevation_ft!.toLocaleString()}
+						</div>
+						<div tw="flex text-base text-gray-400 mt-1">Elevation (ft)</div>
 					</div>
 					<div tw="flex flex-col">
-						<div tw="flex text-3xl font-bold text-gray-900">{airport.runways.length.toLocaleString()}</div>
+						<div
+							tw="flex text-3xl font-bold text-gray-900"
+							style={{ fontFamily: "JetBrainsMono" }}
+						>
+							{airport.runways.length.toLocaleString()}
+						</div>
 						<div tw="flex text-base text-gray-400 mt-1">
 							Runway{airport.runways.length === 1 ? "" : "s"}
 						</div>
 					</div>
 					<div tw="flex flex-col">
-						<div tw="flex text-3xl font-bold text-gray-900">{airport.frequencies.length.toLocaleString()}</div>
-						<div tw="flex text-base text-gray-400 mt-1">Frequencies</div>
+						<div
+							tw="flex text-3xl font-bold text-gray-900"
+							style={{ fontFamily: "JetBrainsMono" }}
+						>
+							{airport.frequencies.length.toLocaleString()}
+						</div>
+						<div tw="flex text-base text-gray-400 mt-1">Frequenc{airport.frequencies.length === 1 ? "y" : "ies"}</div>
 					</div>
-				</div>
-			</div>
-
-			<div
-				tw="flex flex-col justify-center items-center bg-sky-900"
-				style={{ width: "420px" }}
-			>
-				<div
-					tw="flex text-7xl font-bold text-white"
-					style={{
-						letterSpacing: "-0.02em",
-						marginBottom: "20px",
-						fontFamily: "JetBrainsMono"
-					}}
-				>
-					{airport.iata_code!}
-				</div>
-				<div
-					tw="flex text-7xl font-bold text-white"
-					style={{
-						letterSpacing: "-0.02em",
-						marginBottom: "20px",
-						fontFamily: "JetBrainsMono"
-					}}
-				>
-					{airport.icao_code!}
-				</div>
-
-				<div tw="flex flex-col items-center gap-2">
-					<div tw="flex text-lg text-gray-300 font-mono">{airport.latitude_deg}°</div>
-					<div tw="flex text-lg text-gray-300 font-mono">{airport.longitude_deg}°</div>
 				</div>
 			</div>
 		</div>,
 		{
-			width: 1200,
+			width: 800,
 			height: 400,
 			fonts: [
 				{
@@ -190,6 +184,12 @@ export default async function Image({ params }: { params: Promise<Params> }) {
 					data: await loadGoogleFont("JetBrains Mono", 700),
 					style: "normal",
 					weight: 700,
+				},
+				{
+					name: "InstrumentSerif",
+					data: await loadGoogleFont("Instrument Serif", 400),
+					style: "normal",
+					weight: 400,
 				},
 			],
 		},

@@ -223,7 +223,7 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 	{
 		patterns: [
 			/VISUAL\s+APCH(S)?/gi,
-			/VISUAL\s+APPROACH/gi,
+			/VISUAL\s+APPROACH(ES)?/gi,
 			/\bCVFP\b/gi,
 			/\bVIS\b/gi,
 		],
@@ -236,7 +236,7 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 	{
 		patterns: [
 			/INST(R)?\s+APCH(S)?/gi,
-			/INSTRUMENT\s+APPROACH/gi,
+			/INSTRUMENT\s+APPROACH(ES)?/gi,
 		],
 		color: styling("gray"),
 		tooltip: () => ({
@@ -254,13 +254,14 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 	})),
 	{
 		patterns: [
-			/NOTICE\s+TO\s+AIRMEN/gi,
+			/NOTICE(S)?\s+TO\s+AIRMEN/gi,
+			/NOTICE(S)?\s+TO\s+AIR\s+MISSIONS/gi,
 			/NOTAMS/gi,
 			/NOTAM/gi,
 		],
 		color: styling("blue"),
 		tooltip: () => ({
-			title: "Notice to Air Missions (NOTAM)",
+			title: "Notice to Airmen (NOTAM)",
 			description: "Time-critical aeronautical information, such as closures or hazards."
 		})
 	},

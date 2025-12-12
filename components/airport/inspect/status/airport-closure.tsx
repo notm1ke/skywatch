@@ -50,7 +50,7 @@ export const ClosureProgram: React.FC<{ airport: AirportWithJoins, advisory: Air
 				</span>
 				
 				<Dialog>
-					<DialogTrigger className="flex flex-row space-x-1 text-sm items-center">
+					<DialogTrigger asChild className="flex flex-row space-x-1 text-sm items-center">
 						<Button
 							variant="ghost"
 							size="sm"
@@ -85,7 +85,7 @@ export const ClosureProgram: React.FC<{ airport: AirportWithJoins, advisory: Air
 							<Item variant="outline">
 								<ItemHeader>
 									<Avatar>
-										<AvatarFallback className="bg-red-500">
+										<AvatarFallback className="bg-red-300 dark:bg-red-500">
 											<ClockAlert className="size-4.5" />
 										</AvatarFallback>
 									</Avatar>
@@ -101,7 +101,7 @@ export const ClosureProgram: React.FC<{ airport: AirportWithJoins, advisory: Air
 							<Item variant="outline">
 								<ItemHeader>
 									<Avatar>
-										<AvatarFallback className="bg-green-600">
+										<AvatarFallback className="bg-green-300 dark:bg-green-500">
 											<ClockCheck className="size-4.5" />
 										</AvatarFallback>
 									</Avatar>

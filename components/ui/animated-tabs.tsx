@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 import { cn } from "~/lib/utils";
-import { useState } from "react";
 import { TabType } from "~/lib/page";
 import { motion } from "motion/react";
 import { useLinkStatus } from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 export type AnimatedTabsProps = {
@@ -86,13 +86,21 @@ const TabButton: React.FC<TabButtonProps> = ({
 export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({ items, onChange }) => {
 	const pathname = usePathname();
 	const [activeHover, setActiveHover] = useState<AnimatedTabItem | null>(null);
-	const [active, setActive] = useState<AnimatedTabItem>(() => {
+	
+	const detectActiveTab = () => {
 		let path = pathname;
 		if (pathname.split('/').length > 2)
 			path = '/' + pathname.split('/')[1];
 		
 		return items.find((item) => item.href === path) || items[0];
-	});
+	} 
+	
+	const [active, setActive] = useState<AnimatedTabItem>(() => detectActiveTab());
+	
+	useEffect(() => {
+		const active = detectActiveTab();
+		setActive(active);
+	}, [pathname]);
 	
 	return (
 		<ul className="flex items-center px-2">

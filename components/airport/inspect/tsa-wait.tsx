@@ -37,7 +37,7 @@ const SecurityIcon: React.FC<PropsWithChildren<{ tooltip: ReactNode }>> = ({ chi
 )
 
 export const TsaWaitTimesSkeletonLoader: React.FC<{ airport?: AirportWithJoins }> = ({ airport }) => (
-	<div className="border-b border-white/10">
+	<div className="border-b border-border">
 		<div className="flex flex-row px-3 py-2 justify-between">
 			<div className="flex flex-row space-x-2 items-center">
 				<span className="text-md font-semibold pointer-events-none">
@@ -211,7 +211,7 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 			: currentHourData.waitTime;
 
 	return (
-		<div className="border-b border-zinc-200 dark:border-white/10">
+		<div className="border-b border-border">
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">

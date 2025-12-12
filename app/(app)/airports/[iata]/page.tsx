@@ -26,7 +26,7 @@ export async function generateMetadata(
 	const size = airport.type.split("_")[0];
 	return {
 		title: airport.iata_code,
-		description: `${shortenAirportName(airport.name)} is a ${size} airport in ${airport.municipality}, ${state}.`
+		description: `${shortenAirportName(airport.name)} is a ${size}-sized airport in ${airport.municipality}, ${state}.`
 	}
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import mapCoords from "./coords.json";
+import mapCoords from "~/geojson/dotted-map.json";
 
 import { cn } from "~/lib/utils";
 import { motion } from "motion/react";

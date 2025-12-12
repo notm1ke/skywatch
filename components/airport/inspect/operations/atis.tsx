@@ -88,7 +88,7 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 	if (!atis || error) return <>loading</>;
 	
 	return (
-		<div className="border-b border-white/10">
+		<div className="border-b border-border">
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">

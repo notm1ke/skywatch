@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { Badge } from "./ui/badge";
 import { Searchbar } from "./search";
 import { TowerControl } from "lucide-react";
 import { usePageControls } from "~/lib/page";
@@ -10,7 +11,7 @@ import { GitHubButton } from "./github-button";
 import { AnimatedTabs, AnimatedTabItem } from "./ui/animated-tabs";
 
 const NavLinks: AnimatedTabItem[] = [
-	{ content: "US Airspace", tabType: "airspace", href: "/" },
+	{ content: "Airspace", tabType: "airspace", href: "/" },
 	{ content: "Airports", tabType: "airports", href: "/airports" },
 	{ content: "Statistics", tabType: "statistics", href: "/statistics" },
 ];
@@ -24,11 +25,12 @@ export const Header = () => {
 					<div className="flex items-center gap-2 cursor-pointer">
 						<TowerControl className="size-7" />
 						<span className="text-2xl font-serif font-normal tracking-tight">Skywatch</span>
+						{process.env.NODE_ENV === "development" && <Badge variant="destructive">DEV</Badge>}
 					</div>
 				</Link>
 				<div className="flex flex-items-center sm:gap-2">
 					<Searchbar />
-					<div className="space-x-0.5">
+					<div className="sm:space-x-0.5">
 						<ThemeToggle />
 						<GitHubButton />
 					</div>

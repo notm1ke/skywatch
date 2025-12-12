@@ -4,6 +4,7 @@ import { Toaster } from "~/components/ui/sonner";
 import { Geist, Geist_Mono } from "next/font/google";
 import { OpenPanelComponent } from "@openpanel/nextjs";
 import { TooltipProvider } from "~/components/ui/tooltip";
+import { MobileProvider } from "~/components/mobile-provider";
 import { ThemeProvider } from "~/components/ui/theme-provider";
 
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -44,19 +45,21 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<TooltipProvider>
-						{children}
-						<Toaster />
-					</TooltipProvider>
-					<OpenPanelComponent
-						apiUrl={process.env.NEXT_PUBLIC_OPENPANEL_API_URL!}
-						cdnUrl={process.env.NEXT_PUBLIC_OPENPANEL_CDN_URL!}
-						clientId={process.env.NEXT_PUBLIC_OPENPANEL_CLIENT_ID!}
-						disabled={!process.env.NEXT_PUBLIC_OPENPANEL_ENABLED}
-						trackScreenViews
-						trackOutgoingLinks
-						trackAttributes
-					/>
+					<MobileProvider>
+						<TooltipProvider>
+							{children}
+							<Toaster />
+						</TooltipProvider>
+						<OpenPanelComponent
+							apiUrl={process.env.NEXT_PUBLIC_OPENPANEL_API_URL!}
+							cdnUrl={process.env.NEXT_PUBLIC_OPENPANEL_CDN_URL!}
+							clientId={process.env.NEXT_PUBLIC_OPENPANEL_CLIENT_ID!}
+							disabled={!process.env.NEXT_PUBLIC_OPENPANEL_ENABLED}
+							trackScreenViews
+							trackOutgoingLinks
+							trackAttributes
+						/>
+					</MobileProvider>
 				</ThemeProvider>
 			</body>
 		</html>

@@ -108,20 +108,6 @@ export const AirspaceMap: React.FC = () => {
 		[Boundaries]
 	);
 	
-	const initialView = useMemo(() => {
-		if (isMobile) return {
-			latitude: 26.183575146480564,
-			longitude: -97.46394501005533,
-			zoom: 2.25
-		};
-		
-		return {
-			latitude: 40,
-			longitude: -100,
-			zoom: 3.25
-		};
-	}, [isMobile]);
-	
 	const airportMarkers = useMemo(
 		() => advisories
 			.map(advisory => {
@@ -155,12 +141,89 @@ export const AirspaceMap: React.FC = () => {
 		return colors[theme as keyof typeof colors] ?? colors.dark;
 	}, [theme]);
 	
+	if (isMobile === undefined) return (
+		<div className="w-full min-h-[300px] sm:min-h-[600px] h-full relative overflow-hidden">
+			<div className="absolute inset-0 bg-muted animate-pulse" />
+		</div>
+	);
+
+	if (isMobile) return (
+		<div className="w-full h-[300px] relative overflow-hidden">
+			<div className="absolute inset-0">
+				<Map
+					mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+					initialViewState={{
+						latitude: 37.833333,
+						longitude: -97.583333,
+						zoom: 2.15
+					}}
+					projection="mercator"
+					attributionControl={false}
+					interactiveLayerIds={['airspace']}
+					style={{ width: "100%", height: "300px" }}
+					mapStyle={
+						theme === 'dark'
+							? 'mapbox://styles/mapbox/dark-v11'
+							: 'mapbox://styles/mapbox/light-v11'
+					}
+				>
+					<AttributionControl
+						compact
+						customAttribution="Skywatch (c) 2025"
+						style={{
+							color: "black",
+							fontSize: "12px",
+							fontFamily: "monospace",
+						}}
+					/>
+					
+					{airportMarkers}
+					
+					<Source type="geojson" data={centers}>
+						<Layer
+							{...{
+								id: 'airspace',
+								type: 'line',
+								paint: {
+									'line-color': [
+										'match',
+										['get', 'status'],
+										layerStyle.lineColor,
+										layerStyle.lineColor,
+										layerStyle.lineColor
+									],
+									'line-opacity': 0.2
+								}
+							}}
+						/>
+						
+						<Layer
+							id="airspace-label"
+							type="symbol"
+							layout={{
+								'text-field': ['get', 'IDENT'],
+								'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+								'text-size': 14,
+								'symbol-placement': 'point'
+							}}
+							paint={{ 'text-color': layerStyle.textColor }}
+						/>
+					</Source>
+				</Map>
+			</div>
+		</div>	
+	)
+	
 	return (
 		<div className="w-full min-h-[400px] sm:min-h-[600px] h-full relative overflow-hidden">
 			<div className="absolute inset-0">
 				<Map
 					mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-					initialViewState={initialView}
+					initialViewState={{
+						latitude: 37,
+						longitude: -97.5,
+						zoom: 3.25
+					}}
 					projection="mercator"
 					interactiveLayerIds={['airspace']}
 					attributionControl={false}

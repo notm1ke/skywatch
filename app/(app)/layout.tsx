@@ -1,15 +1,23 @@
+import { Metadata, Viewport } from "next";
+import { Header } from "~/components/header";
 import { AirportProvider } from "~/components/airport-provider";
 import { AirspaceProvider } from "~/components/airspace/provider";
-import { Header } from "~/components/header";
 
 const showDevTitle = process.env.NODE_ENV === 'development';
 
-export const metadata = {
+export const metadata: Metadata = {
 	title: {
 		default: `Skywatch ${showDevTitle ? '(Dev)' : ''}`,
 		template: "Skywatch | %s",
 	},
 	description: "There is no description for this page.",
+	applicationName: "Skywatch",
+};
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	maximumScale: 1
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
