@@ -8,7 +8,6 @@ export const size = {
 	height: 400,
 };
 
-export const runtime = "nodejs";
 export const contentType = "image/png";
 
 type PixelProps = {
@@ -97,7 +96,7 @@ export default async function Image() {
 			<div tw="absolute bottom-4 left-4 flex flex-col">
 				<span tw="text-[31px]" style={{ fontFamily: "InstrumentSerif" }}>Skywatch</span>
 				<div
-					tw="flex flex-row space-x-2 items-center text-zinc-600 uppercase text-sm whitespace-nowrap"
+					tw="flex flex-row items-center text-zinc-600 uppercase text-sm"
 					style={{ fontFamily: "JetBrainsMono" }}
 				>
 					<span>With</span>

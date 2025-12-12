@@ -9,7 +9,6 @@ export const size = {
 	height: 400,
 };
 
-export const runtime = "nodejs";
 export const contentType = "image/png";
 
 type Params = {
