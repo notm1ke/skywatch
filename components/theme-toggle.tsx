@@ -34,8 +34,8 @@ export const ThemeToggle = () => {
 							: "dark"
 					)}
 				>
-					<Moon className="size-5.5 dark:hidden" />
-					<Sun className="size-5.5 hidden dark:block" />
+					<Moon className="size-5.5 hidden dark:block" />
+					<Sun className="size-5.5 dark:hidden" />
 				</Button>
 			)}
 		</ThemeToggler>
