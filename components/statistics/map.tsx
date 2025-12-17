@@ -6,8 +6,8 @@ import { cn } from "~/lib/utils";
 import { motion } from "motion/react";
 import { useMemo, memo } from "react";
 import { Diamond } from "lucide-react";
-import { AirportWithJoins } from "~/lib/airports";
 import { geoMercator, GeoProjection } from "d3-geo";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { useAirports } from "~/components/airport-provider";
 
 type CoordsData = Record<

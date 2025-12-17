@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { TopAirports, TopAirportsSkeleton } from "./top-airports";
 import { TotalFlights, TotalFlightsSkeleton } from "./total-flights";
 import { TotalAirports, TotalAirportsSkeleton } from "./total-airports";
-import { fetchTopTenAirports, TopAirportsByTraffic } from "~/lib/traffic";
+import { fetchTopTenAirports, TopAirportsByTraffic } from "~/lib/aviation/traffic";
 
 export const HeaderStats = () => {
 	const [data, setData] = useState<TopAirportsByTraffic | null>();

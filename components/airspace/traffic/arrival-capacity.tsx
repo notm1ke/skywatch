@@ -1,5 +1,5 @@
 import { unrollDatum } from ".";
-import { TrafficFlow } from "~/lib/traffic";
+import { TrafficFlow } from "~/lib/aviation/traffic";
 import { cn, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "~/components/ui/chart";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";

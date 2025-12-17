@@ -3,10 +3,10 @@
 import axios from "axios";
 
 import { load } from "cheerio";
-import { redis } from "./redis";
-import { prisma } from "./prisma";
-import { ok, okAsync, raise } from "./actions";
-import { padZero, safeParseJson } from "./utils";
+import { redis } from "../redis";
+import { prisma } from "../prisma";
+import { ok, okAsync, raise } from "../actions";
+import { padZero, safeParseJson } from "../utils";
 
 type RawProbeType =
 	| "touchdown"

@@ -4,9 +4,9 @@ import { unwrap } from "~/lib/actions";
 import { CircleHelp } from "lucide-react";
 import { cn, padZero } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
-import { AirportWithJoins } from "~/lib/airports";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ErrorSection } from "~/components/error-section";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
@@ -15,7 +15,7 @@ import {
 	RvrProbe,
 	RvrProbeType,
 	RvrResponse
-} from "~/lib/rvr";
+} from "~/lib/aviation/rvr";
 
 import {
 	Dialog,

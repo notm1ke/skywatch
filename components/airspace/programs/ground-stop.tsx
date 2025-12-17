@@ -1,6 +1,5 @@
-import { AirportAdvisory } from "~/lib/faa";
-
 import { Badge } from "~/components/ui/badge";
+import { AirportAdvisory } from "~/lib/aviation/faa";
 import { capitalizeFirst, cn, getUrlDomain } from "~/lib/utils";
 import { ExternalLink, Tally1, Tally2, Tally3 } from "lucide-react";
 

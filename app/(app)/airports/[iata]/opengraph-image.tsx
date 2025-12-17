@@ -1,7 +1,7 @@
 import { unwrap } from "~/lib/actions";
 import { ImageResponse } from "next/og";
 import { NextResponse } from "next/server";
-import { fetchAirportByIata } from "~/lib/airports";
+import { fetchAirportByIata } from "~/lib/aviation/airports";
 import { capitalizeFirst, shortenAirportName } from "~/lib/utils";
 
 export const size = {

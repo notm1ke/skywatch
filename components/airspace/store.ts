@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AirportAdvisory } from "~/lib/faa";
+import { AirportAdvisory } from "~/lib/aviation/faa";
 
 type AirspaceInteractivityState = {
 	hovered: AirportAdvisory | null;

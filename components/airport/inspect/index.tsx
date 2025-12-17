@@ -2,16 +2,16 @@
 
 import { StatusRibbon } from "./status";
 import { TabSwitcher } from "./switcher";
-import { AirportAdvisory } from "~/lib/faa";
 import { useRouter } from "next/navigation";
 import { useAirportInspector } from "./store";
 import { MetarSkeletonLoader } from "./metar";
 import { Button } from "~/components/ui/button";
 import { ArrowLeft, Plane } from "lucide-react";
-import { AirportWithJoins } from "~/lib/airports";
 import { Skeleton } from "~/components/ui/skeleton";
+import { AirportAdvisory } from "~/lib/aviation/faa";
 import { InspectorOperationsTab } from "./operations";
 import { TsaWaitTimesSkeletonLoader } from "./tsa-wait";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { useAirports } from "~/components/airport-provider";
 import { useAirspace } from "~/components/airspace/provider";
 import { AirportMap, AirportMapSkeletonLoader } from "./map";

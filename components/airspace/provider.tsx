@@ -10,7 +10,7 @@ import {
 	AirportAdvisory,
 	fetchCompositeAirspaceData,
 	PlannedAirportEvent
-} from "~/lib/faa";
+} from "~/lib/aviation/faa";
 
 import {
 	createContext,

@@ -2,10 +2,10 @@
 
 import axios from "axios";
 
-import { redis } from "./redis";
-import { prisma } from "./prisma";
-import { safeParseJson } from "./utils";
-import { okAsync, raise } from "./actions";
+import { redis } from "../redis";
+import { prisma } from "../prisma";
+import { safeParseJson } from "../utils";
+import { okAsync, raise } from "../actions";
 
 export type CloudCover = 
 	| "SKC" // clear sky - manual stations

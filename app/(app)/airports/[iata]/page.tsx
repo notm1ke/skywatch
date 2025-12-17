@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { unwrap } from "~/lib/actions";
 import { shortenAirportName } from "~/lib/utils";
-import { fetchAirportByIata } from "~/lib/airports";
+import { fetchAirportByIata } from "~/lib/aviation/airports";
 import { AirportInspector } from "~/components/airport/inspect";
 
 type Params = {

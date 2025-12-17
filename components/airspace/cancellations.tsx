@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ErrorSection } from "../error-section";
 import { Label, Pie, PieChart } from "recharts";
 import { shortNumberFormatter } from "~/lib/utils";
-import { CancellationStats, fetchCancellationStats } from "~/lib/faa";
+import { CancellationStats, fetchCancellationStats } from "~/lib/aviation/faa";
 
 import {
 	ChartConfig,

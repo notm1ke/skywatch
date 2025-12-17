@@ -1,10 +1,10 @@
 import { Check } from "lucide-react";
-import { AirportAdvisory } from "~/lib/faa";
 import { DelayProgram } from "./status/delay";
 import { DeicingProgram } from "./status/deicing";
-import { AirportWithJoins } from "~/lib/airports";
+import { AirportAdvisory } from "~/lib/aviation/faa";
 import { GroundStopProgram } from "./status/ground-stop";
 import { ClosureProgram } from "./status/airport-closure";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { GroundDelayProgram } from "./status/ground-delay";
 import { SpecialAdvisoryProgram } from "./status/special-advisory";
 

@@ -4,10 +4,10 @@ import { Check, Maximize } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ErrorSection } from "~/components/error-section";
-import { AnnotatedAtisSegment, parseAtisText } from "~/lib/atis";
 import { capitalizeFirst, cn, formatFaaTime } from "~/lib/utils";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
+import { AnnotatedAtisSegment, parseAtisText } from "~/lib/aviation/atis";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
 import {
@@ -15,7 +15,7 @@ import {
 	AtisResponse,
 	AtisType,
 	fetchAtisForIata
-} from "~/lib/airports";
+} from "~/lib/aviation/airports";
 
 import {
 	Dialog,

@@ -7,8 +7,8 @@ import { useEffect, useMemo, useState } from "react";
 import { TrafficByAircraftChart } from "./by-aircraft";
 import { ErrorSection } from "~/components/error-section";
 import { ArrivalCapacityChart } from "./arrival-capacity";
-import { DataPoint, fetchAggregatedTrafficFlow, TrafficFlow } from "~/lib/traffic";
 import { ArgumentType, cn, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
+import { DataPoint, fetchAggregatedTrafficFlow, TrafficFlow } from "~/lib/aviation/traffic";
 
 import {
 	DropdownMenu,

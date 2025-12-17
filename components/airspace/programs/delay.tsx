@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { AirportAdvisory, DelayAdvisory } from "~/lib/faa";
+import { AirportAdvisory, DelayAdvisory } from "~/lib/aviation/faa";
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "lucide-react";
 import { capitalizeFirst, cn, delayReason, getLatestTimeValue, parseDelayTime } from "~/lib/utils";
 
