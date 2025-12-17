@@ -90,7 +90,10 @@ const AirportMarker: React.FC<{ advisory: AirportAdvisory, airport: AirportWithJ
 			longitude={airport.longitude_deg}
 			className="cursor-help animate-fade-in"
 		>
-			<AirspaceMapHoverCard advisory={advisory}>
+			<AirspaceMapHoverCard
+				advisory={advisory}
+				airport={airport}
+			>
 				<div className={cn("size-2.5 rounded-md", colorForAirportStatus(status))} />
 			</AirspaceMapHoverCard>
 		</Marker>

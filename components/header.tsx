@@ -13,6 +13,8 @@ import { AnimatedTabs, AnimatedTabItem } from "./ui/animated-tabs";
 const NavLinks: AnimatedTabItem[] = [
 	{ content: "Airspace", tabType: "airspace", href: "/" },
 	{ content: "Airports", tabType: "airports", href: "/airports" },
+	// { content: "Planes", tabType: "airplanes", href: "/airplanes" },
+	// { content: "TFRs", tabType: "tfrs", href: "/tfrs" },
 	{ content: "Statistics", tabType: "statistics", href: "/statistics" },
 ];
 

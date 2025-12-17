@@ -5,16 +5,17 @@ import { TabSwitcher } from "./switcher";
 import { AirportAdvisory } from "~/lib/faa";
 import { useRouter } from "next/navigation";
 import { useAirportInspector } from "./store";
+import { MetarSkeletonLoader } from "./metar";
 import { Button } from "~/components/ui/button";
 import { ArrowLeft, Plane } from "lucide-react";
 import { AirportWithJoins } from "~/lib/airports";
 import { Skeleton } from "~/components/ui/skeleton";
 import { InspectorOperationsTab } from "./operations";
+import { TsaWaitTimesSkeletonLoader } from "./tsa-wait";
 import { useAirports } from "~/components/airport-provider";
 import { useAirspace } from "~/components/airspace/provider";
 import { AirportMap, AirportMapSkeletonLoader } from "./map";
-import { MetarSkeletonLoader, MeteorologicalReport } from "./metar";
-import { TsaWaitTimes, TsaWaitTimesSkeletonLoader } from "./tsa-wait";
+import { AtisBroadcastSkeletonLoader } from "./operations/atis";
 
 // todo
 import { RunwaysSkeletonLoader } from "./operations/runways";
@@ -48,7 +49,7 @@ export const AdvisoryRibbonSkeletonLoader = () => (
 			</div>
 		</div>
 	</div>
-)
+);
 
 const AdvisoryRibbon: React.FC<{ airport: AirportWithJoins }> = ({ airport }) => {
 	const [advisories, loading] = useScopedAdvisories(airport.iata_code!); 
@@ -73,28 +74,17 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 			<AirportMapSkeletonLoader />
 			<AdvisoryRibbonSkeletonLoader />
 			
+			<TabSwitcher disabled />
 			<div className="flex flex-col sm:flex-row">
 				<div className="basis-full sm:basis-2/3">
-					<TabSwitcher />
-					<div>
-						
+					<div className="grid grid-cols-1 sm:grid-cols-2 divide-x-2 divide-y-2">
+						<AtisBroadcastSkeletonLoader />
+						<RunwaysSkeletonLoader />
 					</div>
-					{/*<div className="grid grid-cols-1 sm:grid-cols-3">
-						<div className="sm:col-span-3">
-							<AirspaceMap />
-						</div>
-						<div className="sm:col-span-2 border-t border-r">
-							<TrafficFlowChart />
-						</div>
-						<div className="border-t">
-							<CancellationsPieChart />
-						</div>
-					</div>*/}
 				</div>
 				<div className="sm:basis-1/3 border-l">
 					<MetarSkeletonLoader />
 					<TsaWaitTimesSkeletonLoader />
-					<RunwaysSkeletonLoader />
 				</div>
 			</div>
 		</div>
@@ -140,30 +130,10 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 		<div className="min-h-screen overflow-hidden">
 			<AirportMap airport={airport} />
 			<AdvisoryRibbon airport={airport} />
+			<TabSwitcher />
 			
 			<div className="flex flex-col sm:flex-row">
-				<div className="basis-full sm:basis-2/3">
-					<div>
-						<TabSwitcher />
-					</div>
-					{tab === "operations" && <InspectorOperationsTab airport={airport} />}
-					{/*<div className="grid grid-cols-1 sm:grid-cols-3">
-						<div className="sm:col-span-3">
-							<AirspaceMap />
-						</div>
-						<div className="sm:col-span-2 border-t border-r">
-							<TrafficFlowChart />
-						</div>
-						<div className="border-t">
-							<CancellationsPieChart />
-						</div>
-					</div>*/}
-				</div>
-				<div className="sm:basis-1/3 border-l">
-					<MeteorologicalReport airport={airport} />
-					<TsaWaitTimes airport={airport} />
-					{/*<RunwayConditions airport={airport} />*/}
-				</div>
+				{tab === "operations" && <InspectorOperationsTab airport={airport} />}
 			</div>
 		</div>
 	)

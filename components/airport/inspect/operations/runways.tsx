@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { motion } from "motion/react";
 import { unwrap } from "~/lib/actions";
 import { CircleHelp } from "lucide-react";
 import { cn, padZero } from "~/lib/utils";
@@ -516,8 +517,14 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 
 			<div className="border-t divide-y divide-white/10">
 				<ScrollArea className="sm:h-[265px]">
-					{runways.map(rwy => (
-						<div key={rwy.name} className="p-3 not-first:border-t">
+					{runways.map((rwy, i) => (
+						<motion.div
+							key={rwy.name}
+							className="p-3 not-first:border-t"
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={{ delay: i * (75 / 1000) }} // 75ms staggered delay
+						>
 							<div className="flex items-center justify-between gap-6">
 								<div className="shrink-0 space-y-0.5">
 									<div className="font-mono font-semibold text-zinc-800 dark:text-white">
@@ -556,7 +563,7 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 									)}
 								</div>
 							</div>
-						</div>
+						</motion.div>
 					))}
 					
 					<ScrollBar orientation="vertical" />

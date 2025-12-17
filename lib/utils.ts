@@ -1,5 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import { clsx, type ClassValue } from "clsx";
+import { UsStateAbbreviations } from "./geo";
+import { AirportWithJoins } from "./airports";
 import { FlowStatusMetricKeys } from "./traffic";
 
 export type ArgumentType<Func> = Func extends (...args: infer Args) => any ? Args : never;
@@ -18,10 +20,21 @@ export const shortNumberFormatter = new Intl.NumberFormat('en', {
   maximumFractionDigits: 1
 });
 
-export const formatFaaTime = (raw: string) => {
+export const formatFaaTime = (raw: string, casing: "lower" | "upper" = "lower") => {
 	if (!raw) return 'Today';
 	const hour = (parseInt(raw.slice(0, 2)) % 12)
-	return (hour === 0 ? '12' : hour.toString().padStart(2, '0')) + ':' + raw.slice(2) + ' ' + (raw < '1200' ? 'am' : 'pm');
+	const result = (hour === 0 ? '12' : hour.toString().padStart(2, '0')) + ':' + raw.slice(2) + ' ' + (raw < '1200' ? 'am' : 'pm');
+	
+	if (casing === "lower")
+		return result;
+		
+	return result.toUpperCase();
+}
+
+export const formatAirportLocation = (airport: AirportWithJoins) => {
+	const [country, state] = airport.iso_region!.split('-');
+	if (!airport.municipality) return `${UsStateAbbreviations[state]}, ${country}`;
+	return `${airport.municipality}, ${state}`;
 }
 
 export const capitalizeFirst = (input: string) =>

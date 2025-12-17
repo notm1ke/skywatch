@@ -76,6 +76,22 @@ const ScrollArea = React.forwardRef<
     };
   }, [checkScrollability, isTouch]);
 
+  const contentRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const contentElement = contentRef.current;
+    if (!contentElement) return;
+
+    const resizeObserver = new ResizeObserver(checkScrollability);
+    resizeObserver.observe(contentElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [checkScrollability]);
+
   return (
     <ScrollAreaContext.Provider value={isTouch}>
       {isTouch ? (
@@ -93,7 +109,9 @@ const ScrollArea = React.forwardRef<
             className={cn("size-full overflow-auto rounded-[inherit]", viewportClassName)}
             tabIndex={0}
           >
-            {children}
+            <div ref={contentRef}>
+              {children}
+            </div>
           </div>
 
           {maskHeight > 0 && <ScrollMask showMask={showMask} className={maskClassName} maskHeight={maskHeight} />}
@@ -111,7 +129,9 @@ const ScrollArea = React.forwardRef<
             data-slot="scroll-area-viewport"
             className={cn("size-full rounded-[inherit]", viewportClassName)}
           >
-            {children}
+            <div ref={contentRef}>
+              {children}
+            </div>
           </ScrollAreaPrimitive.Viewport>
 
           {maskHeight > 0 && <ScrollMask showMask={showMask} className={maskClassName} maskHeight={maskHeight} />}

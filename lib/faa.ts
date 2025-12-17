@@ -212,9 +212,11 @@ export const fetchAirspaceStatus = async () => okAsync(redis
 			.get<AirportAdvisory[]>('https://nasstatus.faa.gov/api/airport-events')
 			.then(res => res.data)
 			.then(data => {
-				redis
-					.set(AIRSPACE_STATUS_CACHE_KEY, JSON.stringify(data))
-					.then(() => redis.expire(AIRSPACE_STATUS_CACHE_KEY, 60 * 5));
+				redis.set(
+					AIRSPACE_STATUS_CACHE_KEY,
+					JSON.stringify(data),
+					"EX", 60
+				);
 
 				return data;
 			})
@@ -234,9 +236,11 @@ export const fetchPlannedEvents = async () => okAsync(redis
 					.terminalPlanned
 					.map(enrichPlannedEvent);
 
-				redis
-					.set(PLANNED_EVENTS_CACHE_KEY, JSON.stringify(enriched))
-					.then(() => redis.expire(PLANNED_EVENTS_CACHE_KEY, 60 * 10));
+				redis.set(
+					PLANNED_EVENTS_CACHE_KEY,
+					JSON.stringify(enriched),
+					"EX", 60 * 5
+				)
 
 				return enriched;
 			})

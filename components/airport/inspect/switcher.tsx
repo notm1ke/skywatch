@@ -41,14 +41,14 @@ const Tabs: Record<InspectorTabType, TabMeta> = {
 	}
 }
 
-export const TabSwitcher = () => {
+export const TabSwitcher: React.FC<{ disabled?: boolean }> = ({ disabled }) => {
 	const { tab, switchTab } = useAirportInspector();
 	const metadata = Tabs[tab];
 	
 	return (
 		<div className="flex flex-row pr-3 py-2 justify-between border-b">
 			<DropdownMenu>
-				<DropdownMenuTrigger className="ml-2">
+				<DropdownMenuTrigger className="ml-2 disabled:cursor-not-allowed" disabled={disabled}>
 					<div className="flex flex-row items-center gap-1 pl-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-250 rounded-md">
 						<span className="text-md font-semibold">
 							{metadata.title}

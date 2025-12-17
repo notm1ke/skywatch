@@ -108,6 +108,7 @@ export const Searchbar: React.FC = () => {
 
 	useEffect(() => {
 		if ((selected || selected === 0) && itemRefs.current[selected]) {
+			router.prefetch(results[selected].href);
 			itemRefs.current[selected]?.scrollIntoView({
 				block: "nearest",
 				behavior: "smooth",

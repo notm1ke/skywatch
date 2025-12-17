@@ -1,9 +1,20 @@
+import { redis } from "~/lib/redis";
 import { seedAirports } from "./seed/airport";
 import { seedAirlineHubs } from "./seed/airline-hubs";
 import { seedAirportHasRvrs } from "./seed/airport-rvr";
 import { seedAirportHasAtis } from "./seed/airport-atis";
 import { seedAirportHasClear } from "./seed/airport-clear";
 import { seedAirportHasPrecheck } from "./seed/airport-precheck";
+
+const gap = 5 * 60 * 1000;
+const lastSeededTime = await redis.get("db:seed");
+if (lastSeededTime) {
+	const delta = Date.now() - parseInt(lastSeededTime);
+	if (delta < gap) {
+		console.log(`Database was recently seeded, skipping.`);
+		process.exit(0);
+	}
+}
 
 const start = Date.now();
 console.log('Seeding database..');
@@ -20,4 +31,5 @@ await seedAirportHasClear();
 await seedAirportHasPrecheck();
 await seedAirportHasRvrs()
 
-console.log(`Finished seeding database in ${(Date.now() - start).toFixed(2)}ms.`)
+console.log(`Finished seeding database in ${(Date.now() - start).toFixed(2)}ms.`);
+await redis.set("db:seed", start);

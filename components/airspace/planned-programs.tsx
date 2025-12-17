@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useAirspace } from "./provider";
 import { ClockCheck } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
@@ -37,7 +38,7 @@ export const AirspacePlannedEvents = () => {
 							<Skeleton className="h-4 w-20 rounded" />
 							<Skeleton className="h-4 w-16 rounded" />
 						</div>
-						<Skeleton className="h-4 w-32 rounded" />
+						<Skeleton className="h-4 w-64 rounded" />
 					</div>
 
 					<div className="group flex flex-row justify-between px-3 py-1.5">
@@ -45,7 +46,7 @@ export const AirspacePlannedEvents = () => {
 							<Skeleton className="h-4 w-20 rounded" />
 							<Skeleton className="h-4 w-16 rounded" />
 						</div>
-						<Skeleton className="h-4 w-24 rounded" />
+						<Skeleton className="h-4 w-48 rounded" />
 					</div>
 
 					<div className="group flex flex-row justify-between px-3 py-1.5">
@@ -53,7 +54,7 @@ export const AirspacePlannedEvents = () => {
 							<Skeleton className="h-4 w-20 rounded" />
 							<Skeleton className="h-4 w-16 rounded" />
 						</div>
-						<Skeleton className="h-4 w-28 rounded" />
+						<Skeleton className="h-4 w-48 rounded" />
 					</div>
 
 					<div className="group flex flex-row justify-between px-3 py-1.5">
@@ -61,7 +62,23 @@ export const AirspacePlannedEvents = () => {
 							<Skeleton className="h-4 w-20 rounded" />
 							<Skeleton className="h-4 w-16 rounded" />
 						</div>
-						<Skeleton className="h-4 w-20 rounded" />
+						<Skeleton className="h-4 w-44 rounded" />
+					</div>
+					
+					<div className="group flex flex-row justify-between px-3 py-1.5">
+						<div className="flex items-center gap-2">
+							<Skeleton className="h-4 w-20 rounded" />
+							<Skeleton className="h-4 w-16 rounded" />
+						</div>
+						<Skeleton className="h-4 w-64 rounded" />
+					</div>
+					
+					<div className="group flex flex-row justify-between px-3 py-1.5">
+						<div className="flex items-center gap-2">
+							<Skeleton className="h-4 w-20 rounded" />
+							<Skeleton className="h-4 w-16 rounded" />
+						</div>
+						<Skeleton className="h-4 w-48 rounded" />
 					</div>
 				</div>
 			</div>
@@ -109,7 +126,7 @@ export const AirspacePlannedEvents = () => {
 							</EmptyMedia>
 							<EmptyTitle>No planned interruptions</EmptyTitle>
 							<EmptyDescription>
-								The FAA has not posted any upcoming planned interruptions advisories.
+								The FAA has not posted any upcoming planned interruption advisories.
 							</EmptyDescription>
 						</EmptyHeader>
 					</Empty>
@@ -122,7 +139,14 @@ export const AirspacePlannedEvents = () => {
 							if (!airport) return null;
 							
 							return (
-								<div key={`planned-${plan.iataCode}-${i}`} className="group flex flex-row justify-between px-3 py-1.5">
+								<motion.div
+									key={`planned-${plan.iataCode}-${i}`}
+									className="group flex flex-row justify-between px-3 py-1.5"
+									initial={{ opacity: 0, y: -20 }}
+									animate={{ opacity: 1, y: 0 }}
+									exit={{ opacity: 0, y: -20 }}
+									transition={{ delay: i * (50 / 1000) }}
+								>
 									<div>
 										<div className="flex items-center gap-1">
 											<Tooltip>
@@ -147,7 +171,7 @@ export const AirspacePlannedEvents = () => {
 									<div className="text-sm">
 										{mobile ? plan.eventType.replace("Program", "") : plan.eventType}
 									</div>
-								</div>
+								</motion.div>
 							);
 						})}
 					</ScrollArea>

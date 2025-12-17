@@ -1,14 +1,16 @@
 import Link from "next/link";
 
+import { motion } from "motion/react";
 import { useAirspace } from "./provider";
 import { Skeleton } from "../ui/skeleton";
 import { AirportAdvisory } from "~/lib/faa";
+import { ScrollArea } from "../ui/scroll-area";
 import { ErrorSection } from "../error-section";
 import { DelayProgram } from "./programs/delay";
-import { shortenAirportName } from "~/lib/utils";
 import { useAirports } from "../airport-provider";
+import { useAirspaceInteractivity } from "./store";
 import { DeicingProgram } from "./programs/deicing";
-import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { cn, shortenAirportName } from "~/lib/utils";
 import { GroundStopProgram } from "./programs/ground-stop";
 import { GroundDelayProgram } from "./programs/ground-delay";
 import { AirportClosureProgram } from "./programs/airport-closure";
@@ -25,7 +27,7 @@ import {
 	ContextMenuTrigger
 } from "../ui/context-menu";
 
-enum Priority {
+export enum AdvisoryType {
 	Normal,
 	Deicing,
 	FreeForm,
@@ -37,45 +39,45 @@ enum Priority {
 	AirportClosure
 }
 
-const computePriority = (advisory: AirportAdvisory) => {
-	if (advisory.airportClosure) return Priority.AirportClosure;
-	if (advisory.groundStop) return Priority.GroundStop;
-	if (advisory.groundDelay) return Priority.GroundDelay;
-	if (advisory.arrivalDelay && advisory.departureDelay) return Priority.DualDelay;
-	if (advisory.arrivalDelay) return Priority.ArrivalDelay;
-	if (advisory.departureDelay) return Priority.DepartureDelay;
-	if (advisory.freeForm) return Priority.FreeForm;
-	if (advisory.deicing) return Priority.Deicing;
-	return Priority.Normal;
+export const advisoryPriority = (advisory: AirportAdvisory) => {
+	if (advisory.airportClosure) return AdvisoryType.AirportClosure;
+	if (advisory.groundStop) return AdvisoryType.GroundStop;
+	if (advisory.groundDelay) return AdvisoryType.GroundDelay;
+	if (advisory.arrivalDelay && advisory.departureDelay) return AdvisoryType.DualDelay;
+	if (advisory.arrivalDelay) return AdvisoryType.ArrivalDelay;
+	if (advisory.departureDelay) return AdvisoryType.DepartureDelay;
+	if (advisory.freeForm) return AdvisoryType.FreeForm;
+	if (advisory.deicing) return AdvisoryType.Deicing;
+	return AdvisoryType.Normal;
 }
 
 const sortOrder = (a: AirportAdvisory, b: AirportAdvisory) =>
-	computePriority(b) - computePriority(a);
+	advisoryPriority(b) - advisoryPriority(a);
 
-export const programIndicator = (advisory: AirportAdvisory) => {
-	const priority = computePriority(advisory);
+const programIndicator = (advisory: AirportAdvisory) => {
+	const priority = advisoryPriority(advisory);
 	switch (priority) {
-		case Priority.AirportClosure: return (
+		case AdvisoryType.AirportClosure: return (
 			<div className="flex gap-2 items-center text-sm">
 				<div className="size-3 bg-red-400 animate-pulse rounded-[30%]" />
 				Airport Closure
 			</div>
 		)
-		case Priority.GroundStop: return (
+		case AdvisoryType.GroundStop: return (
 			<div className="flex gap-2 items-center text-sm">
 				<div className="size-3 bg-orange-400 rounded-[30%]" />
 				Ground Stop
 			</div>
 		)
-		case Priority.GroundDelay: return (
+		case AdvisoryType.GroundDelay: return (
 			<div className="flex gap-2 items-center text-sm">
 				<div className="size-3 bg-yellow-400 rounded-[30%]" />
 				Ground Delay
 			</div>
 		)
-		case Priority.DualDelay:
-		case Priority.ArrivalDelay:
-		case Priority.DepartureDelay: {
+		case AdvisoryType.DualDelay:
+		case AdvisoryType.ArrivalDelay:
+		case AdvisoryType.DepartureDelay: {
 			const type = (advisory.arrivalDelay && advisory.departureDelay)
 				? "Arr + Dept"
 				: advisory.arrivalDelay
@@ -89,13 +91,13 @@ export const programIndicator = (advisory: AirportAdvisory) => {
 				</div>
 			)
 		}
-		case Priority.FreeForm: return (
+		case AdvisoryType.FreeForm: return (
 			<div className="flex gap-2 items-center text-sm">
 				<div className="size-3 bg-blue-400 rounded-[30%]" />
 				Special Advisory
 			</div>
 		)
-		case Priority.Deicing: return (
+		case AdvisoryType.Deicing: return (
 			<div className="flex gap-2 items-center text-sm">
 				<Snowflake className="size-4 text-blue-400" />
 				Deicing
@@ -110,22 +112,22 @@ export const programIndicator = (advisory: AirportAdvisory) => {
 	}
 }
 
-export const programContent = (advisory: AirportAdvisory) => {
-	const priority = computePriority(advisory);
+const programContent = (advisory: AirportAdvisory) => {
+	const priority = advisoryPriority(advisory);
 	switch (priority) {
-		case Priority.AirportClosure:
+		case AdvisoryType.AirportClosure:
 			return <AirportClosureProgram advisory={advisory} />
-		case Priority.GroundStop:
+		case AdvisoryType.GroundStop:
 			return <GroundStopProgram advisory={advisory} />
-		case Priority.GroundDelay:
+		case AdvisoryType.GroundDelay:
 			return <GroundDelayProgram advisory={advisory} />
-		case Priority.ArrivalDelay:
-		case Priority.DepartureDelay:
-		case Priority.DualDelay:
+		case AdvisoryType.ArrivalDelay:
+		case AdvisoryType.DepartureDelay:
+		case AdvisoryType.DualDelay:
 			return <DelayProgram advisory={advisory} />
-		case Priority.FreeForm:
+		case AdvisoryType.FreeForm:
 			return <SpecialAdvisoryProgram advisory={advisory} />
-		case Priority.Deicing:
+		case AdvisoryType.Deicing:
 			return <DeicingProgram advisory={advisory} />
 		default:
 			return <></>
@@ -135,6 +137,7 @@ export const programContent = (advisory: AirportAdvisory) => {
 export const ActivePrograms = () => {
 	const { airports } = useAirports();
 	const { advisories, loading, error, refresh } = useAirspace();
+	const { hovered: mapActiveHovered } = useAirspaceInteractivity();
 	
 	if (loading) return (
 		<div>
@@ -204,8 +207,8 @@ export const ActivePrograms = () => {
 				</div>
 			</div>
 			<div className="border-t">
-				<ScrollArea className="sm:min-h-auto h-[300px] sm:h-[559px] sm:max-h-[800px]" maskHeight={20}>
-					{advisories.sort(sortOrder).map(advisory => {
+				<ScrollArea maskHeight={20} className="sm:min-h-auto h-[300px] sm:h-[559px] sm:max-h-[800px]">
+					{advisories.sort(sortOrder).map((advisory, i) => {
 						const airport = airports.find(airport => airport.iata_code === advisory.airportId);
 						if (!airport) return null;
 						
@@ -214,7 +217,15 @@ export const ActivePrograms = () => {
 								<Disclosure className="border-b">
 									<DisclosureTrigger>
 										<ContextMenuTrigger asChild>
-											<div className="group flex flex-row justify-between px-3 pb-3 pt-3 cursor-pointer hover:bg-muted/30 transition-colors duration-150 ease-out">
+											<motion.div
+												className={cn(
+													"group flex flex-row justify-between px-3 pb-3 pt-3 cursor-pointer hover:bg-muted/30 transition-colors duration-300 ease-out",
+													mapActiveHovered?.airportId === advisory.airportId && "bg-muted animate-pulse"
+												)}
+												initial={{ opacity: 0 }}
+												animate={{ opacity: 1 }}
+												transition={{ delay: i * (25 / 1000) }} // 75ms staggered delay
+											>
 												<div>
 													<div className="flex items-center">
 														<ChevronRight className="size-4 mr-2 text-zinc-500 transition-transform duration-200 ease-in-out rotate-0 group-aria-expanded:rotate-90" />
@@ -223,14 +234,13 @@ export const ActivePrograms = () => {
 													</div>
 												</div>
 												<div className="flex items-center">{programIndicator(advisory)}</div>
-											</div>
+											</motion.div>
 										</ContextMenuTrigger>
 									</DisclosureTrigger>
 									<DisclosureContent>
 										<div className="border-t border-spacing-x-5 border-dashed" />
 										<div className="p-3">
 											{programContent(advisory)}
-											<ScrollBar orientation="vertical" />
 										</div>
 									</DisclosureContent>
 								</Disclosure>

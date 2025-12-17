@@ -8,7 +8,7 @@ import { useMobile } from "~/components/mobile-provider";
 import { Globe, Mountain, RadioTower } from "lucide-react";
 import { WikipediaIcon } from "~/components/icons/wikipedia";
 import { GoogleMapsIcon } from "~/components/icons/google-maps";
-import { cn, getUrlDomain, shortenAirportName } from "~/lib/utils";
+import { cn, formatAirportLocation, getUrlDomain, shortenAirportName } from "~/lib/utils";
 
 import {
 	AttributionControl,
@@ -22,12 +22,6 @@ const AirportSiteFavicon: React.FC<{ url: string }> = ({ url }) => (
 		className="size-3.5 rounded-[30%]"
 	/>
 )
-
-const getStateFromRegion = (isoRegion: string | null, fallback: string) => {
-	if (!isoRegion || !isoRegion.includes('-')) return fallback;
-	const [_, state] = isoRegion.split('-');
-	return state;
-}
 
 const QuickLink: React.FC<PropsWithChildren<{ href: string }>> = ({ href, children }) => (
 	<a
@@ -168,8 +162,8 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 						<span className="text-zinc-500 dark:text-zinc-300 text-xs align-text-top">ICAO</span>{" "}
 						{airport.icao_code}
 					</span>
-					<span className="rounded bg-zinc-300 dark:bg-zinc-800 px-2 py-0.5 font-mono text-xs text-zinc-800 dark:text-zinc-400">
-						{airport.municipality}, {getStateFromRegion(airport.iso_region, airport.iso_country!)}
+					<span className="rounded bg-zinc-300 dark:bg-blue-800/50 px-2 py-0.5 font-mono text-xs text-blue-800/50 dark:text-blue-400">
+						{formatAirportLocation(airport)}
 					</span>
 				</div>
 				<h1 className="sm:mb-1 text-xl font-semibold text-zinc-800 dark:text-white">
