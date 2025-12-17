@@ -20,15 +20,10 @@ export const shortNumberFormatter = new Intl.NumberFormat('en', {
   maximumFractionDigits: 1
 });
 
-export const formatFaaTime = (raw: string, casing: "lower" | "upper" = "lower") => {
+export const formatFaaTime = (raw: string) => {
 	if (!raw) return 'Today';
 	const hour = (parseInt(raw.slice(0, 2)) % 12)
-	const result = (hour === 0 ? '12' : hour.toString().padStart(2, '0')) + ':' + raw.slice(2) + ' ' + (raw < '1200' ? 'am' : 'pm');
-	
-	if (casing === "lower")
-		return result;
-		
-	return result.toUpperCase();
+	return (hour === 0 ? '12' : hour.toString().padStart(2, '0')) + ':' + raw.slice(2) + ' ' + (raw < '1200' ? 'am' : 'pm');
 }
 
 export const formatAirportLocation = (airport: AirportWithJoins) => {

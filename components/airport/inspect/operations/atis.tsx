@@ -116,7 +116,7 @@ const FullScreen: React.FC<PropsWithChildren<{ active: AtisResponse }>> = ({ act
 					ATIS Broadcast
 				</DialogTitle>
 				<DialogDescription>
-					{capitalizeFirst(active.type)} broadcast, transmitted at {formatFaaTime(active.time, "upper")} (UTC)
+					{capitalizeFirst(active.type)} broadcast, transmitted at {formatFaaTime(active.time).toUpperCase()} (UTC)
 				</DialogDescription>
 			</DialogHeader>
 			{atisBody(active)}
