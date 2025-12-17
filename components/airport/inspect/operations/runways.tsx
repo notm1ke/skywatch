@@ -444,6 +444,10 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 			if (!rvr) return [];
 			return airport
 				.runways
+				.filter(rwy => {
+					const pattern = /\d{1,2}(L|R|C)?/g;
+					return (pattern.test(rwy.le_ident!) || pattern.test(rwy.he_ident!)) && !rwy.closed;
+				})
 				.map(rwy => {
 					const name = `${padZero(rwy.le_ident!)}/${padZero(rwy.he_ident!)}`;
 					const rvrData = rvr.runways.find(r => r.name === padZero(rwy.le_ident!));
@@ -530,9 +534,18 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 									<div className="font-mono font-semibold text-zinc-800 dark:text-white">
 										{rwy.name}
 									</div>
-									<div className="text-xs text-zinc-400 tabular-nums">
-										{rwy.length_ft!.toLocaleString()} ft
-									</div>
+									
+									{rwy.length_ft && (
+										<div className="text-xs text-zinc-400 tabular-nums">
+											{rwy.length_ft!.toLocaleString()} ft
+										</div>
+									)}
+									
+									{!rwy.length_ft && (
+										<div className="text-xs text-zinc-400 tabular-nums">
+											Unknown length
+										</div>
+									)}
 								</div>
 	
 								<div className="shrink-0 w-60 sm:w-80">
