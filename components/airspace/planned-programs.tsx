@@ -34,7 +34,7 @@ export const AirspacePlannedEvents = () => {
 			<div className="border-t">
 				<div className="py-2 max-h-[340px] space-y-2">
 					{Array.from({ length: 6 }).map((_, i) => (
-						<div key={`planned-programs-skeleton-${i}`} className="flex-row justify-between px-3 py-1.5">
+						<div key={`planned-programs-skeleton-${i}`} className="flex flex-row justify-between px-3 py-1.5">
 							<div className="flex items-center gap-2">
 								<SkeletonWithDelay className="h-4 w-20 rounded" delay={i * 50} />
 								<SkeletonWithDelay className="h-4 w-16 rounded" delay={i * 50} />
