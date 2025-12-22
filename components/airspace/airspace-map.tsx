@@ -13,6 +13,7 @@ import { AirportWithJoins } from "~/lib/aviation/airports";
 import { AirspaceMapHoverCard } from "./airspace-map-hover";
 import { AirportAdvisory, AirportStatus } from "~/lib/aviation/faa";
 import { AttributionControl, Layer, NavigationControl, Source } from "react-map-gl/mapbox";
+import { useMobile } from "../mobile-provider";
 
 type AirspaceProps = {
 	GLOBAL_ID: string;
@@ -103,9 +104,9 @@ const AirportMarker: React.FC<{ advisory: AirportAdvisory, airport: AirportWithJ
 export const AirspaceMap: React.FC = () => {
 	const { airports } = useAirports();
 	const { advisories } = useAirspace();
+	const { mobile, pending } = useMobile();
 	const { resolvedTheme: theme } = useTheme();
 	
-	const isMobile = useIsMobile();
 	const centers = useMemo(() =>
 		filterOnlyCenters(Boundaries as unknown as GeoJson<AirspaceProps>),
 		[Boundaries]
@@ -144,13 +145,13 @@ export const AirspaceMap: React.FC = () => {
 		return colors[theme as keyof typeof colors] ?? colors.dark;
 	}, [theme]);
 	
-	if (isMobile === undefined) return (
+	if (pending) return (
 		<div className="w-full min-h-[300px] sm:min-h-[600px] h-full relative overflow-hidden">
 			<div className="absolute inset-0 bg-muted animate-pulse" />
 		</div>
 	);
 
-	if (isMobile) return (
+	if (mobile) return (
 		<div className="w-full h-[300px] relative overflow-hidden">
 			<div className="absolute inset-0">
 				<Map
