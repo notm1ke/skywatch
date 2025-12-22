@@ -2,13 +2,19 @@ import { toast } from "sonner";
 import { unwrap } from "~/lib/actions";
 import { TrafficByCenterChart } from "./by-center";
 import { TrafficByStatusChart } from "./by-status";
-import { Skeleton } from "~/components/ui/skeleton";
 import { useEffect, useMemo, useState } from "react";
 import { TrafficByAircraftChart } from "./by-aircraft";
 import { ErrorSection } from "~/components/error-section";
 import { ArrivalCapacityChart } from "./arrival-capacity";
+import { TrafficChartSkeleton } from "./skeletons/chart";
+import { TrafficTreemapSkeleton } from "./skeletons/treemap";
 import { ArgumentType, cn, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
-import { DataPoint, fetchAggregatedTrafficFlow, TrafficFlow } from "~/lib/aviation/traffic";
+
+import {
+	DataPoint,
+	fetchAggregatedTrafficFlow,
+	TrafficFlow
+} from "~/lib/aviation/traffic";
 
 import {
 	DropdownMenu,
@@ -45,6 +51,7 @@ const localizeCallerType = (mode: CallerType) => {
 		case "traffic_by_status": return "Traffic by Status";
 		case "traffic_by_center": return "Traffic by Center";
 		case "traffic_by_aircraft": return "Traffic by Aircraft";
+		case "traffic_by_airline": return "Traffic by Airline"
 		case "arrival_capacity": return "Arrival Capacity";
 	}
 }
@@ -129,43 +136,16 @@ export const TrafficFlowChart = () => {
 		setMode(newMode);
 	}
 
-	if (loading) return (
-		<div className="divide-y-2">
-			<div className="flex flex-row pr-3 py-2.5 justify-between border-b">
-				<div className="flex flex-row items-center gap-1 pl-1">
-					<Skeleton className="h-5 w-40" />
-				</div>
-				<div className="flex text-sm items-center rounded-sm font-mono tabular-nums">
-					<Skeleton className="h-6 w-14" />
-				</div>
-			</div>
-			<div className={cn(!false && "p-2 mt-2")}>
-				<div className="mb-3">
-					<div className="flex">
-						<div className="w-6 flex flex-col items-center pr-2 py-2">
-							<div className="flex-1 flex flex-col justify-between w-full">
-								{Array(6).fill(0).map((_, i) => (
-									<Skeleton key={i} className="w-full h-1 rounded" />
-								))}
-							</div>
-						</div>
-
-						<div className="flex-1 pr-2">
-							<Skeleton className="w-full h-48 rounded-md" />
-						</div>
-					</div>
-				</div>
-				<div className="flex justify-between items-end">
-					<div className="flex-1 pl-6">
-						<Skeleton className="w-9 h-2 rounded" />
-					</div>
-					<div className="flex gap-2 pr-3 items-center">
-						<Skeleton className="w-9 h-2 rounded" />
-					</div>
-				</div>
-			</div>
-		</div>
-	)
+	if (loading) switch (mode) {
+		case "traffic_by_aircraft":
+		case "traffic_by_airline":
+			return <TrafficTreemapSkeleton />
+		case "arrival_capacity":
+		case "traffic_by_center":
+		case "traffic_by_status":
+		default: 
+			return <TrafficChartSkeleton />
+	}
 
 	return (
 		<div className="divide-y-2">
@@ -188,7 +168,7 @@ export const TrafficFlowChart = () => {
 							<TowerControl />
 							Traffic by Center
 						</DropdownMenuItem>
-						{/*<DropdownMenuItem onClick={() => handleSetMode('traffic_by_center')}>
+						{/*<DropdownMenuItem onClick={() => handleSetMode('traffic_by_airline')}>
 							<TicketsPlane />
 							Traffic by Airline
 						</DropdownMenuItem>*/}

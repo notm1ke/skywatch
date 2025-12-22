@@ -8,9 +8,10 @@ import { CancellationsPieChart } from "./cancellations";
 import { AirspacePlannedEvents } from "./planned-programs";
 
 export const AirspaceTab = () => {
-	const { mobile } = useMobile();
+	const { mobile, pending } = useMobile();
+	if (pending) return <div className="min-h-screen bg-muted-foreground/10 animate-pulse" />;
 	if (mobile) return (
-		<div className="flex flex-col sm:flex-row">
+		<div className="flex flex-col">
 			<div className="basis-full sm:basis-2/3">
 				<div className="grid grid-cols-1 sm:grid-cols-3">
 					<div className="sm:col-span-3">
@@ -30,7 +31,7 @@ export const AirspaceTab = () => {
 	)
 	
 	return (
-		<div className="flex flex-col sm:flex-row">
+		<div className="flex flex-row">
 			<div className="basis-full sm:basis-2/3">
 				<div className="grid grid-cols-1 sm:grid-cols-3">
 					<div className="sm:col-span-3">
