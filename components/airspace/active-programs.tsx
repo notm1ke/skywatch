@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { motion } from "motion/react";
 import { useAirspace } from "./provider";
-import { Skeleton } from "../ui/skeleton";
 import { ScrollArea } from "../ui/scroll-area";
 import { ErrorSection } from "../error-section";
 import { DelayProgram } from "./programs/delay";
@@ -13,6 +12,7 @@ import { AirportAdvisory } from "~/lib/aviation/faa";
 import { cn, shortenAirportName } from "~/lib/utils";
 import { GroundStopProgram } from "./programs/ground-stop";
 import { GroundDelayProgram } from "./programs/ground-delay";
+import { Skeleton, SkeletonWithDelay } from "../ui/skeleton";
 import { AirportClosureProgram } from "./programs/airport-closure";
 import { SpecialAdvisoryProgram } from "./programs/special-advisory";
 import { ChevronRight, CircleArrowRight, Snowflake } from "lucide-react";
@@ -151,20 +151,20 @@ export const ActivePrograms = () => {
 			</div>
 			<div className="border-t">
 				<ScrollArea className="min-h-auto h-[559px] max-h-[800px]">
-					{Array(5).fill(null).map((_, index) => (
+					{Array(5).fill(null).map((_, i) => (
 						<div
-							key={`active-programs-skeleton-${index}`}
+							key={`active-programs-skeleton-${i}`}
 							className="group flex flex-row justify-between px-3 pb-3 pt-3 cursor-not-allowed border-b"
 						>
 							<div>
 								<div className="flex items-center space-x-3">
-									<Skeleton className="h-[25px] w-7 rounded-sm" />
-									<Skeleton className="h-[25px] w-32 rounded-sm" />
+									<SkeletonWithDelay className="h-[25px] w-32 rounded-sm" delay={i * 50} />
+									<SkeletonWithDelay className="h-[25px] w-7 rounded-sm" delay={i * 50} />
 								</div>
 							</div>
 							<div className="flex items-center space-x-3">
-								<Skeleton className="h-[25px] w-6 rounded-sm" />
-								<Skeleton className="h-[25px] w-24 rounded-sm" />
+								<SkeletonWithDelay className="h-[25px] w-6 rounded-sm" delay={i * 50} />
+								<SkeletonWithDelay className="h-[25px] w-24 rounded-sm" delay={i * 50} />
 							</div>
 						</div>
 					))}

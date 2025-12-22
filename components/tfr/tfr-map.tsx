@@ -73,6 +73,12 @@ const mobileInitialView = {
 	zoom: 2.15
 };
 
+export const TfrMapSkeletonLoader = () => (
+	<div className="w-full min-h-[40vh] h-full relative overflow-hidden">
+		<div className="absolute inset-0 bg-muted animate-pulse" />
+	</div>
+);
+
 export const TfrMap: React.FC<{ geo: TfrGeoJson }> = ({ geo }) => {
 	const mapRef = useRef<MapRef>(null);
 	const convertedGeo = useMemo(() => convertGeoJson(geo), [geo]);
@@ -109,12 +115,7 @@ export const TfrMap: React.FC<{ geo: TfrGeoJson }> = ({ geo }) => {
 		});
 	}, [active, mobile, convertedGeo]);
 	
-	if (pending) return (
-		<div className="w-full min-h-[40vh] h-full relative overflow-hidden">
-			<div className="absolute inset-0 bg-muted animate-pulse" />
-		</div>
-	);
-	
+	if (pending) return <TfrMapSkeletonLoader />;
 	if (mobile) return (
 		<div className="w-full h-[40vh] relative overflow-hidden border-x border-t">
 			<Map

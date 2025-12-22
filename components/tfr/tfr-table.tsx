@@ -5,17 +5,22 @@ import { Tfr } from "~/lib/aviation/tfr";
 import { TfrInfoPanel } from "./info-panel";
 import { useTfrInteractivity } from "./store";
 import { UsStateAbbreviations } from "~/lib/geo";
+import { SkeletonWithDelay } from "../ui/skeleton";
 import { DataGrid } from "~/components/ui/data-grid";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useDataGrid } from "~/components/ui/data-grid/hook";
 
 import {
+	Baseline,
+	Calendar,
 	Crown,
 	Drone,
 	Earth,
 	Flag,
 	LandPlot,
+	List,
 	Lock,
+	LucideIcon,
 	Megaphone,
 	Rocket,
 	TowerControl
@@ -150,6 +155,65 @@ const columns: ColumnDef<Tfr>[] = [
 		maxSize: 400
 	},
 ];
+
+const SkeletonHeaders: Array<{ label: string, width: string, icon: LucideIcon }> = [
+	{
+		label: "NOTAM",
+		width: "w-1/4",
+		icon: Megaphone
+	},
+	{
+		label: "Region",
+		width: "w-1/4",
+		icon: Earth
+	},
+	{
+		label: "ARTCC",
+		width: "w-1/4",
+		icon: TowerControl
+	},
+	{
+		label: "Type",
+		width: "w-1/4",
+		icon: List
+	},
+	{
+		label: "Last Modified",
+		width: "w-1/4",
+		icon: Calendar
+	},
+	{
+		label: "Description",
+		width: "w-1/2",
+		icon: Baseline
+	}
+]
+
+export const TfrTableSkeletonLoader = () => (
+	<div className="flex flex-col items-center justify-center w-full h-full divide-y-2 space-y-0 border-t-2">
+		{/* header */}
+		<div className="w-full flex flex-row divide-x-2 [&>div]:rounded-none not-first:border-t text-sm">
+			{SkeletonHeaders.map(header => (
+				<div key={header.label} className={cn("flex items-center gap-1.5 h-9 cursor-not-allowed [&>svg]:size-4", header.width)}>
+					<header.icon className="size-3.5 shrink-0 text-muted-foreground ml-2" />
+					<span className="truncate">{header.label}</span>
+				</div>
+			))}
+		</div>
+		
+		{/* rows */}
+		{Array.from({ length: 10 }).map((_, i) => (
+			<div key={`tfr-table-skeleton-${i}`} className="w-full flex flex-row divide-x-2 [&>div]:rounded-none not-first:border-t">
+				<SkeletonWithDelay className="w-1/4 h-14" delay={i * 50} />
+				<SkeletonWithDelay className="w-1/4 h-14" delay={i * 50} />
+				<SkeletonWithDelay className="w-1/4 h-14" delay={i * 50} />
+				<SkeletonWithDelay className="w-1/4 h-14" delay={i * 50} />
+				<SkeletonWithDelay className="w-1/4 h-14" delay={i * 50} />
+				<SkeletonWithDelay className="w-1/2 h-14" delay={i * 50} />
+			</div>
+		))}
+	</div>
+)
 
 export const TfrTable: React.FC<{ tfrs: Tfr[] }> = ({ tfrs }) => {
 	const { active, clickRow } = useTfrInteractivity();

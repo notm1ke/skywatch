@@ -1,11 +1,11 @@
 import { motion } from "motion/react";
 import { useAirspace } from "./provider";
 import { ClockCheck } from "lucide-react";
-import { Skeleton } from "../ui/skeleton";
 import { useMobile } from "../mobile-provider";
 import { ScrollArea } from "../ui/scroll-area";
 import { ErrorSection } from "../error-section";
 import { useAirports } from "../airport-provider";
+import { Skeleton, SkeletonWithDelay } from "../ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 import {
@@ -17,8 +17,8 @@ import {
 } from "../ui/empty";
 
 export const AirspacePlannedEvents = () => {
-	const { airports } = useAirports();
 	const { mobile } = useMobile();
+	const { airports } = useAirports();
 	const { planned, loading, error, refresh } = useAirspace();
 	
 	if (loading) return (
@@ -33,53 +33,15 @@ export const AirspacePlannedEvents = () => {
 			</div>
 			<div className="border-t">
 				<div className="py-2 max-h-[340px] space-y-2">
-					<div className="group flex flex-row justify-between px-3 py-1.5">
-						<div className="flex items-center gap-2">
-							<Skeleton className="h-4 w-20 rounded" />
-							<Skeleton className="h-4 w-16 rounded" />
+					{Array.from({ length: 6 }).map((_, i) => (
+						<div key={`planned-programs-skeleton-${i}`} className="flex-row justify-between px-3 py-1.5">
+							<div className="flex items-center gap-2">
+								<SkeletonWithDelay className="h-4 w-20 rounded" delay={i * 50} />
+								<SkeletonWithDelay className="h-4 w-16 rounded" delay={i * 50} />
+							</div>
+							<SkeletonWithDelay className="h-4 w-64 rounded" delay={i * 50} />
 						</div>
-						<Skeleton className="h-4 w-64 rounded" />
-					</div>
-
-					<div className="group flex flex-row justify-between px-3 py-1.5">
-						<div className="flex items-center gap-2">
-							<Skeleton className="h-4 w-20 rounded" />
-							<Skeleton className="h-4 w-16 rounded" />
-						</div>
-						<Skeleton className="h-4 w-48 rounded" />
-					</div>
-
-					<div className="group flex flex-row justify-between px-3 py-1.5">
-						<div className="flex items-center gap-2">
-							<Skeleton className="h-4 w-20 rounded" />
-							<Skeleton className="h-4 w-16 rounded" />
-						</div>
-						<Skeleton className="h-4 w-48 rounded" />
-					</div>
-
-					<div className="group flex flex-row justify-between px-3 py-1.5">
-						<div className="flex items-center gap-2">
-							<Skeleton className="h-4 w-20 rounded" />
-							<Skeleton className="h-4 w-16 rounded" />
-						</div>
-						<Skeleton className="h-4 w-44 rounded" />
-					</div>
-					
-					<div className="group flex flex-row justify-between px-3 py-1.5">
-						<div className="flex items-center gap-2">
-							<Skeleton className="h-4 w-20 rounded" />
-							<Skeleton className="h-4 w-16 rounded" />
-						</div>
-						<Skeleton className="h-4 w-64 rounded" />
-					</div>
-					
-					<div className="group flex flex-row justify-between px-3 py-1.5">
-						<div className="flex items-center gap-2">
-							<Skeleton className="h-4 w-20 rounded" />
-							<Skeleton className="h-4 w-16 rounded" />
-						</div>
-						<Skeleton className="h-4 w-48 rounded" />
-					</div>
+					))}
 				</div>
 			</div>
 		</div>

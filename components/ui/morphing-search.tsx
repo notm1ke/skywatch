@@ -286,7 +286,7 @@ function SearchContent({
 								exit={{ opacity: 0 }}
 								transition={{ duration: 0.2 }}
 								onClick={context.close}
-								className="fixed inset-0 z-[9] bg-black/50 backdrop-blur-xs"
+								className="fixed inset-0 z-[15] bg-black/50 backdrop-blur-xs"
 								data-backdrop="true"
 								aria-hidden="true"
 							/>,
@@ -302,7 +302,7 @@ function SearchContent({
 						aria-modal="true"
 						style={style}
 						className={cn(
-							"absolute z-10 overflow-hidden rounded-md border border-zinc-950/10 bg-white p-2 text-zinc-950 shadow-md dark:border-zinc-50/10 dark:bg-zinc-700 dark:text-zinc-50",
+							"absolute z-[20] overflow-hidden rounded-md border border-zinc-950/10 bg-white p-2 text-zinc-950 shadow-md dark:border-zinc-50/10 dark:bg-zinc-700 dark:text-zinc-50",							
 							className,
 						)}
 						initial="initial"
