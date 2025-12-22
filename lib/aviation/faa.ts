@@ -2,15 +2,15 @@
 
 import axios from "axios";
 
-import { redis } from "./redis";
-import { prisma } from "./prisma";
-import { okAsync, raise, unwrap } from "./actions";
+import { redis } from "../redis";
+import { prisma } from "../prisma";
+import { okAsync, raise, unwrap } from "../actions";
 
 import {
 	capitalizeFirst,
 	formatFaaTime,
 	safeParseJson
-} from "./utils";
+} from "../utils";
 
 export type AirportStatus =
 	| "normal"

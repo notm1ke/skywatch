@@ -1,8 +1,8 @@
 import { twMerge } from "tailwind-merge";
 import { clsx, type ClassValue } from "clsx";
 import { UsStateAbbreviations } from "./geo";
-import { AirportWithJoins } from "./airports";
-import { FlowStatusMetricKeys } from "./traffic";
+import { AirportWithJoins } from "./aviation/airports";
+import { FlowStatusMetricKeys } from "./aviation/traffic";
 
 export type ArgumentType<Func> = Func extends (...args: infer Args) => any ? Args : never;
 

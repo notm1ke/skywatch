@@ -1,7 +1,7 @@
 import { unwrap } from "~/lib/actions";
 import { ImageResponse } from "next/og";
 import { NextResponse } from "next/server";
-import { fetchAirportByIata } from "~/lib/airports";
+import { fetchAirportByIata } from "~/lib/aviation/airports";
 import { capitalizeFirst, shortenAirportName } from "~/lib/utils";
 
 export const size = {
@@ -49,17 +49,17 @@ const getBoundedAirportName = (name: string) => {
 	return sliced.trim();
 }
 
-export default async function Image({ params }: { params: Promise<Params> }) {
+export default async function AirportInspectorOgImage({ params }: { params: Promise<Params> }) {
 	const slug = await params;
 	const airport = await fetchAirportByIata(slug.iata.toUpperCase())
 		.then(unwrap)
 		.catch(() => null);
-	
+
 	if (!airport) return NextResponse.json(
 		{ message: "Airport not found" },
 		{ status: 404 }
 	);
-	
+
 	const [country, state] = airport.iso_region!.split("-");
 	const designation = capitalizeFirst(airport.type.split('_')[0]);
 	const name = getBoundedAirportName(shortenAirportName(airport.name));
@@ -95,7 +95,7 @@ export default async function Image({ params }: { params: Promise<Params> }) {
 							<path d="M12 6V2" />
 							<path d="M13 2h-2" />
 						</svg>
-						
+
 						<span style={{ fontFamily: "InstrumentSerif" }}>Skywatch</span>
 					</div>
 

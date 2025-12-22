@@ -2,10 +2,10 @@
 
 import axios from "axios";
 
-import { redis } from "./redis";
-import { prisma } from "./prisma";
-import { safeParseJson } from "./utils";
-import { ok, okAsync, raise } from "./actions";
+import { redis } from "../redis";
+import { prisma } from "../prisma";
+import { safeParseJson } from "../utils";
+import { ok, okAsync, raise } from "../actions";
 import { Prisma } from "~/prisma/generated/client";
 
 export type AirportWithJoins = Prisma.AirportGetPayload<{

@@ -1,6 +1,6 @@
 import { ClockAlert } from "lucide-react";
-import { AirportAdvisory } from "~/lib/faa";
-import { AirportWithJoins } from "~/lib/airports";
+import { AirportAdvisory } from "~/lib/aviation/faa";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { capitalizeFirst, delayReason, getLatestTimeValue } from "~/lib/utils";
 
 export const GroundDelayProgram: React.FC<{ airport: AirportWithJoins, advisory: AirportAdvisory }> = ({ airport, advisory }) => (

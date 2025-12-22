@@ -3,7 +3,7 @@
 import React from "react";
 
 import { unwrap } from "~/lib/actions";
-import { AirportWithJoins, fetchAirports } from "~/lib/airports";
+import { AirportWithJoins, fetchAirports } from "~/lib/aviation/airports";
 
 import {
 	createContext,

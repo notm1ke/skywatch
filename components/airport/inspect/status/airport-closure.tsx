@@ -1,9 +1,9 @@
 import moment from "moment-timezone";
 
-import { AirportAdvisory } from "~/lib/faa";
 import { Button } from "~/components/ui/button";
-import { AirportWithJoins } from "~/lib/airports";
+import { AirportAdvisory } from "~/lib/aviation/faa";
 import { Separator } from "~/components/ui/separator";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { getLatestTimeValue, shortenAirportName } from "~/lib/utils";
 

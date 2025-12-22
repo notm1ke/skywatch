@@ -3,13 +3,13 @@ import moment from "moment-timezone";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 import { unwrap } from "~/lib/actions";
-import { AirportWithJoins } from "~/lib/airports";
 import { useDebounce } from "~/hooks/use-debounce";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ClearIcon } from "~/components/icons/clear";
 import { PrecheckIcon } from "~/components/icons/precheck";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { SlidingNumber } from "~/components/ui/sliding-number";
-import { fetchWaitTimes, TsaWaitTimesResponse } from "~/lib/tsa";
+import { fetchWaitTimes, TsaWaitTimesResponse } from "~/lib/aviation/tsa";
 import { PropsWithChildren, ReactNode, useEffect, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 

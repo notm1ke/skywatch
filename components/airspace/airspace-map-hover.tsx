@@ -1,8 +1,8 @@
 import { Snowflake } from "lucide-react";
 import { PropsWithChildren } from "react";
-import { AirportAdvisory } from "~/lib/faa";
-import { AirportWithJoins } from "~/lib/airports";
 import { useAirspaceInteractivity } from "./store";
+import { AirportAdvisory } from "~/lib/aviation/faa";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { AdvisoryType, advisoryPriority } from "./active-programs";
 import { formatAirportLocation, shortenAirportName } from "~/lib/utils";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";

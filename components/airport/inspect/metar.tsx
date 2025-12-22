@@ -1,9 +1,9 @@
 import { toast } from "sonner";
 import { unwrap } from "~/lib/actions";
 import { Button } from "~/components/ui/button";
-import { AirportWithJoins } from "~/lib/airports";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ErrorSection } from "~/components/error-section";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { PropsWithChildren, useEffect, useState } from "react";
 
 import {
@@ -11,7 +11,7 @@ import {
 	fetchWeatherReport,
 	FlightCategory,
 	MetarResponse
-} from "~/lib/weather";
+} from "~/lib/aviation/weather";
 
 import {
 	Dialog,

@@ -1,10 +1,10 @@
 import moment from "moment";
 
 import { Badge } from "~/components/ui/badge";
-import { AirportAdvisory } from "~/lib/faa";
-import { AirportWithJoins } from "~/lib/airports";
 import { Button } from "~/components/ui/button";
+import { AirportAdvisory } from "~/lib/aviation/faa";
 import { Separator } from "~/components/ui/separator";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 import {

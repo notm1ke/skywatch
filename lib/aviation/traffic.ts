@@ -2,8 +2,8 @@
 
 import moment from "moment";
 
-import { prisma } from "./prisma";
-import { okAsync, raise } from "./actions";
+import { prisma } from "../prisma";
+import { okAsync, raise } from "../actions";
 import { Prisma } from "~/prisma/generated/client";
 import { ChartConfig } from "~/components/ui/chart";
 

@@ -1,10 +1,10 @@
 import Map from "react-map-gl/mapbox";
 
 import { useTheme } from "next-themes";
-import { AirportWithJoins } from "~/lib/airports";
 import { Fragment, PropsWithChildren } from "react";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useMobile } from "~/components/mobile-provider";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { Globe, Mountain, RadioTower } from "lucide-react";
 import { WikipediaIcon } from "~/components/icons/wikipedia";
 import { GoogleMapsIcon } from "~/components/icons/google-maps";

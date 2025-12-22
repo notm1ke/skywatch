@@ -1,6 +1,6 @@
 import { shortenAirportName } from "~/lib/utils";
 import { UsStateAbbreviations } from "~/lib/geo";
-import { AirportWithJoins } from "~/lib/airports";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 import { SearchResult, SearchResultGenerator, SearchResultPredicate } from ".";
 
 const getAirportState = (airport: AirportWithJoins) => {

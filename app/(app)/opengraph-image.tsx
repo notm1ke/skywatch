@@ -35,7 +35,7 @@ async function loadGoogleFont(font: string, weight: number) {
 	throw new Error("Failed to load font");
 }
 
-export default async function Image() {
+export default async function BaseOgImage() {
 	const mapWidth = 800;
 	const mapHeight = 400;
 	
@@ -93,7 +93,7 @@ export default async function Image() {
 					</g>
 				</svg>
 			</div>
-			<div tw="absolute bottom-4 left-4 flex flex-col">
+			<div tw="absolute bottom-8 left-8 flex flex-col">
 				<span tw="text-[31px]" style={{ fontFamily: "InstrumentSerif" }}>Skywatch</span>
 				<div
 					tw="flex flex-row items-center text-zinc-600 uppercase text-sm"

@@ -1,8 +1,8 @@
 import moment from "moment-timezone";
 
 import { Snowflake } from "lucide-react";
-import { AirportAdvisory } from "~/lib/faa";
-import { AirportWithJoins } from "~/lib/airports";
+import { AirportAdvisory } from "~/lib/aviation/faa";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 
 export const DeicingProgram: React.FC<{ airport: AirportWithJoins, advisory: AirportAdvisory }> = ({ airport, advisory }) => {
 	const expiry = moment.utc(advisory.deicing!.expTime);

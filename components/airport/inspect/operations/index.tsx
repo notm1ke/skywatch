@@ -2,7 +2,7 @@ import { AtisBroadcast } from "./atis";
 import { TsaWaitTimes } from "../tsa-wait";
 import { RunwayConditions } from "./runways";
 import { MeteorologicalReport } from "../metar";
-import { AirportWithJoins } from "~/lib/airports";
+import { AirportWithJoins } from "~/lib/aviation/airports";
 
 export const InspectorOperationsTab: React.FC<{ airport: AirportWithJoins }> = ({ airport }) => {
 	return (

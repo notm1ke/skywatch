@@ -1,7 +1,7 @@
 import aircraftDb from "~/lib/datasets/icao-aircrafts.json";
 
 import { unrollDatum } from ".";
-import { TrafficFlow } from "~/lib/traffic";
+import { TrafficFlow } from "~/lib/aviation/traffic";
 import { useTrafficFlowPrefs } from "./store";
 import { Plane, Star, StarOff } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";

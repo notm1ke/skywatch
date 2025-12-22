@@ -1,11 +1,17 @@
-export type GeoJson<Props> = {
+export type GeoJson<
+	Props,
+	GeoType = "Point",
+	GeoCoordsType = [number, number]
+> = {
 	type: "FeatureCollection";
 	features: Array<{
 		type: "Feature";
+		id?: string;
 		properties: Props;
+		geometry_name?: string;
 		geometry: {
-			type: "Point";
-			coordinates: [number, number];
+			type: GeoType;
+			coordinates: GeoCoordsType;
 		};
 	}>;
 };

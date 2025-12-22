@@ -1,8 +1,8 @@
-import { AirspaceType, TrafficFlow } from "~/lib/traffic";
+import { unrollDatum } from ".";
+import { AirspaceType, TrafficFlow } from "~/lib/aviation/traffic";
 import { cn, flowCenterColors, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "~/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { unrollDatum } from ".";
 
 export const TrafficByCenterChart: React.FC<{ chart: TrafficFlow }> = ({ chart }) => (
 	<ChartContainer config={chart.config} className={cn("min-h-[200px] h-[200px] w-full")}>

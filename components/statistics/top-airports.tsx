@@ -1,7 +1,7 @@
 import { Skeleton } from "../ui/skeleton";
 import { cn, shortenAirportName } from "~/lib/utils";
-import { TopAirportsByTraffic } from "~/lib/traffic";
 import { useIsMounted } from "~/hooks/use-is-mounted";
+import { TopAirportsByTraffic } from "~/lib/aviation/traffic";
 
 const stateColors: Record<string, { color: string, badge: string }> = {
 	AL: { color: "text-yellow-500 dark:text-yellow-400", badge: "bg-yellow-200 dark:bg-yellow-600" },
