@@ -4,8 +4,8 @@ import { cn } from "~/lib/utils";
 import { ComponentProps } from "react";
 import type { Direction } from "./types";
 import { DataGridSearch } from "./search";
-import type { Row } from "@tanstack/react-table";
 import type { useDataGrid } from "./hook";
+import type { Row } from "@tanstack/react-table";
 import { DataGridRow, type GetRowProps } from "./row";
 import { DataGridColumnHeader } from "./column-header";
 import { flexRender, getCommonPinningStyles } from "./lib";
@@ -82,7 +82,7 @@ export function DataGrid<TData>({
 				data-slot="grid"
 				tabIndex={0}
 				ref={dataGridRef}
-				className="relative grid select-none overflow-auto border focus:outline-none"
+				className="relative grid select-none overflow-auto overflow-x-hidden border focus:outline-none"
 				style={{
 					...columnSizeVars,
 					maxHeight: `${height}px`,

@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 
-import { Badge } from "./ui/badge";
 import { Searchbar } from "./search";
 import { TowerControl } from "lucide-react";
 import { usePageControls } from "~/lib/page";
 import { ThemeToggle } from "./theme-toggle";
 import { GitHubButton } from "./github-button";
+import { HeaderEnvBadge } from "./header-env-badge";
 import { AnimatedTabs, AnimatedTabItem } from "./ui/animated-tabs";
 
 const NavLinks: AnimatedTabItem[] = [
@@ -20,6 +20,7 @@ const NavLinks: AnimatedTabItem[] = [
 
 export const Header = () => {
 	const { setActiveTab } = usePageControls();
+	
 	return (
 		<header className="border-b dark:border-zinc-800 bg-background">
 			<div className="flex h-16 items-center px-5 justify-between">
@@ -27,7 +28,7 @@ export const Header = () => {
 					<div className="flex items-center gap-2 cursor-pointer">
 						<TowerControl className="size-7" />
 						<span className="text-2xl font-serif font-normal tracking-tight">Skywatch</span>
-						{process.env.NODE_ENV === "development" && <Badge variant="destructive">DEV</Badge>}
+						<HeaderEnvBadge />
 					</div>
 				</Link>
 				<div className="flex flex-items-center sm:gap-2">

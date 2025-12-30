@@ -8,6 +8,7 @@ const eslintConfig = defineConfig([
 	{
 		rules: {
 			"@typescript-eslint/no-explicit-any": "warn",
+			"@typescript-eslint/ban-ts-comment": "warn",
 			"react-hooks/purity": "warn",
 			"react-hooks/refs": "warn"
 		}

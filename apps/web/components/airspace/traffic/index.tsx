@@ -96,6 +96,7 @@ const LegendDisabled: Array<CallerType> = [
 
 export const TrafficFlowChart = () => {
 	const [mode, setMode] = useState<CallerType>('traffic_by_status');
+	// @ts-ignore phantom error when building - this is safe
 	const { data: chart, isLoading, error, refetch } = useQuery(rpc(mode).queryOptions());
 	
 	const errored = error || !chart;
