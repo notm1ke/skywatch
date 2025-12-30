@@ -7,10 +7,11 @@
 	"private": true,
 	"scripts": {
 		"build": "turbo run build",
+		"build:web": "turbo run build --filter=@skywatch/web --only",
 		"dev": "turbo run dev",
 		"lint": "turbo run lint",
-		"run:web": "turbo run start --filter=@skywatch/web",
-		"run:gateway": "turbo run start --filter=@skywatch/gateway"
+		"run:web": "turbo run start --filter=@skywatch/web --only",
+		"run:gateway": "turbo run start --filter=@skywatch/gateway --only"
 	},
 	"workspaces": [
 		"apps/*",

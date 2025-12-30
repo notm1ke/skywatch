@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
 		fetches: {
 			fullUrl: true
 		}
-	}
+	},
+	transpilePackages: ["@skywatch/gateway"]
 };
 
 export default nextConfig;

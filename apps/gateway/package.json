@@ -1,6 +1,8 @@
 {
 	"name": "@skywatch/gateway",
 	"private": true,
+	"main": "./src/index.ts",
+	"types": "./src/client.ts",
 	"packageManager": "bun@1.2.14",
 	"scripts": {
 		"dev": "nitro dev",
