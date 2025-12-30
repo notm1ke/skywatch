@@ -8,7 +8,7 @@
 		"build": "bun run gen-schema && next build",
 		"start": "next start",
 		"lint": "eslint",
-		"gen-schema": "bunx prisma@latest generate --schema=../gateway/prisma/schema.prisma"
+		"gen-schema": "DATABASE_URL=\"postgresql://fake:fake@fake:5432/fake\" bunx prisma@latest generate --schema=../gateway/prisma/schema.prisma"
 	},
 	"dependencies": {
 		"@openpanel/nextjs": "^1.0.8",
