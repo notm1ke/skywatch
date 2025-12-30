@@ -35,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 		<AirportProvider>
 			<AirspaceProvider>
 				{/* 80% of screen clamped at 2200px for ultrawides */}
-				<div className="max-w-[calc(min(100svw*0.8,2200px))] mx-auto border">
+				<div className="max-w-[1600px] sm:max-w-[calc(min(100svw*0.8,2200px))] mx-auto border">
 					<Header />
 					<main>{children}</main>
 				</div>
