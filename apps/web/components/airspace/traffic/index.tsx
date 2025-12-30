@@ -96,7 +96,6 @@ const LegendDisabled: Array<CallerType> = [
 
 export const TrafficFlowChart = () => {
 	const [mode, setMode] = useState<CallerType>('traffic_by_status');
-	// @ts-expect-error error is invisible in LSP - but fails in next build
 	const { data: chart, isLoading, error, refetch } = useQuery(rpc(mode).queryOptions());
 	
 	const errored = error || !chart;
