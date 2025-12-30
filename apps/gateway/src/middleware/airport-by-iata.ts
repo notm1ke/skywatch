@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
-import { ORPCError, os } from "@orpc/server";
 import { prisma } from "@/services/prisma";
-import { Airport } from "@/prisma/generated/browser";
+import { ORPCError, os } from "@orpc/server";
+import { Airport } from "@/prisma/generated/client";
 
 import {
 	AirportDefaultArgs,

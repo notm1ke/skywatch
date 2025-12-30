@@ -5,9 +5,10 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build",
+		"build": "bun run gen-schema && next build",
 		"start": "next start",
-		"lint": "eslint"
+		"lint": "eslint",
+		"gen-schema": "bunx prisma@latest generate --schema=../gateway/prisma/schema.prisma"
 	},
 	"dependencies": {
 		"@openpanel/nextjs": "^1.0.8",
