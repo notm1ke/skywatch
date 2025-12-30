@@ -1,7 +1,8 @@
 import { z } from "zod/v4";
-import { base } from "~/utils";
-import { prisma } from "~/services/prisma";
-import { injectDataMarker, TrafficFlow } from ".";
+import { base } from "@/utils";
+import { TrafficFlow } from "@/schemas";
+import { prisma } from "@/services/prisma";
+import { injectDataMarker } from "@/middleware/traffic-marker";
 
 export type CommonPaxAircraftType = typeof CommonPaxAircraft[number];
 
@@ -27,7 +28,7 @@ export const aircraft = base
 				flights: true
 			}
 		});
-		
+
 		const tracked = new Set<CommonPaxAircraftType>();
 		const dataPoints = records.reduce((acc, bucket) => {
 			const { flights } = bucket;
@@ -37,10 +38,10 @@ export const aircraft = base
 				if (!tracked.has(type)) tracked.add(type);
 				acc[type] = (acc[type] || 0) + 1;
 			}
-			
+
 			return acc;
 		}, {} as Record<CommonPaxAircraftType, number>);
-		
+
 		// d3 treechart, not recharts, so this is a non-standard response
 		const flow: TrafficFlow<string> = {
 			config: {},
@@ -53,6 +54,6 @@ export const aircraft = base
 				}
 			]
 		}
-		
+
 		return flow;
 	})

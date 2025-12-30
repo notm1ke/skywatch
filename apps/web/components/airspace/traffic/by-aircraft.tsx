@@ -1,9 +1,10 @@
 import aircraftDb from "~/lib/datasets/icao-aircrafts.json";
 
 import { unrollDatum } from ".";
-import { TrafficFlow } from "~/lib/aviation/traffic";
 import { useTrafficFlowPrefs } from "./store";
 import { Plane, Star, StarOff } from "lucide-react";
+import { TrafficFlow } from "@skywatch/gateway/schemas";
+import { ErrorSection } from "~/components/error-section";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { treemap, hierarchy, treemapSquarify } from "d3-hierarchy";
 
@@ -208,7 +209,14 @@ export const TrafficByAircraftChart: React.FC<{ chart: TrafficFlow }> = ({ chart
 		);
 	}
 	
-	if (!data || data.length !== 1) return <>invalid response</>;
+	if (!data || data.length !== 1) return (
+		<div className="w-full h-full justify-center items-center">
+			<ErrorSection
+				title="Something went wrong"
+				error={"Received an unexpected response from the server, please try again."}
+			/>
+		</div>
+	);
 	
 	return (
 		<div ref={containerRef} className="min-h-[250px] h-[250px] w-full">
@@ -227,9 +235,8 @@ export const TrafficByAircraftChart: React.FC<{ chart: TrafficFlow }> = ({ chart
 									width={cell.width}
 									height={cell.height}
 									fill={cell.color}
-									stroke="#0a0e13"
 									strokeWidth={2}
-									className="cursor-pointer transition-opacity duration-200 hover:opacity-80"
+									className="cursor-pointer transition-opacity duration-200 hover:opacity-80 stroke-zinc-300 dark:stroke-[#0a0e13]"
 									onContextMenu={(e) => handleContextMenu(e, cell)}
 									onMouseMove={(e) => handleMouseMove(e, cell)}
 									onMouseLeave={() => setHoveredCell(null)}

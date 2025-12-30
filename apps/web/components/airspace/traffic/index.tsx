@@ -1,20 +1,15 @@
-import { toast } from "sonner";
-import { unwrap } from "~/lib/actions";
+import { orpc } from "~/lib/gateway";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { TrafficByCenterChart } from "./by-center";
 import { TrafficByStatusChart } from "./by-status";
-import { useEffect, useMemo, useState } from "react";
 import { TrafficByAircraftChart } from "./by-aircraft";
+import { TrafficChartSkeleton } from "./skeletons/chart";
 import { ErrorSection } from "~/components/error-section";
 import { ArrivalCapacityChart } from "./arrival-capacity";
-import { TrafficChartSkeleton } from "./skeletons/chart";
 import { TrafficTreemapSkeleton } from "./skeletons/treemap";
-import { ArgumentType, cn, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
-
-import {
-	DataPoint,
-	fetchAggregatedTrafficFlow,
-	TrafficFlow
-} from "~/lib/aviation/traffic";
+import { DataPoint, TrafficFlow } from "@skywatch/gateway/schemas";
+import { cn, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
 
 import {
 	DropdownMenu,
@@ -32,7 +27,12 @@ import {
 	TowerControl
 } from "lucide-react";
 
-type CallerType = ArgumentType<typeof fetchAggregatedTrafficFlow>[0];
+type CallerType = 
+	| "traffic_by_status"
+	| "traffic_by_center"
+	| "traffic_by_aircraft"
+	// | "traffic_by_airline"
+	| "arrival_capacity";
 
 type UnrolledData<T extends string = string> = {
 	time: string;
@@ -51,14 +51,23 @@ const localizeCallerType = (mode: CallerType) => {
 		case "traffic_by_status": return "Traffic by Status";
 		case "traffic_by_center": return "Traffic by Center";
 		case "traffic_by_aircraft": return "Traffic by Aircraft";
-		case "traffic_by_airline": return "Traffic by Airline"
+		// case "traffic_by_airline": return "Traffic by Airline"
 		case "arrival_capacity": return "Arrival Capacity";
+	}
+}
+
+const rpc = (mode: CallerType) => {
+	switch (mode) {
+		case "traffic_by_status": return orpc.traffic.statuses;
+		case "traffic_by_center": return orpc.traffic.centers;
+		case "traffic_by_aircraft": return orpc.traffic.aircraft;
+		case "arrival_capacity": return orpc.traffic.arrivalCapacity;
 	}
 }
 
 type TotalBadgeProps = {
 	mode: CallerType;
-	response: TrafficFlow | null;
+	response: TrafficFlow | undefined;
 }
 
 const TotalBadge: React.FC<TotalBadgeProps> = ({ mode, response }) => {
@@ -87,32 +96,9 @@ const LegendDisabled: Array<CallerType> = [
 
 export const TrafficFlowChart = () => {
 	const [mode, setMode] = useState<CallerType>('traffic_by_status');
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const [chart, setChart] = useState<TrafficFlow | null>(null);
-
-	const refresh = () => {
-		setLoading(true);
-		fetchAggregatedTrafficFlow(mode)
-			.then(res => unwrap<TrafficFlow<string>>(res)) // expand bc typescript has issues inferring
-			.then(setChart)
-			.catch(err => {
-				setError(err.message);
-				toast("Error loading traffic info:", {
-					description: err.message,
-					action: {
-						label: "Retry",
-						onClick: refresh
-					}
-				});
-			})
-			.finally(() => setLoading(false));
-	}
-
-	useEffect(() => {
-		refresh();
-	}, [mode]);
-
+	// @ts-expect-error error is invisible in LSP - but fails in next build
+	const { data: chart, isLoading, error, refetch } = useQuery(rpc(mode).queryOptions());
+	
 	const errored = error || !chart;
 	const title = localizeCallerType(mode);
 	const fullScreen = LegendDisabled.includes(mode) || errored;
@@ -136,9 +122,9 @@ export const TrafficFlowChart = () => {
 		setMode(newMode);
 	}
 
-	if (loading) switch (mode) {
+	if (isLoading) switch (mode) {
 		case "traffic_by_aircraft":
-		case "traffic_by_airline":
+		// case "traffic_by_airline":
 			return <TrafficTreemapSkeleton />
 		case "arrival_capacity":
 		case "traffic_by_center":
@@ -188,7 +174,10 @@ export const TrafficFlowChart = () => {
 						errored && "bg-yellow-300 dark:bg-yellow-600 animate-pulse"
 					)}
 				>
-					<TotalBadge mode={mode} response={chart} />
+					<TotalBadge
+						mode={mode}
+						response={chart}
+					/>
 				</div>
 			</div>
 
@@ -196,8 +185,8 @@ export const TrafficFlowChart = () => {
 				{errored && (
 					<ErrorSection
 						title="Error loading air traffic"
-						error={error}
-						refresh={refresh}
+						error={error?.message}
+						refresh={refetch}
 					/>
 				)}
 				

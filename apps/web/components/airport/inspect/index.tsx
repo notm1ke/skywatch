@@ -6,19 +6,19 @@ import { useRouter } from "next/navigation";
 import { useAirportInspector } from "./store";
 import { MetarSkeletonLoader } from "./metar";
 import { Button } from "~/components/ui/button";
+import { AirportAdvisory } from "~/lib/schemas";
 import { ArrowLeft, Plane } from "lucide-react";
 import { Skeleton } from "~/components/ui/skeleton";
-import { AirportAdvisory } from "~/lib/aviation/faa";
 import { InspectorOperationsTab } from "./operations";
-import { TsaWaitTimesSkeletonLoader } from "./tsa-wait";
-import { AirportWithJoins } from "~/lib/aviation/airports";
 import { useAirports } from "~/components/airport-provider";
 import { useAirspace } from "~/components/airspace/provider";
 import { AirportMap, AirportMapSkeletonLoader } from "./map";
 import { AtisBroadcastSkeletonLoader } from "./operations/atis";
+import { TsaWaitTimesSkeletonLoader } from "./operations/tsa-wait";
 
 // todo
 import { RunwaysSkeletonLoader } from "./operations/runways";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
 
 import {
 	Empty,

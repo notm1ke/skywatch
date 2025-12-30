@@ -1,16 +1,16 @@
 import axios from "axios";
 
-import { base } from "~/utils";
 import { z } from "zod/v4";
+import { base } from "@/utils";
 import { ORPCError } from "@orpc/server";
-import { cache } from "~/middleware/cache";
+import { cache } from "@/middleware/cache";
 
 import {
 	TfrResponse,
 	Tfr,
 	TfrGeoJson,
 	TfrText
-} from "~/schemas/faa";
+} from "@/schemas/faa";
 
 const active = base
 	.input(z.void())
@@ -30,7 +30,14 @@ const active = base
 const getTfrList = async () => axios
 	.get("https://tfr.faa.gov/tfrapi/getTfrList")
 	.then(res => res.data)
-	.then(Tfr.safeParse);
+	.then(z.array(Tfr).safeParse)
+	.then(parsed => {
+		if (!parsed.success) throw new ORPCError("UPSTREAM_ERROR", {
+			message: "Error retrieving TFR data from upstream"
+		});
+
+		return parsed.data;
+	});
 
 const getTfrGeoFeatures = async () => {
 	const apiUrl = new URL("https://tfr.faa.gov/geoserver/TFR/ows");
@@ -41,11 +48,18 @@ const getTfrGeoFeatures = async () => {
 	apiUrl.searchParams.set("maxFeatures", "300");
 	apiUrl.searchParams.set("outputFormat", "application/json");
 	apiUrl.searchParams.set("srsname", "EPSG:3857");
-	
+
 	return axios
 		.get(apiUrl.toString())
 		.then(res => res.data)
-		.then(TfrGeoJson.safeParse);
+		.then(TfrGeoJson.safeParse)
+		.then(parsed => {
+			if (!parsed.success) throw new ORPCError("UPSTREAM_ERROR", {
+				message: "Error retrieving geospatial data from upstream"
+			});
+
+			return parsed.data;
+		});
 }
 
 const tfrTextInput = z.object({
@@ -58,9 +72,7 @@ const TfrTextResponse = z.array(z.object({
 }));
 
 const details = base
-	.input(z.object({
-		notam_id: z.string()
-	}))
+	.input(tfrTextInput)
 	.use(cache<
 		z.infer<typeof tfrTextInput>,
 		z.infer<typeof TfrText>
@@ -78,7 +90,7 @@ const details = base
 			if (!parsed.data.length) throw new ORPCError("NO_DATA_ERROR", {
 				message: "There are no active TFRs for this NOTAM"
 			});
-			
+
 			const text = parsed.data.at(0)!.text;
 			return { text };
 		}))

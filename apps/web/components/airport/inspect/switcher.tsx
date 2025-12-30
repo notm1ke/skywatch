@@ -16,7 +16,6 @@ import {
 	TowerControl
 } from "lucide-react";
 
-
 type TabMeta = {
 	title: string;
 	icon: LucideIcon;
@@ -44,7 +43,7 @@ const Tabs: Record<InspectorTabType, TabMeta> = {
 export const TabSwitcher: React.FC<{ disabled?: boolean }> = ({ disabled }) => {
 	const { tab, switchTab } = useAirportInspector();
 	const metadata = Tabs[tab];
-	
+
 	return (
 		<div className="flex flex-row pr-3 py-2 justify-between border-b">
 			<DropdownMenu>

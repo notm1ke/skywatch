@@ -1,4 +1,4 @@
-import { prisma } from "~/services/prisma";
+import { prisma } from "@/services/prisma";
 
 const TARGETS = [
 	'https://davidmegginson.github.io/ourairports-data/airports.csv',
@@ -13,7 +13,7 @@ function parseCSV(csvText: string): Record<string, string>[] {
 
 	const headers = parseCSVLine(lines[0]);
 	const results: Record<string, string>[] = [];
-	
+
 	for (let i = 1; i < lines.length; i++) {
 		if (!lines[i].trim()) continue;
 
@@ -65,7 +65,7 @@ const upsertAirports = async (data: Record<string, string>[]) => {
 	const ignored = new Set<string>();
 	const usAirports = data.filter(row => row.iso_country === 'US');
 	console.log(`Processing ${usAirports.length} US airports..`);
-	
+
 	for (let i = 0; i < usAirports.length; i += BATCH_SIZE) {
 		const batch = usAirports.slice(i, i + BATCH_SIZE);
 		await Promise.all(
@@ -138,15 +138,15 @@ const upsertAirportFrequencies = async (
 ) => {
 	const start = Date.now();
 	const BATCH_SIZE = 200;
-	
+
 	const usIdents = new Set([...usAirports
 		.filter(row => !ignored.has(row.ident))
 		.map(row => row.ident)
 	]);
-	
+
 	const usData = data.filter(row => usIdents.has(row.airport_ident));
 	console.log(`Processing ${usData.length} airport frequenc${usData.length === 1 ? 'y' : 'ies'}...`);
-	
+
 	let ignoreCount = 0;
 	for (let i = 0; i < usData.length; i += BATCH_SIZE) {
 		const batch = usData.slice(i, i + BATCH_SIZE);
@@ -195,10 +195,10 @@ const upsertAirportRunways = async (
 		.filter(row => !ignored.has(row.ident))
 		.map(row => row.ident)
 	]);
-	
+
 	const usData = data.filter(row => usIdents.has(row.airport_ident));
 	console.log(`Processing ${usData.length} airport runway${usData.length === 1 ? '' : 's'}...`);
-	
+
 	let ignoreCount = 0;
 	for (let i = 0; i < usData.length; i += BATCH_SIZE) {
 		const batch = usData.slice(i, i + BATCH_SIZE);
@@ -268,12 +268,12 @@ const upsertAirportNavs = async (
 ) => {
 	const start = Date.now();
 	const BATCH_SIZE = 200;
-	
+
 	const usIcaoCodes = new Set([...usAirports
 		.filter(row => !ignored.has(row.icao_code))
 		.map(row => row.icao_code)
 	]);
-	
+
 	const usData = data.filter(row => usIcaoCodes.has(row.associated_airport));
 	console.log(`Processing ${usData.length} airport navaid${usData.length === 1 ? '' : 's'}...`);
 
@@ -284,7 +284,7 @@ const upsertAirportNavs = async (
 			batch.map(async (row) => {
 				try {
 					if (!row.associated_airport) return ignoreCount++;
-					
+
 					await prisma.airportNav.upsert({
 						where: { id: parseInt(row.id) },
 						update: {
@@ -344,36 +344,36 @@ const upsertAirportNavs = async (
 export const seedAirports = async () => {
 	const start = Date.now();
 	console.log("Starting airport data sync...");
-	
+
 	try {
 		let ignored = new Set<string>();
 		let usAirports: Record<string, string>[] = [];
 		for (const target of TARGETS) {
 			console.log(`Fetching data from ${target}...`);
-	
+
 			const response = await fetch(target);
 			if (!response.ok) throw new Error(
 				`Failed to fetch ${target}: ${response.status} ${response.statusText}`
 			);
-	
+
 			const csv = await response.text();
 			const rows = parseCSV(csv);
 			if (rows.length === 0) {
 				console.warn(`No data found in ${target}`);
 				continue;
 			}
-	
+
 			if (target.includes('airports.csv')) {
 				usAirports = rows.filter(row => row.iso_country === 'US');
 				ignored = await upsertAirports(usAirports);
 			}
-			
+
 			// console.log(ignored);
 			if (target.includes('airport-frequencies.csv')) await upsertAirportFrequencies(rows, usAirports, ignored);
 			if (target.includes('runways.csv')) await upsertAirportRunways(rows, usAirports, ignored);
 			if (target.includes('navaids.csv')) await upsertAirportNavs(rows, usAirports, ignored);
 		}
-	
+
 		console.log(`Airport sync completed in ${(Date.now() - start).toFixed(2)}ms.`);
 	} catch (error) {
 		console.error("Error during airport data sync:", error);

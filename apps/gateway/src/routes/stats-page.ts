@@ -1,16 +1,7 @@
 import { z } from "zod/v4";
-import { base } from "~/utils";
-import { prisma } from "~/services/prisma";
-
-export type HeaderStats = {
-	top10: Array<{
-		iata_code: string;
-		iso_region: string;
-		name: string;
-		flights: number;
-	}>;
-	total: number;
-}
+import { base } from "@/utils";
+import { HeaderStats } from "@/schemas";
+import { prisma } from "@/services/prisma";
 
 export const statsPage = base
 	.input(z.void())
@@ -29,5 +20,5 @@ export const statsPage = base
 			}
 		})
 	]).then(([top10, total]) => ({
-		top10, total: total._sum.total_flights
+		top10, total: total._sum.total_flights ?? 0
 	})));

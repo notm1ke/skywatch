@@ -1,16 +1,13 @@
 "use client";
 
-import React from "react";
-
-import { unwrap } from "~/lib/actions";
-import { AirportWithJoins, fetchAirports } from "~/lib/aviation/airports";
+import { orpc } from "~/lib/gateway";
+import { useQuery } from "@tanstack/react-query";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
 
 import {
 	createContext,
 	useContext,
-	useEffect,
-	useMemo,
-	useState
+	useMemo
 } from "react";
 
 interface AirportContextType {
@@ -21,27 +18,14 @@ interface AirportContextType {
 
 const AirportContext = createContext<AirportContextType | undefined>(undefined);
 
-export const AirportProvider: React.FC<{ children: React.ReactNode }> = ({
-	children,
-}) => {
-	const [airports, setAirports] = useState<AirportWithJoins[]>([]);
-	const [loading, setLoading] = useState<boolean>(true);
-	const [error, setError] = useState<Error | null>(null);
-
-	useEffect(() => {
-		fetchAirports()
-			.then(unwrap)
-			.then(res => {
-				setAirports(res);
-				setError(null);
-			})
-			.catch(err => setError(err as Error))
-			.finally(() => setLoading(false));
-	}, []);
+export const AirportProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+	const { data: airports, isLoading: loading, error } = useQuery(orpc.airports.findAll.queryOptions({
+		queryKey: ['airports']
+	}));
 
 	const value = useMemo(
 		() => ({
-			airports,
+			airports: airports ?? [],
 			loading,
 			error,
 		}),
@@ -60,5 +44,6 @@ export const useAirports = (): AirportContextType => {
 	if (context === undefined) {
 		throw new Error("useAirports must be used within an AirportProvider");
 	}
+	
 	return context;
 };

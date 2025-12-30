@@ -1,12 +1,12 @@
 import moment from "moment-timezone";
 
 import { Button } from "~/components/ui/button";
-import { AirportAdvisory } from "~/lib/aviation/faa";
+import { AirportAdvisory } from "~/lib/schemas";
 import { Separator } from "~/components/ui/separator";
-import { AirportWithJoins } from "~/lib/aviation/airports";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { CalendarClock, Info, Megaphone, Timer } from "lucide-react";
 import { getLatestTimeValue, shortenAirportName } from "~/lib/utils";
+import { CalendarClock, Info, Megaphone, Timer } from "lucide-react";
 
 import {
 	Item,

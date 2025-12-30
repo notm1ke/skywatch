@@ -1,7 +1,6 @@
 import { Metadata } from "next";
-import { unwrap } from "~/lib/actions";
+import { gateway } from "~/lib/gateway";
 import { shortenAirportName } from "~/lib/utils";
-import { fetchAirportByIata } from "~/lib/aviation/airports";
 import { AirportInspector } from "~/components/airport/inspect";
 
 type Params = {
@@ -14,8 +13,9 @@ export async function generateMetadata(
 	{ params }: Params
 ): Promise<Metadata> {
 	const { iata } = await params;
-	const airport = await fetchAirportByIata(iata.toUpperCase())
-		.then(unwrap)
+	const airport = await gateway
+		.airports
+		.findByIata({ iata_code: iata.toUpperCase() })
 		.catch(() => null);
 	
 	if (!airport) return {

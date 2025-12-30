@@ -1,7 +1,7 @@
 import { Skeleton } from "../ui/skeleton";
 import { cn, shortenAirportName } from "~/lib/utils";
 import { useIsMounted } from "~/hooks/use-is-mounted";
-import { TopAirportsByTraffic } from "~/lib/aviation/traffic";
+import { HeaderStats } from "@skywatch/gateway/schemas";
 
 const stateColors: Record<string, { color: string, badge: string }> = {
 	AL: { color: "text-yellow-500 dark:text-yellow-400", badge: "bg-yellow-200 dark:bg-yellow-600" },
@@ -116,7 +116,7 @@ const AirportIataBadge: React.FC<{ iata_code: string, color: string }> = ({ iata
 	<span className={cn("text-sm font-bold font-mono px-2 rounded-sm", color)}>{iata_code}</span>
 )
 
-export const TopAirports: React.FC<{ data: TopAirportsByTraffic }> = ({ data }) => {
+export const TopAirports: React.FC<{ data: HeaderStats }> = ({ data }) => {
 	return (
 		<div className="space-y-2">
 			<h2 className="my-0 font-mono font-medium text-sm tracking-tight mb-0.5 uppercase text-zinc-900 dark:text-zinc-100">

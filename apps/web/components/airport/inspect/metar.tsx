@@ -1,17 +1,17 @@
-import { toast } from "sonner";
-import { unwrap } from "~/lib/actions";
+import { z } from "zod/v4";
+import { orpc } from "~/lib/gateway";
+import { PropsWithChildren } from "react";
 import { Button } from "~/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ErrorSection } from "~/components/error-section";
-import { AirportWithJoins } from "~/lib/aviation/airports";
-import { PropsWithChildren, useEffect, useState } from "react";
 
 import {
+	AirportMetar,
+	AirportWithJoins,
 	CloudCover,
-	fetchWeatherReport,
-	FlightCategory,
-	MetarResponse
-} from "~/lib/aviation/weather";
+	FlightCategory
+} from "@skywatch/gateway/schemas";
 
 import {
 	Dialog,
@@ -36,7 +36,9 @@ type MeterologicalReportProps = {
 	airport: AirportWithJoins;
 }
 
-const getCloudCoverLabel = (cover: CloudCover) => {
+type MetarResponse = z.infer<typeof AirportMetar>;
+
+const getCloudCoverLabel = (cover: z.infer<typeof CloudCover>) => {
 	switch (cover) {
 		case "FEW": return "Few"
 		case "SCT": return "Scattered"
@@ -50,7 +52,7 @@ const getCloudCoverLabel = (cover: CloudCover) => {
 	}
 }
 
-const getFlightRulesLabel = (category: FlightCategory) => {
+const getFlightRulesLabel = (category: z.infer<typeof FlightCategory>) => {
 	switch (category) {
 		case "MVFR": return "Marginal VFR";
 		case "LIFR": return "Low IFR";
@@ -327,33 +329,12 @@ export const MetarSkeletonLoader = () => (
 )
 
 export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airport }) => {
-	const [metar, setMetar] = useState<MetarResponse | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<Error | null>(null);
+	const { data: metar, isLoading, error, refetch } = useQuery(orpc.airports.weather.queryOptions({
+		input: { iata_code: airport.iata_code! },
+		queryKey: ["metar", airport.iata_code]
+	}));
 
-	const refresh = () => {
-		setLoading(true);
-		fetchWeatherReport(airport.iata_code!)
-			.then(unwrap)
-			.then(setMetar)
-			.catch(err => {
-				setError(err);
-				toast('Error loading meterological report', {
-					description: err.message,
-					action: {
-						label: "Retry",
-						onClick: refresh
-					}
-				})
-			})
-			.finally(() => setLoading(false));
-	}
-
-	useEffect(() => {
-		refresh();
-	}, []);
-
-	if (loading) return <MetarSkeletonLoader />;
+	if (isLoading) return <MetarSkeletonLoader />;
 
 	if (!metar || error) return (
 		<div className="border-b border-border">
@@ -371,7 +352,7 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 					title="Error loading meteorological report"
 					className="border-t rounded-none border-solid"
 					error={error?.message}
-					refresh={refresh}
+					refresh={refetch}
 				/>
 			</div>
 		</div>

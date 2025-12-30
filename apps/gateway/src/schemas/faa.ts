@@ -1,5 +1,4 @@
 import { z } from "zod/v4";
-import { GeoJson } from "./geo";
 
 export const AirportStatus = z.enum([
 	"normal",
@@ -45,21 +44,21 @@ export const GroundDelayAdvisory = z.object({
 		delayProgramType: z.string(), // GDP (ground delay program?) then maybe GSP (ground stop program)
 		startTime: z.string(),
 		endTime: z.string(),
-		dasDelays: z.array(z.object({
+		sourceTimeStamp: z.string(),
+		createdAt: z.string(),
+		updatedAt: z.string(),
+		dasDelays: z.object({
 			delayTimeAmount: z.string(), // datetime
 			dasDelay: z.array(z.object({
 				delay: z.number(),
 				seq: z.number()
 			})),
-			sourceTimeStamp: z.string(),
-			createdAt: z.string(),
-			updatedAt: z.string()
-		})),
+		})
 	}),
 	includedFlights: z.string(),
 	fadtParamType: z.string(), // GDP/GSP
-	gsCancelReceivedTs: z.string().nullable(), // datetime?
-	gsCancelSourceTs: z.string().nullable(), // datetime?
+	gsCancelReceivedTs: z.string().nullish(), // datetime?
+	gsCancelSourceTs: z.string().nullish(), // datetime?
 	compression: z.boolean(),
 	blanket: z.boolean()
 });
@@ -84,8 +83,8 @@ export const GroundStopAdvisory = z.object({
 export const FreeFormAdvisory = z.object({
 	id: z.string(),
 	airportId: z.string(), // IATA
-	createdAt: z.string().nullable(),
-	updatedAt: z.string().nullable(),
+	createdAt: z.string().nullish(),
+	updatedAt: z.string().nullish(),
 	startTime: z.string(),
 	endTime: z.string(),
 	simpleText: z.string(),
@@ -129,14 +128,14 @@ export const AirportConfig = z.object({
 
 export const AirportAdvisory = z.object({
 	airportId: z.string(),
-	groundStop: GroundStopAdvisory.nullable(),
-	groundDelay: GroundDelayAdvisory.nullable(),
-	airportClosure: AirportClosureAdvisory.nullable(),
-	freeForm: FreeFormAdvisory.nullable(),
-	arrivalDelay: DelayAdvisory.nullable(),
-	departureDelay: DelayAdvisory.nullable(),
-	airportConfig: AirportConfig.nullable(),
-	deicing: DeicingAdvisory.nullable(),
+	groundStop: GroundStopAdvisory.nullish(),
+	groundDelay: GroundDelayAdvisory.nullish(),
+	airportClosure: AirportClosureAdvisory.nullish(),
+	freeForm: FreeFormAdvisory.nullish(),
+	arrivalDelay: DelayAdvisory.nullish(),
+	departureDelay: DelayAdvisory.nullish(),
+	airportConfig: AirportConfig.nullish(),
+	deicing: DeicingAdvisory.nullish(),
 	airportLongName: z.string(),
 	latitude: z.string(),
 	longitude: z.string(),
@@ -174,11 +173,11 @@ export const Tfr = z.object({
 	facility: z.string(),
 	state: z.string(),
 	type: z.string(),
-	dscription: z.string(),
+	description: z.string(),
 	mod_date: z.string(),
 	mod_abs_time: z.string(),
 	is_new: z.string(),
-	gid: z.string().nullable()
+	gid: z.string().nullish()
 }); // todo: add geo feature to this object
 
 export const TfrText = z.object({
@@ -195,7 +194,21 @@ export const TfrGeoFeatureMetadata = z.object({
 	LEGAL: z.string()
 });
 
-export const TfrGeoJson = GeoJson(TfrGeoFeatureMetadata);
+const PolygonCoordinate = z.array(z.array(z.array(z.number()).length(2)));
+
+export const TfrGeoJson = z.object({
+	type: z.literal("FeatureCollection"),
+	features: z.array(z.object({
+		type: z.literal("Feature"),
+		id: z.string().optional(),
+		properties: TfrGeoFeatureMetadata,
+		geometry_name: z.string().optional(),
+		geometry: z.object({
+			type: z.literal("Polygon"),
+			coordinates: PolygonCoordinate
+		})
+	}))
+});
 
 export const TfrResponse = z.object({
 	tfrs: z.array(Tfr),

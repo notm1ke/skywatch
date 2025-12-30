@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withWorkflow } from "workflow/next"; 
 
 const nextConfig: NextConfig = {
 	logging: {
@@ -9,4 +8,4 @@ const nextConfig: NextConfig = {
 	}
 };
 
-export default withWorkflow(nextConfig);
+export default nextConfig;

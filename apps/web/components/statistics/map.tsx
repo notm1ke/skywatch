@@ -7,8 +7,8 @@ import { motion } from "motion/react";
 import { useMemo, memo } from "react";
 import { Diamond } from "lucide-react";
 import { geoMercator, GeoProjection } from "d3-geo";
-import { AirportWithJoins } from "~/lib/aviation/airports";
 import { useAirports } from "~/components/airport-provider";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
 
 type CoordsData = Record<
 	string,

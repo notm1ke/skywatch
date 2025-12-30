@@ -10,6 +10,21 @@ export const iataInput = z.object({
 	iata_code: z.string().min(3).max(3).toUpperCase()
 });
 
+export const corsOrigin = (origin: string | undefined) => {
+	if (process.env.NODE_ENV === 'development') {
+		return '*';
+	}
+
+	if (!origin) return '';
+	const originObj = new URL(origin)
+	const host = originObj.host.toLowerCase()
+	if (host === 'skies.now' || host.endsWith('.skies.now')) {
+		return originObj.origin;
+	}
+
+	return '';
+}
+
 export const formatFaaTime = (raw: string) => {
 	if (!raw) return 'Today';
 	const hour = (parseInt(raw.slice(0, 2)) % 12)

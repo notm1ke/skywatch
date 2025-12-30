@@ -1,4 +1,4 @@
-import { AirportAdvisory } from "~/lib/aviation/faa";
+import { AirportAdvisory } from "~/lib/schemas";
 
 export const DeicingProgram: React.FC<{ advisory: AirportAdvisory }> = ({ advisory }) => (
 	<div className="flex flex-col space-y-2">

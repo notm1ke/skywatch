@@ -1,6 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { AirportAdvisory } from "~/lib/aviation/faa";
+import { AirportAdvisory } from "~/lib/schemas";
 import { getLatestTimeValue, getUrlDomain } from "~/lib/utils";
 
 const CenterBadge: React.FC<{ center: string }> = ({ center }) => (

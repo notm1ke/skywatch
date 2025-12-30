@@ -4,9 +4,9 @@ import { useTheme } from "next-themes";
 import { Fragment, PropsWithChildren } from "react";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useMobile } from "~/components/mobile-provider";
-import { AirportWithJoins } from "~/lib/aviation/airports";
 import { Globe, Mountain, RadioTower } from "lucide-react";
 import { WikipediaIcon } from "~/components/icons/wikipedia";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { GoogleMapsIcon } from "~/components/icons/google-maps";
 import { cn, formatAirportLocation, getUrlDomain, shortenAirportName } from "~/lib/utils";
 

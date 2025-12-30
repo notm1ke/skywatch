@@ -2,9 +2,9 @@ import moment from "moment";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { AirportAdvisory } from "~/lib/aviation/faa";
+import { AirportAdvisory } from "~/lib/schemas";
 import { Separator } from "~/components/ui/separator";
-import { AirportWithJoins } from "~/lib/aviation/airports";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 import {

@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 import { os } from "@orpc/server";
 import { Duration } from "effect";
-import { redis } from "~/services/redis";
+import { redis } from "@/services/redis";
 
 type CacheKeyGenerator<TInput> = (input: TInput) => string;
 
@@ -16,7 +16,7 @@ export const cache = <TInput extends Record<string, any>, TOutput>(
 		const parsed = schema.safeParse(cached);
 		if (parsed.success) return output(parsed.data as TOutput);
 	}
-	
+
 	const result = await next(input as TInput);
 	redis.set(
 		cacheKey,
@@ -25,6 +25,6 @@ export const cache = <TInput extends Record<string, any>, TOutput>(
 			.decode(ttl)
 			.pipe(Duration.toSeconds)
 	);
-	
+
 	return output(result.output as TOutput);
 });

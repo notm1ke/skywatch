@@ -2,10 +2,10 @@ import axios from "axios";
 
 import { z } from "zod/v4";
 import { ORPCError } from "@orpc/server";
-import { base, iataInput } from "~/utils";
-import { cache } from "~/middleware/cache";
-import { AirportMetar } from "~/schemas/airport";
-import { injectAirportByIata } from "~/middleware/airport-by-iata";
+import { base, iataInput } from "@/utils";
+import { cache } from "@/middleware/cache";
+import { AirportMetar } from "@/schemas/airport";
+import { injectAirportByIata } from "@/middleware/airport-by-iata";
 
 export const weather = base
 	.input(iataInput)
@@ -21,7 +21,7 @@ export const weather = base
 	.handler(async ({ context }) => axios
 		.get(`https://aviationweather.gov/api/data/metar`, {
 			params: {
-				ids: context.airport.iata_code,
+				ids: context.airport.icao_code,
 				format: "json",
 				taf: true
 			}

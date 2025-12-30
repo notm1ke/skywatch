@@ -1,8 +1,8 @@
 import { AtisBroadcast } from "./atis";
-import { TsaWaitTimes } from "../tsa-wait";
+import { TsaWaitTimes } from "./tsa-wait";
 import { RunwayConditions } from "./runways";
 import { MeteorologicalReport } from "../metar";
-import { AirportWithJoins } from "~/lib/aviation/airports";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
 
 export const InspectorOperationsTab: React.FC<{ airport: AirportWithJoins }> = ({ airport }) => {
 	return (

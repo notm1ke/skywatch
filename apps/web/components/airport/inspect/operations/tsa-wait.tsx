@@ -1,16 +1,17 @@
 import moment from "moment-timezone";
 
-import { toast } from "sonner";
+import { orpc } from "~/lib/gateway";
 import { motion } from "motion/react";
-import { unwrap } from "~/lib/actions";
+import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "~/hooks/use-debounce";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ClearIcon } from "~/components/icons/clear";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import { ErrorSection } from "~/components/error-section";
 import { PrecheckIcon } from "~/components/icons/precheck";
-import { AirportWithJoins } from "~/lib/aviation/airports";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { SlidingNumber } from "~/components/ui/sliding-number";
-import { fetchWaitTimes, TsaWaitTimesResponse } from "~/lib/aviation/tsa";
-import { PropsWithChildren, ReactNode, useEffect, useState } from "react";
+import { PropsWithChildren, ReactNode, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
 type TsaWaitTimesProps = {
@@ -155,37 +156,65 @@ export const TsaWaitTimesSkeletonLoader: React.FC<{ airport?: AirportWithJoins }
 )
 
 export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
-	const [waitTimes, setWaitTimes] = useState<TsaWaitTimesResponse | null>(null);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<Error | null>(null);
+	const { data: waitTimes, isLoading, error, refetch } = useQuery(orpc.airports.tsa.waitTimes.queryOptions({
+		input: { iata_code: airport.iata_code! },
+		queryKey: ["tsa", "waitTimes", airport.iata_code]
+	}));
 	
 	const [hoveredCell, setHoveredCell] = useState<number | null>(null);
 	const debouncedHoverCell = useDebounce(hoveredCell, 250);
 	
-	const refresh = () => {
-		setLoading(true);
-		fetchWaitTimes(airport.iata_code!)
-			.then(unwrap)
-			.then(setWaitTimes)
-			.catch(err => {
-				setError(err);
-				toast("Error loading TSA wait times:", {
-					description: err.message,
-					action: {
-						label: "Retry",
-						onClick: refresh
-					}
-				})
-			})
-			.finally(() => setLoading(false));
-	}
-	
-	useEffect(() => {
-		refresh();
-	}, []);
-	
-	if (loading) return <TsaWaitTimesSkeletonLoader airport={airport} />;
-	if (!waitTimes || error) return <>error</>;
+	if (isLoading) return <TsaWaitTimesSkeletonLoader airport={airport} />;
+	if (!waitTimes || error) return (
+		<div className="border-b border-border">
+			<div className="flex flex-row px-3 py-2 justify-between">
+				<div className="flex flex-row space-x-2 items-center">
+					<span className="text-md font-semibold pointer-events-none">
+						TSA Wait Times
+					</span>
+				</div>
+
+				{(airport.supports_precheck || airport.supports_clear) && (
+					<div className="flex flex-row items-center space-x-1">
+						{airport.supports_precheck && (
+							<SecurityIcon
+								tooltip={(
+									<>
+										{airport.iata_code} has TSA PreCheck® lanes at it&apos;s checkpoints.
+									</>
+								)}
+							>
+								<PrecheckIcon className="w-10 h-4" />
+							</SecurityIcon>
+						)}
+
+						{airport.supports_clear && (
+							<SecurityIcon
+								tooltip={(
+									<>
+										{airport.iata_code} has Clear+ lanes at certain TSA checkpoints, verify using airport signage.
+									</>
+								)}
+							>
+								<ClearIcon className="fill-[#041A55] dark:fill-white size-4" />
+							</SecurityIcon>
+						)}
+					</div>
+				)}
+			</div>
+			
+			<div className="border-t">
+				<ScrollArea className="h-[235px]">
+					<ErrorSection
+						title="Error loading TSA wait times"
+						className="border-t rounded-none border-solid"
+						error={error?.message}
+						refresh={refetch}
+					/>
+				</ScrollArea>
+			</div>
+		</div>
+	);
 
 	const day = moment().format('dddd');
 	const hourlyData = Array.from({ length: 24 }, (_, i) => {
@@ -205,10 +234,9 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 		return `${hr}:00 ${hour < 12 ? "AM" : "PM"}`;
 	};
 
-	const displayedWaitTime =
-		debouncedHoverCell !== null
-			? hourlyData[debouncedHoverCell].waitTime
-			: currentHourData.waitTime;
+	const displayedWaitTime = debouncedHoverCell !== null
+		? hourlyData[debouncedHoverCell].waitTime
+		: currentHourData.waitTime
 
 	return (
 		<div className="border-b border-border">

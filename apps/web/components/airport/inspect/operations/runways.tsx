@@ -1,21 +1,20 @@
-import { toast } from "sonner";
+import { z } from "zod/v4";
+import { orpc } from "~/lib/gateway";
 import { motion } from "motion/react";
-import { unwrap } from "~/lib/actions";
 import { CircleHelp } from "lucide-react";
 import { cn, padZero } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { PropsWithChildren, useMemo } from "react";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ErrorSection } from "~/components/error-section";
-import { AirportWithJoins } from "~/lib/aviation/airports";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
-import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import {
-	fetchRvrForAirport,
+	AirportWithJoins,
 	RvrProbe,
-	RvrProbeType,
-	RvrResponse
-} from "~/lib/aviation/rvr";
+	RvrProbeType
+} from "@skywatch/gateway/schemas";
 
 import {
 	Dialog,
@@ -25,6 +24,9 @@ import {
 	DialogTitle,
 	DialogTrigger
 } from "~/components/ui/dialog";
+
+type RvrProbe = z.infer<typeof RvrProbe>;
+type RvrProbeType = z.infer<typeof RvrProbeType>;
 
 type RunwayConditionsProps = {
 	airport: AirportWithJoins;
@@ -413,31 +415,10 @@ const ProbeIndicator: React.FC<{ data: RvrProbe, target: RvrProbeType }> = ({ da
 }
 
 export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) => {
-	const [rvr, setRvr] = useState<RvrResponse | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<Error | null>(null);
-	
-	const refresh = () => {
-		setLoading(true);
-		fetchRvrForAirport(airport.iata_code!)
-			.then(unwrap)
-			.then(setRvr)
-			.catch(err => {
-				setError(err);
-				toast('Error loading runway conditions', {
-					description: err.message,
-					action: {
-						label: "Retry",
-						onClick: refresh
-					}
-				})
-			})
-			.finally(() => setLoading(false));
-	}
-	
-	useEffect(() => {
-		refresh();
-	}, []);
+	const { data: rvr, isLoading, error, refetch } = useQuery(orpc.airports.rvr.queryOptions({
+		input: { iata_code: airport.iata_code! },
+		queryKey: ["rvr", airport.iata_code]
+	}));
 	
 	const runways = useMemo(
 		() => {
@@ -463,7 +444,7 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 		[airport.runways, rvr]
 	);
 	
-	if (loading) return <RunwaysSkeletonLoader airport={airport} />;
+	if (isLoading) return <RunwaysSkeletonLoader airport={airport} />;
 	
 	if (!rvr || error) return (
 		<div className="border-b border-border">
@@ -490,7 +471,7 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 						title="Error loading runway conditions"
 						className="border-t rounded-none border-solid"
 						error={error?.message}
-						refresh={refresh}
+						refresh={refetch}
 					/>
 				</ScrollArea>
 			</div>

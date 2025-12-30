@@ -5,10 +5,10 @@ import { useAirspace } from "./provider";
 import { ScrollArea } from "../ui/scroll-area";
 import { ErrorSection } from "../error-section";
 import { DelayProgram } from "./programs/delay";
+import { AirportAdvisory } from "~/lib/schemas";
 import { useAirports } from "../airport-provider";
 import { useAirspaceInteractivity } from "./store";
 import { DeicingProgram } from "./programs/deicing";
-import { AirportAdvisory } from "~/lib/aviation/faa";
 import { cn, shortenAirportName } from "~/lib/utils";
 import { GroundStopProgram } from "./programs/ground-stop";
 import { GroundDelayProgram } from "./programs/ground-delay";
@@ -83,7 +83,7 @@ const programIndicator = (advisory: AirportAdvisory) => {
 				: advisory.arrivalDelay
 					? "Arrival"
 					: "Departure";
-			
+
 			return (
 				<div className="flex gap-2 items-center text-sm">
 					<div className="size-3 bg-yellow-400 rounded-[30%]" />
@@ -138,7 +138,7 @@ export const ActivePrograms = () => {
 	const { airports } = useAirports();
 	const { advisories, loading, error, refresh } = useAirspace();
 	const { hovered: mapActiveHovered } = useAirspaceInteractivity();
-	
+
 	if (loading) return (
 		<div>
 			<div className="flex flex-row px-3 py-2 justify-between">
@@ -172,7 +172,7 @@ export const ActivePrograms = () => {
 			</div>
 		</div>
 	);
-	
+
 	if (error) return (
 		<div>
 			<div className="flex flex-row px-3 py-2 justify-between">
@@ -195,7 +195,7 @@ export const ActivePrograms = () => {
 			</div>
 		</div>
 	);
-	
+
 	return (
 		<div>
 			<div className="flex flex-row px-3 py-2 justify-between">
@@ -211,7 +211,7 @@ export const ActivePrograms = () => {
 					{advisories.sort(sortOrder).map((advisory, i) => {
 						const airport = airports.find(airport => airport.iata_code === advisory.airportId);
 						if (!airport) return null;
-						
+
 						return (
 							<ContextMenu key={`interruption-${advisory.airportId}`}>
 								<Disclosure className="border-b">

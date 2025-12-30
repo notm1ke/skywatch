@@ -1,7 +1,7 @@
 import moment from "moment-timezone";
 
+import { AirportAdvisory } from "~/lib/schemas";
 import { getLatestTimeValue } from "~/lib/utils";
-import { AirportAdvisory } from "~/lib/aviation/faa";
 
 export const SpecialAdvisoryProgram: React.FC<{ advisory: AirportAdvisory }> = ({ advisory }) => (
 	<div className="flex flex-col space-y-2">

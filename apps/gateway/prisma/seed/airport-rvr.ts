@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { prisma } from "~/services/prisma";
+import { prisma } from "@/services/prisma";
 
 if (!process.env.RVR_AIRPORTS_STORE) throw new Error(
 	"RVR Airports URL is not set."
@@ -10,10 +10,10 @@ export const seedAirportHasRvrs = async () => {
 	const iatas = await axios
 		.get<string[]>(process.env.RVR_AIRPORTS_STORE!)
 		.then(res => res.data)
-		.catch(err => console.error('[rvr] Error retrieving data from the RVR airports store:', err.data?.message || err.message)); 
-	
+		.catch(err => console.error('[rvr] Error retrieving data from the RVR airports store:', err.data?.message || err.message));
+
 	if (!iatas) process.exit(-1);
-	
+
 	const tracked = await prisma
 		.airport
 		.findMany({
@@ -23,7 +23,7 @@ export const seedAirportHasRvrs = async () => {
 			.map(record => record.iata_code)
 			.filter(Boolean) as string[]
 		);
-	
+
 	await prisma.$transaction(
 		iatas
 			.filter(iata => tracked.includes(iata))
@@ -35,6 +35,6 @@ export const seedAirportHasRvrs = async () => {
 				});
 			})
 	);
-	
+
 	console.log(`[rvr] Done updating ${iatas.length} airport${iatas.length === 1 ? "" : "s"}.`);
 }

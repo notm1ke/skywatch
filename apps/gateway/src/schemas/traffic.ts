@@ -1,5 +1,15 @@
 import { z } from "zod/v4";
 
+export type HeaderStats = {
+	top10: Array<{
+		iata_code: string;
+		iso_region: string;
+		name: string;
+		flights: number;
+	}>;
+	total: number;
+}
+
 const MetricType = z.enum(["CENTER", "STATUS", "FIX"]);
 
 const TimeBucket = z.object({
@@ -36,3 +46,66 @@ export const TrafficFlowResponse = z.object({
 	fixes: z.array(z.string()), // waypoints
 	timeBuckets: z.array(TimeBucket)
 });
+
+export type ChartConfig = {
+	[k in string]: {
+		label?: string
+	} & (
+		| { color?: string; theme?: never }
+		| { color?: never; theme: Record<"light" | "dark", string> }
+	)
+}
+
+export type DataPoint<K extends string = string> = {
+	time: string;
+	datum: Record<K, number>;
+	cumulative: number;
+};
+
+export type TrafficFlow<K extends string = string> = {
+	config: ChartConfig;
+	dataKeys: K[];
+	data: Array<DataPoint<K>>;
+}
+
+export type FlowMetricType = "STATUS" | "CENTER" | "FIX";
+
+export type FlowStatusMetricKeys =
+	| "past_dept_time"
+	| "departing"
+	| "edct_issued"
+	| "irregular"
+	| "flight_active"
+	| "arrived";
+
+export type TrafficFlowAggregation = {
+	type: FlowMetricType;
+	time: string;
+	name: string;
+	total: number;
+	cumulative: number;
+}
+export type AirspaceType = typeof Airspaces[number];
+
+export const Airspaces = [
+	'ZAB',
+	'ZAU',
+	'ZBW',
+	'ZDC',
+	'ZDV',
+	'ZFW',
+	'ZHU',
+	'ZID',
+	'ZJX',
+	'ZKC',
+	'ZLA',
+	'ZLC',
+	'ZMA',
+	'ZME',
+	'ZMP',
+	'ZNY',
+	'ZOA',
+	'ZOB',
+	'ZSE',
+	'ZTL'
+] as const;

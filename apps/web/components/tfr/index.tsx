@@ -1,13 +1,11 @@
 "use client";
 
-import { toast } from "sonner";
+import { orpc } from "~/lib/gateway";
 import { Button } from "../ui/button";
-import { unwrap } from "~/lib/actions";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { MegaphoneOff, RefreshCcw } from "lucide-react";
 import { TfrMap, TfrMapSkeletonLoader } from "./tfr-map";
 import { TfrTable, TfrTableSkeletonLoader } from "./tfr-table";
-import { fetchTfrsAndGeo, TfrResponse } from "~/lib/aviation/tfr";
 
 import {
 	Empty,
@@ -19,41 +17,17 @@ import {
 } from "../ui/empty";
 
 export const TfrsTab = () => {
-	const [data, setData] = useState<TfrResponse | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<Error | null>();
-	
-	const refresh = () => {
-		setLoading(true);
-		setError(null);
-		fetchTfrsAndGeo()
-			.then(unwrap)
-			.then(({ tfrs, geo }) => ({
-				tfrs: unwrap(tfrs),
-				geo: unwrap(geo)
-			}))
-			.then(setData)
-			.catch(err => toast("Error retrieving TFRs:", {
-				description: err.message,
-				action: {
-					label: "Retry",
-					onClick: refresh
-				}
-			}))
-			.finally(() => setLoading(false))
-	};
-	
-	useEffect(() => {
-		refresh();
-	}, []);
-	
-	if (loading) return (
+	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.tfrs.active.queryOptions({
+		queryKey: ['tfrs']
+	}));
+
+	if (isLoading) return (
 		<div className="flex flex-col">
 			<TfrMapSkeletonLoader />
 			<TfrTableSkeletonLoader />
 		</div>
 	)
-	
+
 	if (error || !data) return (
 		<div className="h-[calc(100vh-8rem)] flex flex-col items-center justify-center bg-muted/5">
 			<Empty>
@@ -67,15 +41,15 @@ export const TfrsTab = () => {
 					<EmptyDescription>
 						We ran into an issue while retrieving TFR data, please try again.
 					</EmptyDescription>
-					
+
 					<EmptyContent className="mt-2">
 						<Button
 							size="sm"
 							variant="outline"
 							className="text-muted-foreground"
-							onClick={refresh}
+							onClick={() => refetch()}
 						>
-								<RefreshCcw />
+							<RefreshCcw />
 							<span>Retry</span>
 						</Button>
 					</EmptyContent>
@@ -83,10 +57,10 @@ export const TfrsTab = () => {
 			</Empty>
 		</div>
 	)
-	
+
 	return (
 		<div className="flex flex-col">
-			<TfrMap geo={data.geo} /> 
+			<TfrMap geo={data.geo} />
 			<TfrTable tfrs={data.tfrs} />
 		</div>
 	)

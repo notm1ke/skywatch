@@ -1,10 +1,10 @@
 import axios from "axios";
 
 import { z } from "zod/v4";
-import { base, iataInput } from "~/utils";
+import { base, iataInput } from "@/utils";
 import { ORPCError } from "@orpc/server";
-import { cache } from "~/middleware/cache";
-import { TsaWaitTimes } from "~/schemas/airport";
+import { cache } from "@/middleware/cache";
+import { TsaWaitTimes } from "@/schemas/airport";
 
 export const waitTimes = base
 	.input(z.object({

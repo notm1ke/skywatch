@@ -1,11 +1,9 @@
-import { toast } from "sonner";
-import { unwrap } from "~/lib/actions";
+import { orpc } from "~/lib/gateway";
 import { Skeleton } from "../ui/skeleton";
-import { useEffect, useState } from "react";
 import { ErrorSection } from "../error-section";
 import { Label, Pie, PieChart } from "recharts";
+import { useQuery } from "@tanstack/react-query";
 import { shortNumberFormatter } from "~/lib/utils";
-import { CancellationStats, fetchCancellationStats } from "~/lib/aviation/faa";
 
 import {
 	ChartConfig,
@@ -29,33 +27,9 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export const CancellationsPieChart: React.FC = () => {
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const [stats, setStats] = useState<CancellationStats | null>(null);
+	const { data: stats, isLoading, error, refetch } = useQuery(orpc.traffic.cancellations.queryOptions());
 	
-	const refresh = () => {
-		setLoading(true);
-		fetchCancellationStats()
-			.then(unwrap)
-			.then(setStats)
-			.catch(err => {
-				setError(err.message);
-				toast('Error fetching cancellations:', {
-					description: err.message,
-					action: {
-						label: "Retry",
-						onClick: refresh
-					}
-				});
-			})
-			.finally(() => setLoading(false));
-	}
-	
-	useEffect(() => {
-		refresh();
-	}, []);
-	
-	if (loading) return (
+	if (isLoading) return (
 		<div>
 			<div className="flex flex-row px-3 py-2 justify-between border-b">
 				<div className="text-md font-semibold pointer-events-none">
@@ -91,8 +65,8 @@ export const CancellationsPieChart: React.FC = () => {
 
 			<ErrorSection
 				title="Error loading flight stats"
-				error={error}
-				refresh={refresh}
+				error={error?.message}
+				refresh={refetch}
 			/>
 		</div>
 	);

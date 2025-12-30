@@ -1,4 +1,4 @@
-import { redis } from "~/services/redis";
+import { redis } from "@/services/redis";
 import { seedAirports } from "./seed/airport";
 import { seedAirlineHubs } from "./seed/airline-hubs";
 import { seedAirportHasRvrs } from "./seed/airport-rvr";

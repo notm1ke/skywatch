@@ -1,12 +1,21 @@
+import { z } from "zod/v4";
 import { useMemo } from "react";
-import { AirportAdvisory, DelayAdvisory } from "~/lib/aviation/faa";
+import { AirportAdvisory } from "~/lib/schemas";
+import { DelayAdvisory } from "@skywatch/gateway/schemas";
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "lucide-react";
-import { capitalizeFirst, cn, delayReason, getLatestTimeValue, parseDelayTime } from "~/lib/utils";
+
+import {
+	capitalizeFirst,
+	cn,
+	delayReason,
+	getLatestTimeValue,
+	parseDelayTime
+} from "~/lib/utils";
 
 type DelayProgramMode = "both" | "arrivals" | "departures";
  
 type ProgramDetailsProps = {
-	delayProgram: DelayAdvisory;
+	delayProgram: z.infer<typeof DelayAdvisory>;
 };
 
 const computeRange = (min: string, max: string) => {

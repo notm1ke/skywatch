@@ -1,5 +1,5 @@
 import { unrollDatum } from ".";
-import { FlowStatusMetricKeys, TrafficFlow } from "~/lib/aviation/traffic";
+import { FlowStatusMetricKeys, TrafficFlow } from "@skywatch/gateway/schemas";
 import { cn, flowStatusColors, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "~/components/ui/chart";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";

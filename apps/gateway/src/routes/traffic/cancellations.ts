@@ -1,9 +1,9 @@
 import { z } from "zod/v4";
-import { base } from "~/utils";
+import { base } from "@/utils";
 import { ORPCError } from "@orpc/server";
-import { cache } from "~/middleware/cache";
-import { prisma } from "~/services/prisma";
-import { CancellationStats } from "~/schemas/faa";
+import { cache } from "@/middleware/cache";
+import { prisma } from "@/services/prisma";
+import { CancellationStats } from "@/schemas/faa";
 
 export const cancellations = base
 	.input(z.void())

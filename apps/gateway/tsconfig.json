@@ -8,8 +8,13 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"paths": {
-			"~/*": ["./src/*"],
-			"~/prisma/*": ["./prisma/*"],
-		}
+			"@/*": ["./src/*"],
+			"@/prisma/*": ["./prisma/*"],
+		},
+		"plugins": [
+			{
+				"name": "workflow"
+			}
+		]
 	}
 }

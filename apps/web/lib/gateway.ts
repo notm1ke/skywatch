@@ -1,6 +1,8 @@
 import { createClient } from "@skywatch/gateway";
+import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 
-const gateway = process.env.GATEWAY_URL!;
-if (!gateway) throw new Error('Gateway URL not configured.');
+const gatewayUrl = process.env.NEXT_PUBLIC_GATEWAY_URL!;
+if (!gatewayUrl) throw new Error('Gateway URL not configured.');
 
-export const client = createClient(gateway);
+export const gateway = createClient(gatewayUrl);
+export const orpc = createTanstackQueryUtils(gateway);

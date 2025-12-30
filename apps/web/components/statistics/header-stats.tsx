@@ -1,27 +1,13 @@
-import { unwrap } from "~/lib/actions";
-import { useEffect, useState } from "react";
+import { orpc } from "~/lib/gateway";
+import { useQuery } from "@tanstack/react-query";
 import { TopAirports, TopAirportsSkeleton } from "./top-airports";
 import { TotalFlights, TotalFlightsSkeleton } from "./total-flights";
 import { TotalAirports, TotalAirportsSkeleton } from "./total-airports";
-import { fetchTopTenAirports, TopAirportsByTraffic } from "~/lib/aviation/traffic";
 
 export const HeaderStats = () => {
-	const [data, setData] = useState<TopAirportsByTraffic | null>();
-	const [loading, setLoading] = useState(true);
+	const { data, isLoading } = useQuery(orpc.statsPage.queryOptions());
 	
-	const refresh = () => {
-		fetchTopTenAirports()
-			.then(unwrap)
-			.then(setData)
-			.catch(() => setData(null))
-			.finally(() => setLoading(false));
-	}
-	
-	useEffect(() => {
-		refresh();
-	}, []);
-	
-	if (loading || !data) return (
+	if (isLoading || !data) return (
 		<section className="lg:absolute lg:bottom-0 w-fit relative">
 			<div className="flex flex-col gap-y-8">
 				<TotalFlightsSkeleton />

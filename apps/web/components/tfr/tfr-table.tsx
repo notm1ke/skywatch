@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "~/lib/utils";
-import { Tfr } from "~/lib/aviation/tfr";
+import { Tfr } from "~/lib/schemas";
 import { TfrInfoPanel } from "./info-panel";
 import { useTfrInteractivity } from "./store";
 import { UsStateAbbreviations } from "~/lib/geo";

@@ -1,13 +1,16 @@
 import mapboxgl from 'mapbox-gl';
 import Map from "react-map-gl/mapbox";
 
+import { z } from "zod/v4";
 import { useTheme } from 'next-themes';
 import { useTfrInteractivity } from "./store";
 import { useMobile } from '../mobile-provider';
-import { TfrGeoJson } from "~/lib/aviation/tfr";
 import { useEffect, useMemo, useRef } from "react";
+import { TfrGeoJson } from "@skywatch/gateway/schemas";
 import { Layer, MapRef, Source } from "react-map-gl/mapbox";
 import { AttributionControl, NavigationControl } from "react-map-gl/mapbox";
+
+type TfrGeoJson = z.infer<typeof TfrGeoJson>;
 
 const layerStyle = {
 	lineColor: "#ff4444",
@@ -78,6 +81,7 @@ export const TfrMapSkeletonLoader = () => (
 		<div className="absolute inset-0 bg-muted animate-pulse" />
 	</div>
 );
+
 
 export const TfrMap: React.FC<{ geo: TfrGeoJson }> = ({ geo }) => {
 	const mapRef = useRef<MapRef>(null);

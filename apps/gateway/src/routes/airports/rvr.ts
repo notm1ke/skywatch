@@ -2,20 +2,20 @@ import axios from "axios";
 
 import { z } from "zod/v4";
 import { load } from "cheerio";
-import { padZero } from "~/utils";
-import { base, iataInput } from "~/utils";
-import { cache } from "~/middleware/cache";
+import { padZero } from "@/utils";
+import { base, iataInput } from "@/utils";
+import { cache } from "@/middleware/cache";
 
 import {
 	AirportExtendable,
 	injectAirportByIata
-} from "~/middleware/airport-by-iata";
+} from "@/middleware/airport-by-iata";
 
 import {
 	Rvr,
 	RvrProbeValue,
 	RvrTrend
-} from "~/schemas/airport";
+} from "@/schemas/airport";
 
 type RawProbeType =
 	| "touchdown"
@@ -61,7 +61,7 @@ export const rvr = base
 				illumination: {}
 			}))
 		};
-		
+
 		return axios
 			.get("https://rvr.data.faa.gov/cgi-bin/nph-rcrp", {
 				params: {

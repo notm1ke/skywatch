@@ -4,6 +4,7 @@ import { Toaster } from "~/components/ui/sonner";
 import { Geist, Geist_Mono } from "next/font/google";
 import { OpenPanelComponent } from "@openpanel/nextjs";
 import { TooltipProvider } from "~/components/ui/tooltip";
+import { QueryProvider } from "~/components/query-provider";
 import { MobileProvider } from "~/components/mobile-provider";
 import { ThemeProvider } from "~/components/ui/theme-provider";
 
@@ -46,10 +47,12 @@ export default function RootLayout({
 					disableTransitionOnChange
 				>
 					<MobileProvider>
-						<TooltipProvider>
-							{children}
-							<Toaster />
-						</TooltipProvider>
+						<QueryProvider>
+							<TooltipProvider>
+								{children}
+								<Toaster />
+							</TooltipProvider>
+						</QueryProvider>
 						<OpenPanelComponent
 							apiUrl={process.env.NEXT_PUBLIC_OPENPANEL_API_URL!}
 							cdnUrl={process.env.NEXT_PUBLIC_OPENPANEL_CDN_URL!}

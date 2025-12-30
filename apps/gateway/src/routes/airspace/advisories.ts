@@ -1,23 +1,23 @@
 import axios from "axios";
 
 import { z } from "zod/v4";
-import { base } from "~/utils";
+import { base } from "@/utils";
 import { ORPCError } from "@orpc/server";
-import { cache } from "~/middleware/cache";
-import { capitalizeFirst, formatFaaTime } from "~/utils";
+import { cache } from "@/middleware/cache";
+import { capitalizeFirst, formatFaaTime } from "@/utils";
 
 import {
 	AirportAdvisory,
 	PlannedAirportEvent,
 	RawPlannedEvent
-} from "~/schemas/faa";
+} from "@/schemas/faa";
 
 const AirspaceAdvisories = z.array(AirportAdvisory);
 
 const active = base
 	.input(z.void())
 	.use(cache(
-		"__airspace:status", 
+		"__airspace:status",
 		"1 minutes",
 		AirspaceAdvisories,
 	))
@@ -27,9 +27,10 @@ const active = base
 		.then(AirspaceAdvisories.safeParse)
 		.then(result => {
 			if (result.success) return result.data;
-			throw new ORPCError("UPSTREAM_ERROR"); 
+			throw new ORPCError("UPSTREAM_ERROR");
 		})
-	);
+	)
+	.callable();
 
 const PlannedAdvisories = z.array(PlannedAirportEvent);
 
@@ -65,10 +66,22 @@ const planned = base
 					? 'after'
 					: 'until',
 				eventType: capitalizeFirst(eventType.join(' ').toLowerCase())
-			}
+			} as z.infer<typeof PlannedAirportEvent>;
 		}))
-	);
+	)
+	.callable();
+
+const all = base
+	.input(z.void())
+	.handler(async () => {
+		const [current, plannedEvents] = await Promise.all([
+			active(),
+			planned()
+		]);
+
+		return { active: current, planned: plannedEvents };
+	});
 
 export const advisories = {
-	active, planned
+	all, active, planned
 }

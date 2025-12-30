@@ -8,7 +8,9 @@
 	"scripts": {
 		"build": "turbo run build",
 		"dev": "turbo run dev",
-		"lint": "turbo run lint"
+		"lint": "turbo run lint",
+		"run:web": "turbo run start --filter=@skywatch/web",
+		"run:gateway": "turbo run start --filter=@skywatch/gateway"
 	},
 	"workspaces": [
 		"apps/*",

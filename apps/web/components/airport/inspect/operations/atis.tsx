@@ -1,7 +1,8 @@
-import { toast } from "sonner";
-import { unwrap } from "~/lib/actions";
+import { z } from "zod/v4";
+import { orpc } from "~/lib/gateway";
 import { Check, Maximize } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ErrorSection } from "~/components/error-section";
 import { capitalizeFirst, cn, formatFaaTime } from "~/lib/utils";
@@ -9,13 +10,7 @@ import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { AnnotatedAtisSegment, parseAtisText } from "~/lib/aviation/atis";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
-
-import {
-	AirportWithJoins,
-	AtisResponse,
-	AtisType,
-	fetchAtisForIata
-} from "~/lib/aviation/airports";
+import { AirportAtis, AirportAtisType, AirportWithJoins } from "@skywatch/gateway/schemas";
 
 import {
 	Dialog,
@@ -60,7 +55,7 @@ export const AtisBroadcastSkeletonLoader = () => (
 const renderSegment = (segment: AnnotatedAtisSegment, line: number, fragment: number) => {
 	if (!segment.tooltip) return (
 		<span key={`raw-${line}-${fragment}`}>{segment.text}</span>
-	)
+	);
 	
 	return (
 		<Tooltip key={`rich-${line}-${fragment}`} delayDuration={200}>
@@ -84,7 +79,7 @@ const renderSegment = (segment: AnnotatedAtisSegment, line: number, fragment: nu
 	)
 }
 
-const atisBody = (active: AtisResponse | undefined) => (
+const atisBody = (active: z.infer<typeof AirportAtis> | undefined) => (
 	<div
 		key={active?.type}
 		className="animate-in fade-in duration-200"
@@ -105,7 +100,7 @@ const atisBody = (active: AtisResponse | undefined) => (
 	</div>
 );
 
-const FullScreen: React.FC<PropsWithChildren<{ active: AtisResponse }>> = ({ active, children }) => (
+const FullScreen: React.FC<PropsWithChildren<{ active?: z.infer<typeof AirportAtis> }>> = ({ active, children }) => (
 	<Dialog>
 		<DialogTrigger asChild>
 			{children}
@@ -116,7 +111,15 @@ const FullScreen: React.FC<PropsWithChildren<{ active: AtisResponse }>> = ({ act
 					ATIS Broadcast
 				</DialogTitle>
 				<DialogDescription>
-					{capitalizeFirst(active.type)} broadcast, transmitted at {formatFaaTime(active.time).toUpperCase()} (UTC)
+					{active && (
+						<>
+							{capitalizeFirst(active.type)} broadcast, transmitted at {formatFaaTime(active.time).toUpperCase()} (UTC)
+						</>
+					)}
+					
+					{!active && (
+						<>Please select an ATIS type to proceed.</>
+					)}
 				</DialogDescription>
 			</DialogHeader>
 			{atisBody(active)}
@@ -125,48 +128,29 @@ const FullScreen: React.FC<PropsWithChildren<{ active: AtisResponse }>> = ({ act
 )
 
 export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport }) => {
-	const [atis, setAtis] = useState<AtisResponse[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<Error | null>(null);
-	
-	const [selected, setSelected] = useState<AtisType>();
-	
-	const refresh = () => {
-		setLoading(true);
-		fetchAtisForIata(airport.iata_code!)
-			.then(unwrap)
-			.then(atis => {
-				setAtis(atis);
-				setSelected(atis.at(0)?.type);
-			})
-			.catch(err => {
-				setError(err);
-				toast("Error fetching ATIS:", {
-					description: err.message,
-					action: {
-						label: "Retry",
-						onClick: refresh
-					}
-				})
-			})
-			.finally(() => setLoading(false));
-	}
+	const { data: atis, isLoading, error, refetch } = useQuery(orpc.airports.atis.queryOptions({
+		input: { iata_code: airport.iata_code! },
+		queryKey: ["atis", airport.iata_code]
+	}));
 	
 	useEffect(() => {
-		refresh();
-	}, []);
+		if (!isLoading && atis?.length) {
+			setSelected(atis[0].type);
+		}
+	}, [atis, isLoading]);
 	
+	const [selected, setSelected] = useState<z.infer<typeof AirportAtisType>>();
 	const types = useMemo(
-		() => [...new Set(atis.map(atis => atis.type))],
+		() => [...new Set(atis?.map(atis => atis.type))],
 		[atis]
 	);
 	
 	const active = useMemo(
-		() => atis.find(atis => atis.type === selected),
+		() => atis?.find(atis => atis.type === selected),
 		[atis, selected]
-	)
+	);
 	
-	if (loading) return <AtisBroadcastSkeletonLoader />;
+	if (isLoading) return <AtisBroadcastSkeletonLoader />;
 	if (!atis || error) return (
 		<div className="border-b border-border">
 			<div className="flex flex-row px-3 py-2 justify-between">
@@ -182,7 +166,7 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 					title="Error loading ATIS information"
 					className="border-t rounded-none border-solid"
 					error={error?.message}
-					refresh={refresh}
+					refresh={refetch}
 				/>
 			</div>
 		</div>

@@ -1,11 +1,11 @@
 import { Check } from "lucide-react";
 import { DelayProgram } from "./status/delay";
+import { AirportAdvisory } from "~/lib/schemas";
 import { DeicingProgram } from "./status/deicing";
-import { AirportAdvisory } from "~/lib/aviation/faa";
 import { GroundStopProgram } from "./status/ground-stop";
 import { ClosureProgram } from "./status/airport-closure";
-import { AirportWithJoins } from "~/lib/aviation/airports";
 import { GroundDelayProgram } from "./status/ground-delay";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { SpecialAdvisoryProgram } from "./status/special-advisory";
 
 const AllClear: React.FC<{ airport: AirportWithJoins, advisory: AirportAdvisory }> = ({ airport, advisory }) => (

@@ -1,19 +1,21 @@
 import Map from "react-map-gl/mapbox";
 import Boundaries from '~/geojson/airspaces.json';
 
+import { z } from "zod/v4";
 import { useMemo } from "react";
 import { cn } from "~/lib/utils";
 import { GeoJson } from "~/lib/geo";
 import { useTheme } from "next-themes";
 import { useAirspace } from "./provider";
 import { Marker } from "react-map-gl/mapbox";
-import { useIsMobile } from "~/hooks/use-mobile";
-import { useAirports } from "../airport-provider";
-import { AirportWithJoins } from "~/lib/aviation/airports";
-import { AirspaceMapHoverCard } from "./airspace-map-hover";
-import { AirportAdvisory, AirportStatus } from "~/lib/aviation/faa";
-import { AttributionControl, Layer, NavigationControl, Source } from "react-map-gl/mapbox";
 import { useMobile } from "../mobile-provider";
+import { AirportAdvisory } from "~/lib/schemas";
+import { useAirports } from "../airport-provider";
+import { AirspaceMapHoverCard } from "./airspace-map-hover";
+import { AirportStatus, AirportWithJoins } from "@skywatch/gateway/schemas";
+import { AttributionControl, Layer, NavigationControl, Source } from "react-map-gl/mapbox";
+
+type AirportStatus = z.infer<typeof AirportStatus>;
 
 type AirspaceProps = {
 	GLOBAL_ID: string;

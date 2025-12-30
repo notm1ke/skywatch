@@ -1,14 +1,14 @@
 import { z } from "zod/v4";
-import { base } from "~/utils";
-import { prisma } from "~/services/prisma";
+import { base } from "@/utils";
+import { prisma } from "@/services/prisma";
+import { injectDataMarker } from "@/middleware/traffic-marker";
 
 import {
 	Airspaces,
 	AirspaceType,
 	ChartConfig,
-	injectDataMarker,
 	TrafficFlowAggregation
-} from ".";
+} from "@/schemas";
 
 const TrafficByCenterConfig = {
 	zab: {
@@ -139,7 +139,7 @@ export const centers = base
 			FROM aggregated
 			ORDER BY time, type, name;
 		`;
-		
+
 		return {
 			config: TrafficByCenterConfig,
 			dataKeys: [...Airspaces],

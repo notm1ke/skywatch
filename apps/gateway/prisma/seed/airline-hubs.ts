@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { prisma } from "~/services/prisma";
+import { prisma } from "@/services/prisma";
 
 if (!process.env.AIRLINE_HUBS_STORE) throw new Error(
 	"Airline hubs store URL is not set."

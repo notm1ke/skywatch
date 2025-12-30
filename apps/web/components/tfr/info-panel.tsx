@@ -1,45 +1,26 @@
-import { toast } from "sonner";
-import { unwrap } from "~/lib/actions";
+import { z } from "zod/v4";
+import { useMemo } from "react";
+import { Tfr } from "~/lib/schemas";
+import { orpc } from "~/lib/gateway";
 import { useTfrInteractivity } from "./store";
+import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useEffect, useMemo, useState } from "react";
 import { parseTfrText } from "~/lib/aviation/tfr-parser";
 import { CircleX, SquareArrowOutUpRight } from "lucide-react";
-import { fetchTfrText, Tfr, TfrTextResponse } from "~/lib/aviation/tfr";
 
 export const TfrInfoPanel: React.FC<{ tfr: Tfr }> = ({ tfr }) => {
 	const { close } = useTfrInteractivity();
-	
-	const [text, setText] = useState<TfrTextResponse | null>();
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<Error | null>(null);
-	
-	const refresh = () => {
-		setLoading(true);
-		setError(null);
-		fetchTfrText(tfr.notam_id)
-			.then(unwrap)
-			.then(setText)
-			.catch(err => toast("Error retrieving TFRs:", {
-				description: err.message,
-				action: {
-					label: "Retry",
-					onClick: refresh
-				}
-			}))
-			.finally(() => setLoading(false));
-	}
-	
-	useEffect(() => {
-		refresh();
-	}, [tfr]);
+	const { data: text, isLoading, error } = useQuery(orpc.airspace.tfrs.details.queryOptions({
+		input: { notam_id: tfr.notam_id! },
+		queryKey: ['tfr', "details", tfr.notam_id]
+	}));
 	
 	const fragments = useMemo(
 		() => {
-			if (!text || loading) return null;
+			if (!text || isLoading) return null;
 			return parseTfrText(text.text);
 		},
-		[text, loading]
+		[text, isLoading]
 	);
 	
 	return (
@@ -65,7 +46,7 @@ export const TfrInfoPanel: React.FC<{ tfr: Tfr }> = ({ tfr }) => {
 			</div>
 			
 			<div className="p-4">
-				{loading && (
+				{isLoading && (
 					<div className="flex flex-col space-y-2">
 						{Array.from({ length: 15 }).map((_, i) => (
 							<Skeleton
@@ -92,7 +73,7 @@ export const TfrInfoPanel: React.FC<{ tfr: Tfr }> = ({ tfr }) => {
 					</div>
 				)}
 				
-				{(!loading && fragments) && (
+				{(!isLoading && fragments) && (
 					<div className="max-w-full h-full flex flex-col">
 						<div className="flex-1 min-h-[530px] max-h-[530px] overflow-y-auto space-y-3">
 							<div>

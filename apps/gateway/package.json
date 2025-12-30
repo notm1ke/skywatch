@@ -1,13 +1,19 @@
 {
 	"name": "@skywatch/gateway",
 	"private": true,
+	"packageManager": "bun@1.2.14",
 	"scripts": {
 		"dev": "nitro dev",
-		"build": "nitro build"
+		"build": "bun run db:gen && nitro build && bun run db:push",
+		"start": "bun run db:seed && bun run ./.output/server/index.mjs",
+		"db:gen": "bunx prisma generate",
+		"db:seed": "bunx prisma db seed",
+		"db:push": "bunx prisma migrate deploy"
 	},
 	"dependencies": {
 		"@orpc/client": "^1.13.0",
 		"@orpc/server": "^1.13.0",
+		"@orpc/tanstack-query": "^1.13.0",
 		"@prisma/adapter-pg": "^7.2.0",
 		"@prisma/client": "^7.2.0",
 		"axios": "^1.13.2",
@@ -31,6 +37,7 @@
 		"prisma-json-types-generator": "^4.0.1"
 	},
 	"exports": {
-		".": "./src/client.ts"
+		".": "./src/client.ts",
+		"./schemas": "./src/schemas/index.ts"
 	}
 }

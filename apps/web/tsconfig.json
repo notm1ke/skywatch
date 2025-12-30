@@ -16,13 +16,12 @@
 		"plugins": [
 			{
 				"name": "next"
-			},
-			{
-				"name": "workflow"
 			}
 		],
 		"paths": {
-			"~/*": ["./*"]
+			"~/*": ["./*"],
+			"@/*": ["../gateway/src/*"],
+			"@/prisma/*": ["../gateway/prisma/*"]
 		}
 	},
 	"include": [

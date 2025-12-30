@@ -1,12 +1,8 @@
 import { z } from "zod/v4";
-import { base } from "~/utils";
-import { prisma } from "~/services/prisma";
-
-import { 
-	ChartConfig,
-	injectDataMarker,
-	TrafficFlowAggregation
-} from ".";
+import { base } from "@/utils";
+import { prisma } from "@/services/prisma";
+import { injectDataMarker } from "@/middleware/traffic-marker";
+import { ChartConfig, TrafficFlowAggregation } from "@/schemas";
 
 const TrafficByStatusConfig = {
 	arrived: {
@@ -52,7 +48,7 @@ export const statuses = base
 					year = ${marker.year}
 					AND month = ${marker.month}
 					AND day = ${marker.day}
-					AND elem->>'type' = 'CENTER'
+					AND elem->>'type' = 'STATUS'
 				GROUP BY type, time, name
 			)
 			SELECT
@@ -68,7 +64,7 @@ export const statuses = base
 			FROM aggregated
 			ORDER BY time, type, name;
 		`;
-		
+
 		return {
 			config: TrafficByStatusConfig,
 			dataKeys: [

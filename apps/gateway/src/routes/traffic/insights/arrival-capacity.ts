@@ -1,14 +1,10 @@
 import moment from "moment-timezone";
 
 import { z } from "zod/v4";
-import { base } from "~/utils";
-import { prisma } from "~/services/prisma";
-
-import {
-	ChartConfig,
-	injectDataMarker,
-	TrafficFlow
-} from ".";
+import { base } from "@/utils";
+import { prisma } from "@/services/prisma";
+import { ChartConfig, TrafficFlow } from "@/schemas";
+import { injectDataMarker } from "@/middleware/traffic-marker";
 
 export const arrivalCapacity = base
 	.input(z.void())

@@ -1,5 +1,5 @@
+import { Tfr } from "~/lib/schemas";
 import { create } from "zustand/react";
-import { Tfr } from "~/lib/aviation/tfr";
 
 type TfrInteractivityStore = {
 	active: Tfr | null;

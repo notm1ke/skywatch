@@ -1,7 +1,6 @@
-import { unwrap } from "~/lib/actions";
+import { gateway } from "~/lib/gateway";
 import { ImageResponse } from "next/og";
 import { NextResponse } from "next/server";
-import { fetchAirportByIata } from "~/lib/aviation/airports";
 import { capitalizeFirst, shortenAirportName } from "~/lib/utils";
 
 export const size = {
@@ -51,8 +50,9 @@ const getBoundedAirportName = (name: string) => {
 
 export default async function AirportInspectorOgImage({ params }: { params: Promise<Params> }) {
 	const slug = await params;
-	const airport = await fetchAirportByIata(slug.iata.toUpperCase())
-		.then(unwrap)
+	const airport = await gateway
+		.airports
+		.findByIata({ iata_code: slug.iata.toUpperCase() })
 		.catch(() => null);
 
 	if (!airport) return NextResponse.json(

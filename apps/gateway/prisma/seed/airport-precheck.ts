@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { prisma } from "~/services/prisma";
+import { prisma } from "@/services/prisma";
 
 type RemoteResponse = {
 	airports: PrecheckAirport[];
@@ -32,10 +32,10 @@ export const seedAirportHasPrecheck = async () => {
 	const airports = await axios
 		.get<RemoteResponse>("https://www.tsa.gov/ajax/precheck/airports")
 		.then(res => res.data.airports)
-		.catch(err => console.error('[precheck] Error retrieving data for precheck airports:', err.data?.message || err.message)); 
-	
+		.catch(err => console.error('[precheck] Error retrieving data for precheck airports:', err.data?.message || err.message));
+
 	if (!airports) process.exit(-1);
-	
+
 	const iatas = [...new Set(airports.map(entry => entry.airport.airportCode))];
 	const tracked = await prisma
 		.airport
@@ -46,7 +46,7 @@ export const seedAirportHasPrecheck = async () => {
 			.map(record => record.iata_code)
 			.filter(Boolean) as string[]
 		);
-	
+
 	await prisma.$transaction(
 		iatas
 			.filter(iata => tracked.includes(iata))
@@ -58,6 +58,6 @@ export const seedAirportHasPrecheck = async () => {
 				});
 			})
 	);
-	
+
 	console.log(`[precheck] Done updating ${iatas.length} airport${iatas.length === 1 ? "" : "s"}.`);
 }
