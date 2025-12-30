@@ -4,8 +4,8 @@
 	"packageManager": "bun@1.2.14",
 	"scripts": {
 		"dev": "nitro dev",
-		"build": "bun run db:gen && nitro build && bun run db:push",
-		"start": "bun run db:seed && bun run ./.output/server/index.mjs",
+		"build": "bun run db:gen && nitro build && bun run db:push && bun run db:seed",
+		"start": "bun run ./.output/server/index.mjs",
 		"db:gen": "bunx prisma generate",
 		"db:seed": "bunx prisma db seed",
 		"db:push": "bunx prisma migrate deploy"
