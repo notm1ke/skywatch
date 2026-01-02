@@ -175,7 +175,7 @@ export const AirspaceMap: React.FC = () => {
 				>
 					<AttributionControl
 						compact
-						customAttribution="Skywatch (c) 2025"
+						customAttribution="Skywatch (c) 2026"
 						style={{
 							color: "black",
 							fontSize: "12px",

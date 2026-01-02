@@ -37,7 +37,7 @@ export const GroundDelayAdvisory = z.object({
 	center: z.string(),
 	advisoryUrl: z.string(),
 	departureScope: z.any(),
-	includedFacilities: z.array(z.string()),
+	includedFacilities: z.array(z.string()).nullable(),
 	fuelFlowAdvisoryDelayTime: z.object({
 		id: z.string(),
 		controlElement: z.string(), // IATA

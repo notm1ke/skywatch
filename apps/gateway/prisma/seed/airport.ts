@@ -368,7 +368,6 @@ export const seedAirports = async () => {
 				ignored = await upsertAirports(usAirports);
 			}
 
-			// console.log(ignored);
 			if (target.includes('airport-frequencies.csv')) await upsertAirportFrequencies(rows, usAirports, ignored);
 			if (target.includes('runways.csv')) await upsertAirportRunways(rows, usAirports, ignored);
 			if (target.includes('navaids.csv')) await upsertAirportNavs(rows, usAirports, ignored);

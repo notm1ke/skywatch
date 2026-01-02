@@ -23,7 +23,7 @@ export const seedAirportHasAtis = async () => {
 
 	await prisma.$transaction([
 		...stale.map(icao_code => {
-			console.log(` - Stale: ${icao_code}`);
+			console.log(`[atis] - Stale: ${icao_code}`);
 			return prisma.airport.update({
 				where: { icao_code },
 				data: { supports_atis: false }

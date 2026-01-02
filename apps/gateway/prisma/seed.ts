@@ -14,6 +14,8 @@ if (lastSeededTime) {
 	if (delta < gap) {
 		console.log(`Database was recently seeded, skipping.`);
 		process.exit(0);
+	} else {
+		console.log(`Database was last seeded ${delta}ms ago`);
 	}
 }
 
@@ -34,5 +36,7 @@ await seedAirportHasRvrs()
 
 console.log(`Finished seeding database in ${(Date.now() - start).toFixed(2)}ms.`);
 await redis.set("db:seed", start);
+
+// explicitly cleanup otherwise turbo build gets stuck
 await prisma.$disconnect();
 process.exit(0);

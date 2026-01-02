@@ -1,4 +1,9 @@
 import { z } from "zod/v4";
+import { AirportTrafficFlowGetPayload } from "@/prisma/generated/models";
+
+export type AirportTrafficFlow = AirportTrafficFlowGetPayload<{
+	include: { time_buckets: true };
+}>;
 
 export type HeaderStats = {
 	top10: Array<{
