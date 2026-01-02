@@ -1,0 +1,46 @@
+{
+	"name": "@skywatch/gateway",
+	"private": true,
+	"main": "./src/index.ts",
+	"types": "./src/client.ts",
+	"packageManager": "bun@1.2.14",
+	"scripts": {
+		"dev": "nitro dev",
+		"build": "bun run db:gen && nitro build && bun run db:push && bun run db:seed",
+		"start": "bun run ./.output/server/index.mjs",
+		"db:gen": "bunx prisma generate",
+		"db:seed": "bunx prisma db seed",
+		"db:push": "bunx prisma migrate deploy"
+	},
+	"dependencies": {
+		"@orpc/client": "^1.13.0",
+		"@orpc/server": "^1.13.0",
+		"@orpc/tanstack-query": "^1.13.0",
+		"@prisma/adapter-pg": "^7.2.0",
+		"@prisma/client": "^7.2.0",
+		"axios": "^1.13.2",
+		"cheerio": "^1.1.2",
+		"dotenv": "^17.2.3",
+		"effect": "^3.19.13",
+		"hono": "^4.11.1",
+		"ioredis": "^5.8.2",
+		"moment-timezone": "^0.6.0",
+		"nitro": "^3.0.1-alpha.1",
+		"node-cron": "^4.2.1",
+		"pg": "^8.16.3",
+		"rollup": "^4.54.0",
+		"workflow": "^4.0.1-beta.36",
+		"zod": "^4.2.1"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@types/cheerio": "^1.0.0",
+		"@types/pg": "^8.16.0",
+		"prisma": "^7.2.0",
+		"prisma-json-types-generator": "^4.0.1"
+	},
+	"exports": {
+		".": "./src/client.ts",
+		"./schemas": "./src/schemas/index.ts"
+	}
+}

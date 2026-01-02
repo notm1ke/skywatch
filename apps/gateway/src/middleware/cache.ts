@@ -1,0 +1,30 @@
+import { z } from "zod/v4";
+import { os } from "@orpc/server";
+import { Duration } from "effect";
+import { redis } from "@/services/redis";
+
+type CacheKeyGenerator<TInput> = (input: TInput) => string;
+
+export const cache = <TInput extends Record<string, any>, TOutput>(
+	key: CacheKeyGenerator<TInput> | string,
+	ttl: Duration.DurationInput,
+	schema: z.ZodType<TOutput>,
+) => os.middleware(async ({ next }, input, output) => {
+	const cacheKey = typeof key === "string" ? key : key(input as TInput);
+	const cached = await redis.get(cacheKey);
+	if (cached) {
+		const parsed = schema.safeParse(cached);
+		if (parsed.success) return output(parsed.data as TOutput);
+	}
+
+	const result = await next(input as TInput);
+	redis.set(
+		cacheKey,
+		JSON.stringify(result.output),
+		'EX', Duration
+			.decode(ttl)
+			.pipe(Duration.toSeconds)
+	);
+
+	return output(result.output as TOutput);
+});

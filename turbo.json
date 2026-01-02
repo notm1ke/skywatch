@@ -1,0 +1,23 @@
+{
+	"$schema": "https://turborepo.com/schema.json",
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": [".next/**", "!.next/cache/**", ".output/**"]
+		},
+		"skywatch@web#build": {
+			"dependsOn": [],
+			"outputs": [".next/**"]
+		},
+		"check-types": {
+			"dependsOn": ["^check-types"]
+		},
+		"dev": {
+			"persistent": true,
+			"cache": false
+		},
+		"start": {
+			"cache": false
+		}
+	}
+}
