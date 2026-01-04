@@ -7,7 +7,7 @@ import { HeaderStats } from "./header-stats";
 export const StatisticsTab = () => {
 	return (
 		<div className="min-h-screen overflow-hidden">
-			<div className="w-full max-w-[1600px] mx-auto">
+			<div className="w-full max-w-[2200px] mx-auto pl-[35px] overflow-hidden">
 				{/* mobile */}
 				<div className="flex flex-col min-[961px]:hidden">
 					<div className="w-full h-[200px] flex justify-center pointer-events-none z-1 translate-x-2.5">
@@ -49,7 +49,7 @@ export const StatisticsTab = () => {
 
 					<HeaderStats />
 
-					<div className="w-full h-full pointer-events-none max-lg:scale-[1.5] max-lg:-translate-y-16 max-lg:translate-x-[10%] lg:translate-x-[21.5%] lg:translate-y-[-4.5%]">
+					<div className="w-full h-full pointer-events-none max-lg:scale-[1.5] max-lg:-translate-y-16 max-lg:translate-x-[10%] lg:translate-x-[21.5%] lg:translate-y-[-4.5%] 3xl:scale-[0.8] 3xl:translate-y-[-9.5%]">
 						<div className="h-[515px]">
 							<MapVisualization height={375} width={1000} />
 						</div>

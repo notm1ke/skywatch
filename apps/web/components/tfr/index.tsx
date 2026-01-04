@@ -1,10 +1,10 @@
 "use client";
 
+import { TfrMap } from "./tfr-map";
 import { orpc } from "~/lib/gateway";
 import { Button } from "../ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { MegaphoneOff, RefreshCcw } from "lucide-react";
-import { TfrMap, TfrMapSkeletonLoader } from "./tfr-map";
 import { TfrTable, TfrTableSkeletonLoader } from "./tfr-table";
 
 import {
@@ -23,7 +23,7 @@ export const TfrsTab = () => {
 
 	if (isLoading) return (
 		<div className="flex flex-col">
-			<TfrMapSkeletonLoader />
+			<TfrMap />
 			<TfrTableSkeletonLoader />
 		</div>
 	)
@@ -60,7 +60,10 @@ export const TfrsTab = () => {
 
 	return (
 		<div className="flex flex-col">
-			<TfrMap geo={data.geo} />
+			<TfrMap
+				tfrs={data.tfrs}
+				geo={data.geo}
+			/>
 			<TfrTable tfrs={data.tfrs} />
 		</div>
 	)

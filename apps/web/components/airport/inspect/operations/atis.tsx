@@ -174,7 +174,7 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 	
 	return (
 		<div className="border-b border-border">
-			<div className="flex flex-row px-3 py-2 justify-between">
+			<div className="flex flex-row px-3 py-[7px] justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">
 						ATIS
@@ -195,19 +195,21 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 						</div>
 					)}
 					
-					<div className="space-x-1">
-						{types.length > 1 && types.map(type => (
-							<Button
-								key={type}
-								variant="outline"
-								className="rounded-sm h-5"
-								onClick={() => setSelected(type)}
-							>
-								{capitalizeFirst(type)}
-								{selected === type && <Check />}
-							</Button>
-						))}
-					</div>
+					{types.length > 1 && (
+						<div className="space-x-1">
+							{types.map(type => (
+								<Button
+									key={type}
+									variant="outline"
+									className="rounded-sm h-5"
+									onClick={() => setSelected(type)}
+								>
+									{capitalizeFirst(type)}
+									{selected === type && <Check />}
+								</Button>
+							))}
+						</div>
+					)}
 				</div>
 			</div>
 

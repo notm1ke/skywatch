@@ -36,7 +36,7 @@ const handler = new RPCHandler(router, {
 				})
 			}
 			
-			console.error("Uncaught error in procedure:", error)
+			console.error("Uncaught error in procedure:", error);
 			if (typeof error === "object" && error && "data" in error) {
 				console.log(error.data)
 			}

@@ -1,19 +1,21 @@
 import Map from "react-map-gl/mapbox";
-import Boundaries from '~/geojson/airspaces.json';
+import Boundaries from "~/geojson/airspaces.json";
 
 import { z } from "zod/v4";
-import { useMemo } from "react";
 import { cn } from "~/lib/utils";
 import { GeoJson } from "~/lib/geo";
+import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { useAirspace } from "./provider";
 import { Marker } from "react-map-gl/mapbox";
 import { useMobile } from "../mobile-provider";
 import { AirportAdvisory } from "~/lib/schemas";
+import { useMemo, useRef, useState } from "react";
 import { useAirports } from "../airport-provider";
+import { Layer, Source } from "react-map-gl/mapbox";
 import { AirspaceMapHoverCard } from "./airspace-map-hover";
-import { AirportStatus, AirportWithJoins } from "@skywatch/gateway/schemas";
-import { AttributionControl, Layer, NavigationControl, Source } from "react-map-gl/mapbox";
+import { MapControls, MapLayers } from "../ui/map-controls";
+import { AirportStatus, AirportWithJoins, Airspaces } from "@skywatch/gateway/schemas";
 
 type AirportStatus = z.infer<typeof AirportStatus>;
 
@@ -91,13 +93,19 @@ const AirportMarker: React.FC<{ advisory: AirportAdvisory, airport: AirportWithJ
 			key={airport.iata_code}
 			latitude={airport.latitude_deg}
 			longitude={airport.longitude_deg}
-			className="cursor-help animate-fade-in"
+			className="cursor-help"
 		>
 			<AirspaceMapHoverCard
 				advisory={advisory}
 				airport={airport}
 			>
-				<div className={cn("size-2.5 rounded-md", colorForAirportStatus(status))} />
+				<motion.div
+					className={cn("size-2.5 rounded-md", colorForAirportStatus(status))}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.5 }}
+				/>
 			</AirspaceMapHoverCard>
 		</Marker>
 	)
@@ -109,10 +117,36 @@ export const AirspaceMap: React.FC = () => {
 	const { mobile, pending } = useMobile();
 	const { resolvedTheme: theme } = useTheme();
 	
+	const boundaries = Boundaries as unknown as GeoJson<AirspaceProps>;
+	const mapContainerRef = useRef<HTMLDivElement>(null);
+	const layers: MapLayers = [
+		{
+			key: "airspace",
+			name: "Airspaces",
+			color: "var(--color-zinc-500)",
+			count: Airspaces.length,
+		},
+		{
+			key: "advisory",
+			name: "Advisories",
+			color: "var(--color-green-500)",
+			count: advisories.length,
+		},
+	];
+	
 	const centers = useMemo(() =>
-		filterOnlyCenters(Boundaries as unknown as GeoJson<AirspaceProps>),
-		[Boundaries]
+		filterOnlyCenters(boundaries),
+		[boundaries]
 	);
+	
+	const [enabledLayers, setEnabledLayers] = useState<Set<string>>(
+		() => new Set<string>(
+			layers
+				.filter(layer => layer.defaultState === undefined || layer.defaultState === true)
+				.map(layer => layer.key)
+		)
+	);
+	
 	
 	const airportMarkers = useMemo(
 		() => advisories
@@ -154,7 +188,11 @@ export const AirspaceMap: React.FC = () => {
 	);
 
 	if (mobile) return (
-		<div className="w-full h-[300px] relative overflow-hidden">
+		<div
+			ref={mapContainerRef}
+			className="w-full relative overflow-hidden data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-[300px]"
+			data-fullscreen={false}
+		>
 			<div className="absolute inset-0">
 				<Map
 					mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
@@ -166,62 +204,80 @@ export const AirspaceMap: React.FC = () => {
 					projection="mercator"
 					attributionControl={false}
 					interactiveLayerIds={['airspace']}
-					style={{ width: "100%", height: "300px" }}
+					style={{ width: "100%" }}
 					mapStyle={
 						theme === 'dark'
 							? 'mapbox://styles/mapbox/dark-v11'
 							: 'mapbox://styles/mapbox/light-v11'
 					}
 				>
-					<AttributionControl
-						compact
-						customAttribution="Skywatch (c) 2026"
-						style={{
-							color: "black",
-							fontSize: "12px",
-							fontFamily: "monospace",
+					<MapControls
+						ref={mapContainerRef}
+						position="bottom-right"
+						orientation="horizontal"
+						initialView={{
+							latitude: 37.833333,
+							longitude: -97.583333,
+							zoom: 2.15
 						}}
+						layers={layers}
+						layerState={enabledLayers}
+						syncLayers={setEnabledLayers}
+						showFullscreen
+						showReset
 					/>
 					
-					{airportMarkers}
+					{enabledLayers.has("advisory") && airportMarkers}
 					
-					<Source type="geojson" data={centers}>
-						<Layer
-							{...{
-								id: 'airspace',
-								type: 'line',
-								paint: {
-									'line-color': [
-										'match',
-										['get', 'status'],
-										layerStyle.lineColor,
-										layerStyle.lineColor,
-										layerStyle.lineColor
-									],
-									'line-opacity': 0.2
-								}
-							}}
-						/>
-						
-						<Layer
-							id="airspace-label"
-							type="symbol"
-							layout={{
-								'text-field': ['get', 'IDENT'],
-								'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-								'text-size': 14,
-								'symbol-placement': 'point'
-							}}
-							paint={{ 'text-color': layerStyle.textColor }}
-						/>
-					</Source>
+					{enabledLayers.has("airspace") && (
+						<Source type="geojson" data={centers}>
+							<Layer
+								{...{
+									id: 'airspace',
+									type: 'line',
+									paint: {
+										'line-color': [
+											'match',
+											['get', 'status'],
+											layerStyle.lineColor,
+											layerStyle.lineColor,
+											layerStyle.lineColor
+										],
+										'line-opacity': 0.2
+									}
+								}}
+							/>
+							
+							<Layer
+								id="airspace-label"
+								type="symbol"
+								layout={{
+									'text-field': ['get', 'IDENT'],
+									'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+									'text-size': 14,
+									'symbol-placement': 'point'
+								}}
+								paint={{ 'text-color': layerStyle.textColor }}
+							/>
+						</Source>
+					)}
 				</Map>
 			</div>
-		</div>	
-	)
+		</div>
+	);
+	
+	const initialView = {
+		latitude: 37,
+		longitude: -97.5,
+		zoom: 3.25
+	};
 	
 	return (
-		<div className="w-full min-h-[400px] sm:min-h-[600px] h-full relative overflow-hidden">
+		<div
+			ref={mapContainerRef}
+			data-fullscreen={false}
+			className="w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:min-h-[400px] sm:data-[fullscreen='false']:min-h-[600px] h-full relative overflow-hidden"
+		>
 			<div className="absolute inset-0">
 				<Map
 					mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
@@ -233,56 +289,58 @@ export const AirspaceMap: React.FC = () => {
 					projection="mercator"
 					interactiveLayerIds={['airspace']}
 					attributionControl={false}
-					style={{ width: "100%", height: "600px" }}
+					style={{ width: "100%" }}
 					mapStyle={
 						theme === 'dark'
 							? 'mapbox://styles/mapbox/dark-v11'
 							: 'mapbox://styles/mapbox/light-v11'
 					}
 				>
-					<NavigationControl position="top-right" />
-					<AttributionControl
-						compact
-						customAttribution="Skywatch (c) 2025"
-						style={{
-							color: "black",
-							fontSize: "12px",
-							fontFamily: "monospace",
-						}}
+					<MapControls
+						ref={mapContainerRef}
+						position="top-right"
+						initialView={initialView}
+						layers={layers}
+						layerState={enabledLayers}
+						syncLayers={setEnabledLayers}
+						showFullscreen
+						showReset
 					/>
 					
-					{airportMarkers}
+					{enabledLayers.has("advisory") && airportMarkers}
 					
-					<Source type="geojson" data={centers}>
-						<Layer
-							{...{
-								id: 'airspace',
-								type: 'line',
-								paint: {
-									'line-color': [
-										'match',
-										['get', 'status'],
-										layerStyle.lineColor,
-										layerStyle.lineColor,
-										layerStyle.lineColor
-									],
-									'line-opacity': 0.2
-								}
-							}}
-						/>
-						
-						<Layer
-							id="airspace-label"
-							type="symbol"
-							layout={{
-								'text-field': ['get', 'IDENT'],
-								'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-								'text-size': 14,
-								'symbol-placement': 'point'
-							}}
-							paint={{ 'text-color': layerStyle.textColor }}
-						/>
-					</Source>
+					{enabledLayers.has("airspace") && (
+						<Source type="geojson" data={centers}>
+							<Layer
+								{...{
+									id: 'airspace',
+									type: 'line',
+									paint: {
+										'line-color': [
+											'match',
+											['get', 'status'],
+											layerStyle.lineColor,
+											layerStyle.lineColor,
+											layerStyle.lineColor
+										],
+										'line-opacity': 0.2
+									}
+								}}
+							/>
+							
+							<Layer
+								id="airspace-label"
+								type="symbol"
+								layout={{
+									'text-field': ['get', 'IDENT'],
+									'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+									'text-size': 14,
+									'symbol-placement': 'point'
+								}}
+								paint={{ 'text-color': layerStyle.textColor }}
+							/>
+						</Source>
+					)}
 				</Map>
 			</div>
 		</div>

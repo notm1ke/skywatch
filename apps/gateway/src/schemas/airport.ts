@@ -48,7 +48,7 @@ export const AirportMetar = z.object({
 	wgst: z.number().nullish(), // wind gust (kts)
 	visib: z.union([z.string(), z.number()]), // "n+" or just n (statute miles)
 	altim: z.number(), // altimeter (hPa)
-	slp: z.number(), // sea-level pressure (hPa)
+	slp: z.number().nullish(), // sea-level pressure (hPa)
 	qcField: z.number(), // 1-5 quality control score
 	wxString: z.string().nullish(), // severe weather string (i.e. -FZRA PL)
 	maxT: z.number().nullish(),

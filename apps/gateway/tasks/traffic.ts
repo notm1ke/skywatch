@@ -6,6 +6,8 @@ import { defineTask } from "nitro/task";
 import { prisma } from "@/services/prisma";
 import { AirportTrafficFlow, FlowMetricType } from "@/schemas";
 
+const DEV_DISABLED = process.env.DEV_DISABLE_SCHEDULED_TASKS;
+
 export type TrafficFlowResponse = {
 	name: string; // IATA
 	totalFlightCount: string; // int
@@ -70,6 +72,11 @@ const traffic = defineTask({
 		description: "Pulls down current AADC records from FAA",
 	},
 	async run() {
+		if (process.env.NODE_ENV === "development" && DEV_DISABLED === 'true') {
+			console.warn('Skipped AADC traffic task due to environment config.')
+			return { result: "Skipped" };
+		}
+		
 		const start = Date.now();
 		console.log("Triggering AADC traffic synchronization..");
 		const tracked = new Set(

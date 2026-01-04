@@ -8,7 +8,7 @@ import { QueryProvider } from "~/components/query-provider";
 import { MobileProvider } from "~/components/mobile-provider";
 import { ThemeProvider } from "~/components/ui/theme-provider";
 
-import 'mapbox-gl/dist/mapbox-gl.css';
+import "mapbox-gl/dist/mapbox-gl.css";
 import "./globals.css";
 
 const geistSans = Geist({

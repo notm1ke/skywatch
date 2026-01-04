@@ -131,7 +131,7 @@ const Tutorial: React.FC<PropsWithChildren> = ({ children }) => (
 						<h3 className="font-semibold text-base mb-2">What is RVR?</h3>
 						<p className="text-zinc-700 dark:text-zinc-400">
 							Runway Visual Range (RVR) measures how far pilots can see down the runway, critical for takeoffs and
-							landings in low visibility conditions like fog, rain, or snow.
+							landings in low visibility operations.
 						</p>
 					</div>
 	
@@ -241,8 +241,7 @@ const Tutorial: React.FC<PropsWithChildren> = ({ children }) => (
 									</div>
 								</div>
 								<p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1.5">
-									Upward chevrons indicate visibility is <span className="text-lime-700 dark:text-lime-300">improving</span> - conditions
-									are getting better
+									Upward chevrons indicate visibility is <span className="text-lime-700 dark:text-lime-300">improving</span>.
 								</p>
 							</div>
 	
@@ -287,8 +286,7 @@ const Tutorial: React.FC<PropsWithChildren> = ({ children }) => (
 									</div>
 								</div>
 								<p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1.5">
-									Downward chevrons indicate visibility is <span className="text-orange-700 dark:text-orange-300">deteriorating</span> -
-									conditions are getting worse
+									Downward chevrons indicate visibility is <span className="text-orange-700 dark:text-orange-300">deteriorating</span>.
 								</p>
 							</div>
 	
@@ -306,8 +304,7 @@ const Tutorial: React.FC<PropsWithChildren> = ({ children }) => (
 									</div>
 								</div>
 								<p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1.5">
-									No chevron pattern indicates visibility is <span className="text-zinc-700 dark:text-zinc-300">steady</span> -
-									conditions are stable
+									No chevron pattern indicates visibility is <span className="text-zinc-700 dark:text-zinc-300">steady</span>.
 								</p>
 							</div>
 						</div>
@@ -427,11 +424,16 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 				.runways
 				.filter(rwy => {
 					const pattern = /\d{1,2}(L|R|C)?/g;
+					console.log(rwy);
 					return (pattern.test(rwy.le_ident!) || pattern.test(rwy.he_ident!)) && !rwy.closed;
 				})
 				.map(rwy => {
 					const name = `${padZero(rwy.le_ident!)}/${padZero(rwy.he_ident!)}`;
-					const rvrData = rvr.runways.find(r => r.name === padZero(rwy.le_ident!));
+					const rvrData = rvr.runways.find(
+						r => r.name === padZero(rwy.le_ident!)
+							|| r.name === padZero(rwy.he_ident!)
+					);
+					
 					return { ...rwy, name, rvrData };
 				})
 				.sort((a, b) => {

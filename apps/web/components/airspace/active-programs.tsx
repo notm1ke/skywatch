@@ -15,8 +15,9 @@ import { GroundDelayProgram } from "./programs/ground-delay";
 import { Skeleton, SkeletonWithDelay } from "../ui/skeleton";
 import { AirportClosureProgram } from "./programs/airport-closure";
 import { SpecialAdvisoryProgram } from "./programs/special-advisory";
-import { ChevronRight, CircleArrowRight, Snowflake } from "lucide-react";
 import { Disclosure, DisclosureContent, DisclosureTrigger } from "../ui/disclosure";
+import { ChevronRight, CircleArrowRight, CircleCheckBig, Snowflake } from "lucide-react";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "../ui/empty";
 
 import {
 	ContextMenu,
@@ -208,6 +209,22 @@ export const ActivePrograms = () => {
 			</div>
 			<div className="border-t">
 				<ScrollArea maskHeight={20} className="sm:min-h-auto h-[300px] sm:h-[559px] sm:max-h-[800px]">
+					{!advisories.length && (
+						<Empty>
+							<EmptyHeader>
+								<EmptyMedia>
+									<div className="bg-green-200 dark:bg-green-700 p-2 rounded-lg">
+										<CircleCheckBig />
+									</div>
+								</EmptyMedia>
+								<EmptyTitle>No active interruptions</EmptyTitle>
+								<EmptyDescription>
+									The FAA does not have any active airport advisories right now.
+								</EmptyDescription>
+							</EmptyHeader>
+						</Empty>
+					)}
+					
 					{advisories.sort(sortOrder).map((advisory, i) => {
 						const airport = airports.find(airport => airport.iata_code === advisory.airportId);
 						if (!airport) return null;

@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from "react";
 import { StandardRPCJsonSerializer } from "@orpc/client/standard";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const serializer = new StandardRPCJsonSerializer();

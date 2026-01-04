@@ -1,12 +1,11 @@
 import { Button } from "./ui/button";
-import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 import { useIsMounted } from "~/hooks/use-is-mounted";
-import { Resolved, ThemeSelection, ThemeToggler } from "./ui/theme-toggler";
+import { useThemeToggle } from "~/hooks/use-theme-toggle";
 
 export const ThemeToggle = () => {
-	const { theme, resolvedTheme, setTheme } = useTheme();
 	const mounted = useIsMounted();
+	const { toggleTheme } = useThemeToggle();
 	
 	if (!mounted) return (
 		<Button
@@ -17,27 +16,17 @@ export const ThemeToggle = () => {
 		</Button>
 	);
 
+	// <Moon className="size-5.5 hidden dark:block" />
+	// <Sun className="size-5.5 dark:hidden" />
+ 
 	return (
-		<ThemeToggler
-			theme={theme as ThemeSelection}
-			resolvedTheme={resolvedTheme as Resolved}
-			setTheme={setTheme}
-			direction="ttb"
+		<Button
+			variant="ghost"
+			className="cursor-pointer"
+			onClick={toggleTheme}
 		>
-			{({ effective, toggleTheme }) => (
-				<Button
-					variant="ghost"
-					className="cursor-pointer"
-					onClick={() => toggleTheme(
-						effective === "dark"
-							? "light"
-							: "dark"
-					)}
-				>
-					<Moon className="size-5.5 hidden dark:block" />
-					<Sun className="size-5.5 dark:hidden" />
-				</Button>
-			)}
-		</ThemeToggler>
+			<Moon className="size-5.5 hidden dark:block" />
+			<Sun className="size-5.5 dark:hidden" />
+		</Button>
 	)
 }

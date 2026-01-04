@@ -6,6 +6,7 @@ import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { AdvisoryType, advisoryPriority } from "./active-programs";
 import { formatAirportLocation, shortenAirportName } from "~/lib/utils";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
+import Link from "next/link";
 
 const indicator = (advisory: AirportAdvisory, priority: AdvisoryType) => {
 	switch (priority) {
@@ -69,32 +70,37 @@ export const AirspaceMapHoverCard: React.FC<PropsWithChildren<{ advisory: Airpor
 	const priority = advisoryPriority(advisory);
 	
 	return (
-		<HoverCard
-			openDelay={50}
-			onOpenChange={open => {
-				if (!open) hover(null);
-				if (advisory.airportId === hovered?.airportId) return;
-				else hover(advisory);
-			}}
-		>
-			<HoverCardTrigger>{children}</HoverCardTrigger>
-			<HoverCardContent className="w-64">
-				<div className="flex flex-row items-start gap-4">
-					<div>
-						<span className="text-zinc-800 dark:text-zinc-400 font-mono font-bold text-sm">
-							{airport.iata_code}
-						</span>
-					</div>
-
-					<div className="space-y-1">
-						<h4 className="text-sm font-semibold">{shortenAirportName(airport.name)}</h4>
-						<p className="text-sm">{formatAirportLocation(airport)}</p>
-						<div className="text-muted-foreground text-xs">
-							{indicator(advisory, priority)}
+			<HoverCard
+				openDelay={50}
+				onOpenChange={open => {
+					if (!open) hover(null);
+					if (advisory.airportId === hovered?.airportId) return;
+					else hover(advisory);
+				}}
+			>
+				<HoverCardTrigger>{children}</HoverCardTrigger>
+				<HoverCardContent className="w-64">
+					<Link
+						href={`/airports/${airport.iata_code}`}
+						onClick={() => hover(null)}
+					>
+						<div className="flex flex-row items-start gap-4">
+							<div>
+								<span className="text-zinc-800 dark:text-zinc-400 font-mono font-bold text-sm">
+									{airport.iata_code}
+								</span>
+							</div>
+		
+							<div className="space-y-1">
+								<h4 className="text-sm font-semibold">{shortenAirportName(airport.name)}</h4>
+								<p className="text-sm">{formatAirportLocation(airport)}</p>
+								<div className="text-muted-foreground text-xs">
+									{indicator(advisory, priority)}
+								</div>
+							</div>
 						</div>
-					</div>
-				</div>
-			</HoverCardContent>
-		</HoverCard>
+					</Link>
+				</HoverCardContent>
+			</HoverCard>
 	);
 } 
