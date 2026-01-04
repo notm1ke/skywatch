@@ -43,6 +43,19 @@ const QuickLink: React.FC<PropsWithChildren<{ href: string }>> = ({ href, childr
 	</a>
 )
 
+const DropdownMenuQuickLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+	<DropdownMenuItem asChild>
+		<a
+			href={href}
+			className="flex flex-row items-center gap-2 [&>img]:mr-0.5 [&>svg]:mr-0.5"
+			target="_blank"
+			rel="noopener noreferrer"
+		>
+			{children}
+		</a>
+	</DropdownMenuItem>
+);
+
 const MobileQuickLinksControl: React.FC<{ airport: AirportWithJoins }> = ({ airport }) => (
 	<DropdownMenu>
 		<DropdownMenuTrigger asChild>
@@ -52,28 +65,33 @@ const MobileQuickLinksControl: React.FC<{ airport: AirportWithJoins }> = ({ airp
 		</DropdownMenuTrigger>
 		<DropdownMenuContent side="left" align="start">
 			{airport.home_link && (
-				<DropdownMenuItem>
+				<DropdownMenuQuickLink href={airport.home_link}>
 					<AirportSiteFavicon url={airport.home_link} />
 					{getUrlDomain(airport.home_link)}
-				</DropdownMenuItem>
+				</DropdownMenuQuickLink>
 			)}
+			
+			<DropdownMenuQuickLink href={`https://adip.faa.gov/agis/public/#/airportData/${airport.iata_code}`}>
+				<AirportSiteFavicon url={`https://adip.faa.gov/agis/public/#/airportData/${airport.iata_code}`} />
+				ADIP
+			</DropdownMenuQuickLink>
 			
 			{airport.wikipedia_link && (
-				<DropdownMenuItem>
+				<DropdownMenuQuickLink href={airport.wikipedia_link}>
 					<WikipediaIcon className="fill-black dark:fill-white" />
 					Wikipedia
-				</DropdownMenuItem>
+				</DropdownMenuQuickLink>
 			)}
 			
-			<DropdownMenuItem>
+			<DropdownMenuQuickLink href={`https://www.liveatc.net/search/?icao=${airport.icao_code}`}>
 				<RadioTower />
 				LiveATC
-			</DropdownMenuItem>
+			</DropdownMenuQuickLink>
 			
-			<DropdownMenuItem>
+			<DropdownMenuQuickLink href={`https://www.google.com/maps/search/${airport.name}`}>
 				<GoogleMapsIcon />
 				Google Maps
-			</DropdownMenuItem>
+			</DropdownMenuQuickLink>
 		</DropdownMenuContent>
 	</DropdownMenu>
 )
@@ -143,6 +161,8 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 		latitude: airport.latitude_deg,
 		zoom: mobile ? 11.9 : 12.5,
 	};
+
+	const adipUrl = `https://adip.faa.gov/agis/public/#/airportData/${airport.iata_code}`;
 	
 	return (
 		<div
@@ -171,12 +191,14 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 					layers={layers}
 					layerState={enabledLayers}
 					syncLayers={setEnabledLayers}
-					customControls={[
-						<MobileQuickLinksControl
-							key="mobile-quick-links-map-control"
-							airport={airport}
-						/>
-					]}
+					customControls={
+						mobile ? [
+							<MobileQuickLinksControl
+								key="mobile-quick-links-map-control"
+								airport={airport}
+							/>
+						] : []
+					}
 					showFullscreen
 					showReset
 				/>
@@ -301,10 +323,14 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 				{airport.home_link && (
 					<QuickLink href={airport.home_link}>
 						<AirportSiteFavicon url={airport.home_link} />
-						{mobile && "Website"}
-						{mobile !== undefined && !mobile && getUrlDomain(airport.home_link, "Website")}
+						{getUrlDomain(airport.home_link, "Website")}
 					</QuickLink>
 				)}
+				
+				<QuickLink href={adipUrl}>
+					<AirportSiteFavicon url={adipUrl} />
+					ADIP
+				</QuickLink>
 				
 				{airport.wikipedia_link && (
 					<QuickLink href={airport.wikipedia_link}>

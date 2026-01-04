@@ -76,13 +76,17 @@ const CenterBadge: React.FC<{ center: string }> = ({ center }) => (
 export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: AirportAdvisory }> = ({ airport, advisory }) => (
 	<div className="sticky top-0 border-y border-orange-700/20 bg-orange-700/10 px-4.5 py-3 backdrop-blur-sm">
 		<div className="flex items-center gap-3 justify-between">
-			<span className="flex flex-row items-center gap-2 text-sm font-semibold text-orange-600">
-				<CircleOff className="size-4" />
-				Ground Stop
-			</span>
+			<div className="flex flex-row space-x-3">
+				<span className="flex flex-row items-center gap-2 text-sm font-semibold text-orange-600">
+					<CircleOff className="size-4" />
+					Ground Stop
+				</span>
+				<span className="hidden sm:flex text-sm text-orange-400/70">
+					{capitalizeFirst(advisory.groundStop!.impactingCondition)}
+				</span>
+			</div>
 			<div className="flex font-mono text-sm text-orange-600 items-center gap-3 h-4">
 				<span>
-					<span className="max-w-[35ch] truncate">{capitalizeFirst(advisory.groundStop!.impactingCondition)}{" / "}</span>
 					Ends in {getLatestTimeValue(
 						moment
 							.utc(advisory.groundStop!.programExpirationTime)
