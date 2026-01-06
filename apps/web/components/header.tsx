@@ -15,6 +15,7 @@ const NavLinks: AnimatedTabItem[] = [
 	{ content: "Airports", tabType: "airports", href: "/airports" },
 	// { content: "Planes", tabType: "airplanes", href: "/airplanes" },
 	{ content: "TFRs", tabType: "tfrs", href: "/tfrs" },
+	{ content: "Waypoints", tabType: "waypoints", href: "/waypoints" },
 	{ content: "Statistics", tabType: "statistics", href: "/statistics" },
 ];
 

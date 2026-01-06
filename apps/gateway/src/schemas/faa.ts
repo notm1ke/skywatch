@@ -214,3 +214,33 @@ export const TfrResponse = z.object({
 	tfrs: z.array(Tfr),
 	geo: TfrGeoJson
 });
+
+const PointCoordinate = z.array(z.number()).length(2);
+
+export const WaypointFeatureMetadata = z.object({
+	waypoint_id: z.string(),
+	waypoint_use_code: z.string(),
+	icao_region_code: z.string(),
+	state_code: z.string(),
+	charts: z.array(z.string()),
+	charting_remark: z.string(),
+	artcc_id_high: z.string(),
+	artcc_id_low: z.string(),
+	min_reception_alt: z.number(),
+	special_use_flag: z.boolean(),
+	catch_flag: z.boolean(),
+	pitch_flag: z.boolean(),
+	compulsory: z.string()
+});
+
+export const WaypointGeoJson = z.object({
+	type: z.literal("FeatureCollection"),
+	features: z.array(z.object({
+		type: z.literal("Feature"),
+		properties: WaypointFeatureMetadata,
+		geometry: z.object({
+			type: z.literal("Point"),
+			coordinates: PointCoordinate
+		})
+	}))
+});

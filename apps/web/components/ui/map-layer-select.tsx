@@ -1,8 +1,10 @@
 "use client";
 
+import { Skeleton } from "./skeleton";
 import { PropsWithChildren } from "react";
 import { MapLayers } from "./map-controls";
 import { Circle, Check } from "lucide-react";
+import { shortNumberFormatter } from "~/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
@@ -23,7 +25,7 @@ interface MapLayerSelectorProps {
 export function MapLayerSelector({ items, selectedKeys, onSelectionChange, children, side }: PropsWithChildren<MapLayerSelectorProps>) {
 	const padding = 4;
 	const maxNameWidth = Math.max(...items.map(item => item.name.length));
-	const maxCountWidth = Math.max(...items.map(item => item.count.toString().length));
+	const maxCountWidth = Math.max(...items.map(item => shortNumberFormatter.format(item.count).length));
 	const width = `${Math.max(maxNameWidth + maxCountWidth + padding, 16)}ch`;
 
 	const handleToggleItem = (key: string) => {
@@ -73,7 +75,8 @@ export function MapLayerSelector({ items, selectedKeys, onSelectionChange, child
 							<span className="truncate flex-1">{item.name}</span>
 							{item.count !== undefined && (
 								<span className="text-xs text-muted-foreground tabular-nums">
-									{item.count.toLocaleString()}
+									{isNaN(item.count) && <Skeleton className="h-4 w-8" />}
+									{!isNaN(item.count) && shortNumberFormatter.format(item.count)}
 								</span>
 							)}
 							<div className="w-4 flex items-center justify-center">

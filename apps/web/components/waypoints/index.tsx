@@ -1,0 +1,158 @@
+"use client";
+
+import { orpc } from "~/lib/gateway";
+import { Button } from "../ui/button";
+import { useTheme } from "next-themes";
+import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { RefreshCcw, WaypointsIcon } from "lucide-react";
+import { Layer, Map, Source } from "react-map-gl/mapbox";
+import { MapControls, MapLayers } from "../ui/map-controls";
+
+import {
+	Empty,
+	EmptyContent,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle
+} from "../ui/empty";
+
+export const WaypointsTab = () => {
+	const { resolvedTheme: theme } = useTheme();
+	const { data, isLoading, error, refetch} = useQuery(orpc.airspace.waypoints.geojson.queryOptions());
+	
+	const mapContainerRef = useRef<HTMLDivElement>(null);
+	const layers: MapLayers = [
+		{
+			key: "waypoint",
+			name: "Waypoint",
+			color: "var(--color-purple-400)",
+			count: data?.features.length || NaN
+		},
+		{
+			key: "label",
+			name: "Label",
+			color: "var(--color-zinc-400)",
+			count: data?.features.length || NaN
+		}
+	];
+	
+	const [enabledLayers, setEnabledLayers] = useState<Set<string>>(
+		() => new Set<string>(
+			layers
+				.filter(layer => layer.defaultState === undefined || layer.defaultState === true)
+				.map(layer => layer.key)
+		)
+	);
+	
+	if (error || (!isLoading && !data)) return (
+		<div className="h-[calc(100vh-8rem)] flex flex-col items-center justify-center bg-muted/5">
+			<Empty>
+				<EmptyHeader>
+					<EmptyMedia>
+						<div className="relative bg-red-200 dark:bg-red-700 px-2 py-2 rounded-lg">
+							<WaypointsIcon className="size-6 text-red-600 dark:text-red-300" />
+						</div>
+					</EmptyMedia>
+					<EmptyTitle>Something went wrong</EmptyTitle>
+					<EmptyDescription>
+						We ran into an issue while retrieving waypoint data, please try again.
+					</EmptyDescription>
+
+					<EmptyContent className="mt-2">
+						<Button
+							size="sm"
+							variant="outline"
+							className="text-muted-foreground"
+							onClick={() => refetch()}
+						>
+							<RefreshCcw />
+							<span>Retry</span>
+						</Button>
+					</EmptyContent>
+				</EmptyHeader>
+			</Empty>
+		</div>
+	)
+	
+	return (
+		<div
+			ref={mapContainerRef}
+			className="w-full h-[calc(85svh)]"
+			data-fullscreen={false}
+		>
+			<Map
+				mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+				initialViewState={{
+					latitude: 37.833333,
+					longitude: -97.583333,
+					zoom: 4.15
+				}}
+				projection="mercator"
+				attributionControl={false}
+				interactiveLayerIds={['airspace']}
+				style={{ width: "100%" }}
+				mapStyle={
+					theme === "dark"
+						? "mapbox://styles/mapbox/dark-v11"
+						: "mapbox://styles/mapbox/light-v11"
+				}
+			>
+				<MapControls
+					ref={mapContainerRef}
+					position="top-right"
+					initialView={{
+						latitude: 37.833333,
+						longitude: -97.583333,
+						zoom: 4.15
+					}}
+					layers={layers}
+					layerState={enabledLayers}
+					syncLayers={setEnabledLayers}
+					showFullscreen
+					showReset
+				/>
+				
+				{enabledLayers.has("waypoint") && (
+					<Source id="markers" type="geojson" data={data}>
+						<Layer
+							id="points"
+							type="circle"
+							minzoom={3.5}
+							paint={{
+								'circle-radius': 4,
+								'circle-color': theme === "dark" ? "#6E11B0" : "#C27AFF",
+								"circle-opacity": 0.85
+							}}
+						 />
+					</Source>	
+				)}
+				
+				{enabledLayers.has("label") && (
+					<Source id="text" type="geojson" data={data}>
+						<Layer
+							id="labels"
+							type="symbol"
+							minzoom={7}
+							layout={{
+								'text-field': ['get', 'waypoint_id'],
+								'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+								'text-size': 11.5,
+								'text-offset': [0, 1],
+								'text-anchor': 'top',
+								'icon-text-fit': 'none',
+							}}
+							paint={{
+								"text-opacity": 0.85,
+								'text-color': theme === "dark"
+									? "#ffffff"
+									: "#000000",
+							}}
+						/>
+					</Source>
+				)}
+			</Map>
+		</div>
+	)
+}
