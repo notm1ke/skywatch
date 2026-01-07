@@ -1,5 +1,6 @@
 import { z } from "zod/v4";
 import { base } from "@/utils";
+import { ORPCError } from "@orpc/server";
 import { prisma } from "@/services/prisma";
 import { WaypointGeoJson } from "@/schemas";
 
@@ -39,8 +40,69 @@ export const findById = base
 	.handler(async ({ input: { waypoint_id } }) => prisma
 		.waypoint
 		.findFirst({ where: { waypoint_id } })
+		.then(async result => {
+			if (!result) throw new ORPCError("NOT_FOUND");
+			const marker = await prisma
+				.airportTrafficFlow
+				.findFirst({
+					orderBy: [
+						{ year: 'desc' },
+						{ month: 'desc' },
+						{ day: 'desc' }
+					],
+					select: {
+						year: true,
+						month: true,
+						day: true
+					}
+				})
+				.then(marker => {
+					if (!marker || !marker.month || !marker.day) {
+						return null;
+					}
+
+					return marker;
+				})
+				.catch(() => null);
+			
+			if (!marker) return {
+				...result,
+				airports: []
+			}
+			
+			const airports = await prisma
+				.airportTrafficFlow
+				.findMany({
+					distinct: ["iata_code"],
+					select: { iata_code: true },
+					where: {
+						month: marker.month,
+						day: marker.day,
+						year: marker.year,
+						fixes: { has: result.waypoint_id }
+					}
+				})
+				.then(rows => rows.map(row => row.iata_code));
+				
+			return { ...result, airports }
+		})
+	);
+
+export const search = base
+	.input(z.object({ query: z.string() }))
+	.handler(async ({ input: { query } }) => prisma
+		.waypoint
+		.findMany({
+			where: {
+				waypoint_id: {
+					startsWith: query,
+					mode: "insensitive"
+				}
+			},
+			take: 100
+		})
 	);
 
 export const waypoints = {
-	geojson, findById
+	geojson, findById, search
 }

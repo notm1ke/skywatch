@@ -1,13 +1,17 @@
 "use client";
 
+import { Badge } from "../ui/badge";
 import { orpc } from "~/lib/gateway";
+import { motion } from "motion/react";
 import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
+import { WaypointSearchbar } from "./search";
 import { useQuery } from "@tanstack/react-query";
-import { RefreshCcw, WaypointsIcon } from "lucide-react";
+import { useWaypointPageControls } from "./store";
 import { Layer, Map, Source } from "react-map-gl/mapbox";
 import { MapControls, MapLayers } from "../ui/map-controls";
+import { Loader, RefreshCcw, WaypointsIcon } from "lucide-react";
 
 import {
 	Empty,
@@ -17,10 +21,12 @@ import {
 	EmptyMedia,
 	EmptyTitle
 } from "../ui/empty";
+import { WaypointDetailsPane } from "./details";
 
 export const WaypointsTab = () => {
 	const { resolvedTheme: theme } = useTheme();
-	const { data, isLoading, error, refetch} = useQuery(orpc.airspace.waypoints.geojson.queryOptions());
+	const { active } = useWaypointPageControls();
+	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.waypoints.geojson.queryOptions());
 	
 	const mapContainerRef = useRef<HTMLDivElement>(null);
 	const layers: MapLayers = [
@@ -79,7 +85,7 @@ export const WaypointsTab = () => {
 	return (
 		<div
 			ref={mapContainerRef}
-			className="w-full h-[calc(85svh)]"
+			className="relative w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-[calc(85svh)]"
 			data-fullscreen={false}
 		>
 			<Map
@@ -99,6 +105,8 @@ export const WaypointsTab = () => {
 						: "mapbox://styles/mapbox/light-v11"
 				}
 			>
+				<WaypointSearchbar />
+				
 				<MapControls
 					ref={mapContainerRef}
 					position="top-right"
@@ -114,43 +122,61 @@ export const WaypointsTab = () => {
 					showReset
 				/>
 				
-				{enabledLayers.has("waypoint") && (
-					<Source id="markers" type="geojson" data={data}>
-						<Layer
-							id="points"
-							type="circle"
-							minzoom={3.5}
-							paint={{
-								'circle-radius': 4,
-								'circle-color': theme === "dark" ? "#6E11B0" : "#C27AFF",
-								"circle-opacity": 0.85
-							}}
-						 />
-					</Source>	
+				{isLoading && (
+					<motion.div
+						className="absolute bottom-2 right-2"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.3 }}
+					>
+						<Badge variant="purple" className="rounded-sm py-2 px-2">
+							<Loader className="animate-spin duration-200" />
+						</Badge>
+					</motion.div>
 				)}
 				
-				{enabledLayers.has("label") && (
-					<Source id="text" type="geojson" data={data}>
-						<Layer
-							id="labels"
-							type="symbol"
-							minzoom={7}
-							layout={{
-								'text-field': ['get', 'waypoint_id'],
-								'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-								'text-size': 11.5,
-								'text-offset': [0, 1],
-								'text-anchor': 'top',
-								'icon-text-fit': 'none',
-							}}
-							paint={{
-								"text-opacity": 0.85,
-								'text-color': theme === "dark"
-									? "#ffffff"
-									: "#000000",
-							}}
-						/>
-					</Source>
+				{!isLoading && (
+					<>
+						{enabledLayers.has("waypoint") && (
+							<Source id="markers" type="geojson" data={data}>
+								<Layer
+									id="points"
+									type="circle"
+									minzoom={3.5}
+									paint={{
+										'circle-radius': 4,
+										'circle-color': theme === "dark" ? "#6E11B0" : "#C27AFF",
+										"circle-opacity": 0.85
+									}}
+								 />
+							</Source>	
+						)}
+						
+						{enabledLayers.has("label") && (
+							<Source id="text" type="geojson" data={data}>
+								<Layer
+									id="labels"
+									type="symbol"
+									minzoom={7}
+									layout={{
+										'text-field': ['get', 'waypoint_id'],
+										'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+										'text-size': 11.5,
+										'text-offset': [0, 1],
+										'text-anchor': 'top',
+										'icon-text-fit': 'none',
+									}}
+									paint={{
+										"text-opacity": 0.85,
+										'text-color': theme === "dark"
+											? "#ffffff"
+											: "#000000",
+									}}
+								/>
+							</Source>
+						)}
+					</>
 				)}
 			</Map>
 		</div>

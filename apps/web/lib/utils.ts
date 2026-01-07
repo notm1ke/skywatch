@@ -13,6 +13,8 @@ export type RemoteChartType =
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
+export const immediately = (callback: () => any) => setTimeout(callback, 1);
+
 export const shortNumberFormatter = new Intl.NumberFormat('en', {
   notation: "compact",
   compactDisplay: "short",

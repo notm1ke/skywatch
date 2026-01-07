@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { WaypointGetPayload } from "@/prisma/generated/models";
 
 export const AirportStatus = z.enum([
 	"normal",
@@ -215,6 +216,60 @@ export const TfrResponse = z.object({
 	geo: TfrGeoJson
 });
 
+export type Waypoint = WaypointGetPayload<{}>;
+
+export const WaypointUseType = [
+	"RADAR",
+	"WP",
+	"CN",
+	"MW",
+	"NRS",
+	"VFR",
+	"RP",
+	"MR"
+] as const;
+
+export type WaypointUseType = typeof WaypointUseType[number];
+
+export const WaypointUseLocalizations: Record<string, string> = {
+	RADAR: "Radar-only",
+	WP: "Waypoint",
+	CN: "Computer Navigation",
+	MW: "Military Waypoint",
+	NRS: "Nav-Ref Grid Point",
+	VFR: "Visual Aid",
+	RP: "Reporting Point",
+	MR: "Military Reporting Point"
+};
+
+export const WaypointChartLocalizations: Record<string, string> = {
+	"AREA": "Enroute Area",
+	"CONTROLLER": "ARTCC",
+	"CONTROLLER LOW": "ARTCC Low Alt",
+	"CONTROLLER HIGH": "ARTCC High Alt",
+	"ENROUTE LOW": "IFR Enroute Low Alt",
+	"ENROUTE HIGH": "IFR Enroute High Alt",
+	"GULF COAST VFR CHART": "Gulf of America VFR",
+	"HELICOPTER ROUTE": "Helicopter Route",
+	"IAP": "Instrument Appr Procedure",
+	"IFR GOA VERTICAL FLT": "Gulf of America IFR Vert Ref",
+	"MILITARY IAP": "Military IAP",
+	"MILITARY STAR": "Military STAR",
+	"MILITARY SID": "Military SID",
+	"NORTH ATLANTIC ROUTE": "Atlantic Tracks High Alt",
+	"NORTH PACIFIC ROUTE": "Pacific Tracks High Alt",
+	"NOT REQUIRED": "Not Published",
+	"PRIVATE IAP": "Private IAP",
+	"SECTIONAL": "Sectional Aero",
+	"SID": "Std Instrument Dept",
+	"SPECIAL DP": "Special Dept Procedure",
+	"SPECIAL IAP": "Special IAP",
+	"STAR": "Std Terminal Arrival Route",
+	"WESTERN ATLANTIC ROUTE": "WATRS",
+	"VFR FLYWAY PLANNING": "VFR Flyway Planning",
+	"VFR TERMINAL AREA": "Terminal Area",
+	}
+
 const PointCoordinate = z.array(z.number()).length(2);
 
 export const WaypointFeatureMetadata = z.object({
@@ -244,3 +299,8 @@ export const WaypointGeoJson = z.object({
 		})
 	}))
 });
+
+export const WaypointWithDynamic = z.object({
+	...WaypointFeatureMetadata,
+	airports: z.array(z.string())
+})
