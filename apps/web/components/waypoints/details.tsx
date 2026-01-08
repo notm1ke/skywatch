@@ -175,7 +175,7 @@ export const WaypointDetailsPane = () => {
 					{/* location + coords */}
 					<div className="flex flex-row justify-between">
 						<div className="flex flex-row items-start gap-3">
-							<Compass className={cn("size-5 mt-[3px]", indicator.color)} />
+							<Compass className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
 							<div className="flex flex-col space-y-0.5 font-mono">
 								<div>{renderWaypointLocation(waypoint)}</div>
 								<div className="text-xs text-muted-foreground">
@@ -203,7 +203,7 @@ export const WaypointDetailsPane = () => {
 					
 					{/* airspace info */}
 					<div className="flex flex-row items-start gap-3">
-						<Radar className={cn("size-5 mt-[3px]", indicator.color)} />
+						<Radar className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
 						<div className="flex-col space-y-0.5 font-mono">
 							<div>Airspace</div>
 							<div className="text-xs text-muted-foreground">
@@ -216,7 +216,7 @@ export const WaypointDetailsPane = () => {
 					{/* currently in use */}
 					{waypoint.airports.length > 0 && (
 						<div className="flex flex-row items-start gap-3">
-							<TowerControl className={cn("size-5 mt-[3px]", indicator.color)} />
+							<TowerControl className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
 							<div className="flex-col space-y-0.5 font-mono">
 								<div>Associated Airports</div>
 								<div className="text-xs text-muted-foreground">
@@ -229,7 +229,7 @@ export const WaypointDetailsPane = () => {
 					{/* special use airspace */}
 					{waypoint.special_use_flag && (
 						<div className="flex flex-row items-start gap-3">
-							<SquaresExclude className={cn("size-5 mt-[3px]", indicator.color)} />
+							<SquaresExclude className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
 							<div className="flex-col space-y-0.5 font-mono">
 								<div>Special Use Airspace</div>
 								<div className="text-xs text-muted-foreground">
@@ -242,7 +242,7 @@ export const WaypointDetailsPane = () => {
 					{/* min reception alt */}
 					{waypoint.min_reception_alt > 0 && (
 						<div className="flex flex-row items-start gap-3">
-							<Gauge className={cn("size-5 mt-[3px]", indicator.color)} />
+							<Gauge className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
 							<div className="flex-col space-y-0.5 font-mono">
 								<div>Minimum Reception Altitude</div>
 								<div className="text-xs text-muted-foreground">
@@ -255,7 +255,7 @@ export const WaypointDetailsPane = () => {
 					{/* compulsory reporting */}
 					{waypoint.compulsory.length > 0 && (
 						<div className="flex flex-row items-start gap-3">
-							<Megaphone className={cn("size-5 mt-[3px]", indicator.color)} />
+							<Megaphone className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
 							<div className="flex-col space-y-0.5 font-mono">
 								<div>Compulsory Reporting Point</div>
 								<div className="text-xs text-muted-foreground">
@@ -268,7 +268,7 @@ export const WaypointDetailsPane = () => {
 					{/* effective date */}
 					{!!waypoint.effective_date && (
 						<div className="flex flex-row items-start gap-3">
-							<CalendarFold className={cn("size-5 mt-[3px]", indicator.color)} />
+							<CalendarFold className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
 							<div className="flex-col space-y-0.5 font-mono">
 								<div>Last Updated</div>
 								<div className="text-xs text-muted-foreground">
@@ -281,7 +281,7 @@ export const WaypointDetailsPane = () => {
 					{/* chart remarks */}
 					{sanitizeRemarks(waypoint).length > 0 && (
 						<div className="flex flex-row items-start gap-3">
-							<ListTree className={cn("size-5 mt-[3px]", indicator.color)} />
+							<ListTree className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
 							<div className="flex-col space-y-0.5 font-mono">
 								<div>Chart Remarks</div>
 								<div className="text-xs text-muted-foreground">
@@ -295,8 +295,8 @@ export const WaypointDetailsPane = () => {
 					<div className="flex flex-row items-start gap-3">
 						{
 							waypoint.charts.length === 0
-								? <MapPinOff className={cn("size-5 mt-[3px]", indicator.color)} />
-								: <MapPinned className={cn("size-5 mt-[3px]", indicator.color)} />
+								? <MapPinOff className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
+								: <MapPinned className={cn("size-5 mt-[3px] shrink-0", indicator.color)} />
 						}
 						
 						<div className="flex-col space-y-0.5 font-mono">
