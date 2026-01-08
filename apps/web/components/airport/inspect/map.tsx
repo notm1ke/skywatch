@@ -9,8 +9,8 @@ import { WikipediaIcon } from "~/components/icons/wikipedia";
 import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { GoogleMapsIcon } from "~/components/icons/google-maps";
 import { Globe, LinkIcon, Mountain, RadioTower } from "lucide-react";
-import { MapControls, MapLayers } from "~/components/ui/map-controls";
 import { Fragment, PropsWithChildren, useRef, useState } from "react";
+import { MapControls, MapLayers, Side } from "~/components/ui/map-controls";
 
 import {
 	formatAirportLocation,
@@ -56,14 +56,14 @@ const DropdownMenuQuickLink = ({ href, children }: { href: string; children: Rea
 	</DropdownMenuItem>
 );
 
-const MobileQuickLinksControl: React.FC<{ airport: AirportWithJoins }> = ({ airport }) => (
+const MobileQuickLinksControl: React.FC<{ airport: AirportWithJoins, side: Side }> = ({ airport, side }) => (
 	<DropdownMenu>
 		<DropdownMenuTrigger asChild>
 			<Button variant="outline" size="icon" className="flex sm:hidden">
 				<LinkIcon />
 			</Button>
 		</DropdownMenuTrigger>
-		<DropdownMenuContent side="left" align="start">
+		<DropdownMenuContent side={side} align="start">
 			{airport.home_link && (
 				<DropdownMenuQuickLink href={airport.home_link}>
 					<AirportSiteFavicon url={airport.home_link} />
@@ -193,10 +193,16 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 					syncLayers={setEnabledLayers}
 					customControls={
 						mobile ? [
-							<MobileQuickLinksControl
-								key="mobile-quick-links-map-control"
-								airport={airport}
-							/>
+							{
+								section: "informational",
+								node: side => (
+									<MobileQuickLinksControl
+										key="mobile-quick-links-map-control"
+										airport={airport}
+										side={side}
+									/>
+								)
+							}
 						] : []
 					}
 					showFullscreen

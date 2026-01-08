@@ -1,9 +1,9 @@
 generator client {
-   provider = "prisma-client"
-   engineType = "client"
-   output   = "./generated"
+   provider        = "prisma-client"
+   engineType      = "client"
+   output          = "./generated"
    previewFeatures = ["fullTextSearchPostgres"]
-   binaryTargets = ["native", "rhel-openssl-3.0.x"]
+   binaryTargets   = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -123,8 +123,8 @@ model AirportTrafficFlow {
    day                  Int
    default_arrival_rate Int
    arrival_rates        Int[]
-   total_flights        Int @default(0)
-   cancelled_flights    Int @default(0)
+   total_flights        Int                        @default(0)
+   cancelled_flights    Int                        @default(0)
    fixes                String[]
    time_buckets         AirportTrafficFlowRecord[]
 
@@ -161,10 +161,32 @@ enum AirportHubType {
 model AirportAirlineHub {
    airline_iata String
    airport_iata String
-   airport      Airport  @relation(fields: [airport_iata], references: [iata_code])
+   airport      Airport        @relation(fields: [airport_iata], references: [iata_code])
    terminals    String[]
    type         AirportHubType
 
    @@unique([airline_iata, airport_iata])
    @@map("airport_airline_hubs")
+}
+
+model Waypoint {
+   waypoint_id       String   @unique
+   waypoint_use_code String
+   effective_date    String
+   icao_region_code  String
+   country_code      String
+   state_code        String
+   latitude_deg      Float
+   longitude_deg     Float
+   charts            String[]
+   charting_remark   String
+   compulsory        String
+   artcc_id_high     String
+   artcc_id_low      String
+   min_reception_alt Int
+   pitch_flag        Boolean 
+   catch_flag        Boolean
+   special_use_flag  Boolean
+
+   @@map("waypoints")
 }

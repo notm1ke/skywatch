@@ -103,7 +103,7 @@ export const AnimatedTabs: React.FC<AnimatedTabsProps> = ({ items, onChange }) =
 	}, [pathname]);
 	
 	return (
-		<ul className="flex items-center px-2">
+		<ul className="flex items-center px-2 overflow-x-scroll sm:overflow-x-auto">
 			{items.map((item) => (
 				<Link
 					prefetch

@@ -147,7 +147,6 @@ export const AirspaceMap: React.FC = () => {
 		)
 	);
 	
-	
 	const airportMarkers = useMemo(
 		() => advisories
 			.map(advisory => {

@@ -13,6 +13,8 @@ export type RemoteChartType =
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
+export const immediately = (callback: () => any) => setTimeout(callback, 1);
+
 export const shortNumberFormatter = new Intl.NumberFormat('en', {
   notation: "compact",
   compactDisplay: "short",
@@ -86,8 +88,10 @@ export const delayReason = (raw: string) => {
 		return "Taxiway Congestion";
 	if (/:(vol|volume|minutes in trail)$/g.test(raw.toLowerCase()) || raw.toLowerCase().includes('demand'))
 		return "Traffic Volume";
-	if (raw.toLowerCase().includes('staff'))
+	if (raw.toLowerCase().includes("staff"))
 		return "Staffing";
+	if (raw.toLowerCase().includes("parking"))
+		return "Parking Space";
 	return raw;
 }
 

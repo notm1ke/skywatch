@@ -5,7 +5,8 @@ export type TabType =
 	| "airplanes"
 	| "airports"
 	| "statistics"
-	| "tfrs";
+	| "tfrs"
+	| "waypoints";
 
 type PageControlState = {
 	activeTab: TabType;

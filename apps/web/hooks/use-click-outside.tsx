@@ -36,10 +36,15 @@ const isPortalOrWhitelisted = (element: HTMLElement) => {
 export function useClickOutside<T extends HTMLElement>(
 	ref: RefObject<T | null>,
 	handler: (event: MouseEvent | TouchEvent) => void,
+	exclusions: RefObject<HTMLElement | null>[] = [],
 	portalCheck = false,
 ): void {
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+			if (exclusions.some(exclusion => exclusion.current?.contains(event.target as Node))) {
+				return handler(event);
+			}
+			
 			if (
 				!ref ||
 				!ref.current ||

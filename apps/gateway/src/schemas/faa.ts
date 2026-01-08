@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { WaypointGetPayload } from "@/prisma/generated/models";
 
 export const AirportStatus = z.enum([
 	"normal",
@@ -214,3 +215,92 @@ export const TfrResponse = z.object({
 	tfrs: z.array(Tfr),
 	geo: TfrGeoJson
 });
+
+export type Waypoint = WaypointGetPayload<{}>;
+
+export const WaypointUseType = [
+	"RADAR",
+	"WP",
+	"CN",
+	"MW",
+	"NRS",
+	"VFR",
+	"RP",
+	"MR"
+] as const;
+
+export type WaypointUseType = typeof WaypointUseType[number];
+
+export const WaypointUseLocalizations: Record<string, string> = {
+	RADAR: "Radar-only",
+	WP: "Waypoint",
+	CN: "Computer Navigation",
+	MW: "Military Waypoint",
+	NRS: "Nav-Ref Grid Point",
+	VFR: "Visual Aid",
+	RP: "Reporting Point",
+	MR: "Military Reporting Point"
+};
+
+export const WaypointChartLocalizations: Record<string, string> = {
+	"AREA": "Enroute Area",
+	"CONTROLLER": "Air Route Traffic Control (ARTCC)",
+	"CONTROLLER LOW": "ARTCC Low Altitude",
+	"CONTROLLER HIGH": "ARTCC High Altitude",
+	"ENROUTE LOW": "IFR Enroute Low Altitude",
+	"ENROUTE HIGH": "IFR Enroute High Altitude",
+	"GULF COAST VFR CHART": "Gulf of America VFR",
+	"HELICOPTER ROUTE": "Helicopter Route",
+	"IAP": "Instrument Approach Procedure",
+	"IFR GOA VERTICAL FLT": "Gulf of America IFR Vertical Reference",
+	"MILITARY IAP": "Military IAP",
+	"MILITARY STAR": "Military STAR",
+	"MILITARY SID": "Military SID",
+	"NORTH ATLANTIC ROUTE": "Atlantic Tracks High Altitude",
+	"NORTH PACIFIC ROUTE": "Pacific Tracks High Altitude",
+	"NOT REQUIRED": "Not Published",
+	"PRIVATE IAP": "Private IAP",
+	"SECTIONAL": "Sectional Aero",
+	"SID": "Standard Instrument Departure",
+	"SPECIAL DP": "Special Departure Procedure",
+	"SPECIAL IAP": "Special IAP",
+	"STAR": "Standard Terminal Arrival Route",
+	"WESTERN ATLANTIC ROUTE": "WATRS",
+	"VFR FLYWAY PLANNING": "VFR Flyway Planning",
+	"VFR TERMINAL AREA": "Terminal Area",
+}
+
+const PointCoordinate = z.array(z.number()).length(2);
+
+export const WaypointFeatureMetadata = z.object({
+	waypoint_id: z.string(),
+	waypoint_use_code: z.string(),
+	icao_region_code: z.string(),
+	state_code: z.string(),
+	charts: z.array(z.string()),
+	charting_remark: z.string(),
+	artcc_id_high: z.string(),
+	artcc_id_low: z.string(),
+	min_reception_alt: z.number(),
+	special_use_flag: z.boolean(),
+	catch_flag: z.boolean(),
+	pitch_flag: z.boolean(),
+	compulsory: z.string()
+});
+
+export const WaypointGeoJson = z.object({
+	type: z.literal("FeatureCollection"),
+	features: z.array(z.object({
+		type: z.literal("Feature"),
+		properties: WaypointFeatureMetadata,
+		geometry: z.object({
+			type: z.literal("Point"),
+			coordinates: PointCoordinate
+		})
+	}))
+});
+
+export const WaypointWithDynamic = z.object({
+	...WaypointFeatureMetadata,
+	airports: z.array(z.string())
+})

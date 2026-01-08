@@ -2,6 +2,7 @@ import { cn } from "~/lib/utils";
 import { Button } from "./button";
 import { Separator } from "./separator";
 import { ButtonGroup } from "./button-group";
+import { useMobile } from "../mobile-provider";
 import { MapLayerSelector } from "./map-layer-select";
 import { useMap, ViewState } from "react-map-gl/mapbox";
 import { TooltipContentProps } from "@radix-ui/react-tooltip";
@@ -34,7 +35,7 @@ const positioning = {
 	"bottom-right": "bottom-2 right-2",
 };
 
-type Side = "top" | "bottom" | "left" | "right";
+export type Side = "top" | "bottom" | "left" | "right";
 
 const tooltipDropdownPosition: Record<keyof typeof positioning, Side> = {
 	"bottom-left": "top",
@@ -144,6 +145,13 @@ const MapAttributions: React.FC = () => (
 	</Dialog>
 );
 
+type SectionType = "zoom-controls" | "map-controls" | "informational";
+
+type CustomMapControl = {
+	section: SectionType;
+	node: (side: Side) => ReactNode;
+}
+
 type MapControlsProps = {
 	ref: RefObject<HTMLDivElement | null>;
 	position: keyof typeof positioning;
@@ -154,7 +162,7 @@ type MapControlsProps = {
 	layers?: MapLayers;
 	layerState?: Set<string>;
 	syncLayers?: (enabled: Set<string>) => void;
-	customControls?: Array<ReactNode>;
+	customControls?: Array<CustomMapControl>;
 }
 
 export const MapControls: React.FC<MapControlsProps> = ({
@@ -170,6 +178,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
 	customControls
 }) => {
 	const mapRef = useMap();
+	const { mobile, pending } = useMobile();
 	
 	const zoomIn = () => mapRef.current?.zoomIn();
 	const zoomOut = () => mapRef.current?.zoomOut();
@@ -205,6 +214,15 @@ export const MapControls: React.FC<MapControlsProps> = ({
 		}
 	});
 	
+	const hasCustomControls = (section: SectionType) => customControls
+		?.some(control => control.section === section);
+	
+	const renderCustomControl = (control: CustomMapControl) => control.node(side);
+	
+	const getCustomControlsForSection = (section: SectionType) => customControls
+		?.filter(control => control.section === section)
+		?.map(renderCustomControl);
+	
 	const side = orientation === "vertical"
 		? tooltipDropdownPosition[position]
 		: position.includes("top")
@@ -234,14 +252,18 @@ export const MapControls: React.FC<MapControlsProps> = ({
 						<MinusIcon />
 					</Button>
 				</TooltipWrapper>
+				
+				{getCustomControlsForSection("zoom-controls")}
 			</ButtonGroup>
 			
-			{(showFullscreen || showReset || layers) && (
+			{(showFullscreen || showReset || layers || hasCustomControls("map-controls")) && (
 				<ButtonGroup
 					orientation={orientation}
 					aria-label="Reset map controls"
 					className="h-fit bg-background rounded-lg"
 				>
+					{getCustomControlsForSection("map-controls")}
+					
 					{layers.length > 0 && (
 						<MapLayerSelector
 							items={layers}
@@ -255,7 +277,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
 						</MapLayerSelector>
 					)}
 					
-					{showFullscreen && (
+					{(!mobile || pending) && showFullscreen && (
 						<TooltipWrapper content="Toggle fullscreen" opts={{ side }}>
 							<Button variant="outline" size="icon" onClick={fullscreen}>
 								<Maximize />
@@ -278,7 +300,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
 				aria-label="Map attributions"
 				className="h-fit bg-background rounded-lg"
 			>
-				{customControls}
+				{getCustomControlsForSection("informational")}
 				<MapAttributions />
 			</ButtonGroup>
 		</div>
