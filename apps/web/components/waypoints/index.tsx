@@ -7,9 +7,10 @@ import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
 import { WaypointSearchbar } from "./search";
-import { useWaypointControls } from "./store";
+import { useMobile } from "../mobile-provider";
 import { useQuery } from "@tanstack/react-query";
 import { MapStyleSelector } from "./style-selector";
+import { WaypointMapStyleLayer } from "./style-layer";
 import { Layer, Map, Source } from "react-map-gl/mapbox";
 import { MapControls, MapLayers } from "../ui/map-controls";
 import { Loader, MapIcon, RefreshCcw, WaypointsIcon } from "lucide-react";
@@ -24,11 +25,10 @@ import {
 	EmptyMedia,
 	EmptyTitle
 } from "../ui/empty";
-import { WaypointMapStyleLayer } from "./style-layer";
 
 export const WaypointsTab = () => {
 	const { resolvedTheme: theme } = useTheme();
-	const { active } = useWaypointControls();
+	const { mobile } = useMobile();
 	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.waypoints.geojson.queryOptions());
 	
 	const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -110,48 +110,92 @@ export const WaypointsTab = () => {
 			>
 				<WaypointSearchbar />
 				
-				<MapControls
-					ref={mapContainerRef}
-					position="top-right"
-					initialView={{
-						latitude: 37.833333,
-						longitude: -97.583333,
-						zoom: 4.15
-					}}
-					showFullscreen
-					showReset
-					layers={layers}
-					layerState={enabledLayers}
-					syncLayers={setEnabledLayers}
-					customControls={[
-						{
-							section: "map-controls",
-							node: side => (
-								<DropdownMenu key="waypoint-map-style-control">
-									<Tooltip>
-										<DropdownMenuTrigger asChild>
-											<TooltipTrigger asChild>
-												<Button variant="outline" size="icon">
-													<MapIcon />
-												</Button>
-											</TooltipTrigger>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent side={side} align="start">
-											<MapStyleSelector />
-										</DropdownMenuContent>
-										<TooltipContent side={side}>
-											Map styles
-										</TooltipContent>
-									</Tooltip>
-								</DropdownMenu>
-							)
-						}
-					]}
-				/>
+				{mobile && (
+					<MapControls
+						ref={mapContainerRef}
+						position="bottom-right"
+						orientation="horizontal"
+						initialView={{
+							latitude: 37.833333,
+							longitude: -97.583333,
+							zoom: 4.15
+						}}
+						showFullscreen
+						showReset
+						layers={layers}
+						layerState={enabledLayers}
+						syncLayers={setEnabledLayers}
+						customControls={[
+							{
+								section: "map-controls",
+								node: side => (
+									<DropdownMenu key="waypoint-map-style-control">
+										<Tooltip>
+											<DropdownMenuTrigger asChild>
+												<TooltipTrigger asChild>
+													<Button variant="outline" size="icon">
+														<MapIcon />
+													</Button>
+												</TooltipTrigger>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent side={side} align="start">
+												<MapStyleSelector />
+											</DropdownMenuContent>
+											<TooltipContent side={side}>
+												Map styles
+											</TooltipContent>
+										</Tooltip>
+									</DropdownMenu>
+								)
+							}
+						]}
+					/>
+				)}
+				
+				{!mobile && (
+					<MapControls
+						ref={mapContainerRef}
+						position="top-right"
+						initialView={{
+							latitude: 37.833333,
+							longitude: -97.583333,
+							zoom: 4.15
+						}}
+						showFullscreen
+						showReset
+						layers={layers}
+						layerState={enabledLayers}
+						syncLayers={setEnabledLayers}
+						customControls={[
+							{
+								section: "map-controls",
+								node: side => (
+									<DropdownMenu key="waypoint-map-style-control">
+										<Tooltip>
+											<DropdownMenuTrigger asChild>
+												<TooltipTrigger asChild>
+													<Button variant="outline" size="icon">
+														<MapIcon />
+													</Button>
+												</TooltipTrigger>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent side={side} align="start">
+												<MapStyleSelector />
+											</DropdownMenuContent>
+											<TooltipContent side={side}>
+												Map styles
+											</TooltipContent>
+										</Tooltip>
+									</DropdownMenu>
+								)
+							}
+						]}
+					/>
+				)}
 				
 				{isLoading && (
 					<motion.div
-						className="absolute bottom-2 right-2"
+						className="absolute bottom-2 left-2 sm:right-2"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}

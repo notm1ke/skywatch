@@ -84,7 +84,7 @@ export const WaypointDetailsPane = () => {
 	
 	if (!active) return null;
 	if (isLoading) return (
-		<>
+		<div className="divide-y dark:divide-zinc-700/80">
 			<div className="flex flex-row justify-between items-center px-4 py-4">
 				<div className="flex flex-row space-x-4 items-center">
 					<div>
@@ -117,7 +117,7 @@ export const WaypointDetailsPane = () => {
 					))}
 				</div>
 			</div>
-		</>
+		</div>
 	);
 	
 	if (error || !waypoint) return (
@@ -151,7 +151,7 @@ export const WaypointDetailsPane = () => {
 	});
 	
 	return (
-		<>
+		<div className="divide-y dark:divide-zinc-700/80">
 			<div className="flex flex-row justify-between items-center px-4 py-4">
 				<div className="flex flex-row space-x-4 items-center">
 					<div>
@@ -183,7 +183,7 @@ export const WaypointDetailsPane = () => {
 								</div>
 							</div>
 						</div>
-						<div className="flex flex-row space-x-2">
+						<div className="hidden sm:flex flex-row space-x-2">
 							<TooltipButton content="Jump to Waypoint" opts={{ side: "bottom" }}>
 								<Button variant="outline" size="icon-sm" onClick={focusMap}>
 									<Navigation className="dark:text-muted-foreground" />
@@ -320,6 +320,6 @@ export const WaypointDetailsPane = () => {
 					</div>
 				</div>
 			</div>
-		</>
+		</div>
 	)
 }

@@ -4,6 +4,7 @@ import { Kbd, KbdGroup } from "../ui/kbd";
 import { useMap } from "react-map-gl/mapbox";
 import { cn, immediately } from "~/lib/utils";
 import { useWaypointControls } from "./store";
+import { useMobile } from "../mobile-provider";
 import { ScrollArea } from "../ui/scroll-area";
 import { WaypointDetailsPane } from "./details";
 import { useQuery } from "@tanstack/react-query";
@@ -67,6 +68,7 @@ export const renderWaypointLocation = (match: Waypoint) => {
 }
 
 export const WaypointSearchbar = () => {
+	const { mobile, pending } = useMobile();
 	const { active, query, style, activate, deactivate, search } = useWaypointControls();
 	
 	const [visible, setVisible] = useState(false);
@@ -183,10 +185,10 @@ export const WaypointSearchbar = () => {
 	);
 	
 	return (
-		<div ref={containerRef} className="absolute top-2 left-2 w-md">
+		<div ref={containerRef} className="absolute top-2 left-2 w-[95svw] sm:w-md">
 			<div className="flex flex-col space-y-2">
 				<InputGroup className={cn(
-					"bg-background dark:bg-input/30 dark:backdrop-blur-xl h-10",
+					"bg-background dark:bg-input/30 dark:backdrop-blur-xl h-12 sm:h-10",
 					style !== "default" && "dark:mix-blend-difference border-none"
 				)}>
 					<InputGroupInput
@@ -201,7 +203,7 @@ export const WaypointSearchbar = () => {
 					</InputGroupAddon>
 					<InputGroupAddon align="inline-end">
 						{!visible && !active && (
-							<Kbd className="animate-in fade-in">F</Kbd>
+							<Kbd className="animate-in fade-in hidden sm:inline-flex">F</Kbd>
 						)}
 						
 						{active && (
@@ -219,7 +221,7 @@ export const WaypointSearchbar = () => {
 						)}
 						
 						{isLoading && <Loader className="animate-spin duration-200" />}
-						{visible && <Kbd className="animate-in fade-in fade-out">Esc</Kbd>}
+						{visible && <Kbd className="animate-in fade-in fade-out hidden sm:inline-flex">Esc</Kbd>}
 					</InputGroupAddon>
 				</InputGroup>
 				
@@ -227,11 +229,17 @@ export const WaypointSearchbar = () => {
 					<div
 						ref={detailsRef}
 						className={cn(
-							"bg-background dark:bg-input/80 dark:backdrop-blur-xl rounded-sm divide-y dark:divide-zinc-700/80 border border-border dark:border-zinc-700/80",
+							"bg-background dark:bg-input/80 dark:backdrop-blur-xl rounded-sm border border-border dark:border-zinc-700/80",
 							style !== "default" && "dark:bg-input/90"
 						)}
 					>
-						<WaypointDetailsPane />
+						{mobile && (
+							<ScrollArea className="h-108 rounded-sm" viewportClassName="divide-y dark:divide-zinc-700/80">
+								<WaypointDetailsPane />
+							</ScrollArea>
+						)}
+						
+						{(!mobile || pending) && <WaypointDetailsPane />}
 					</div>
 				)}
 				
@@ -304,8 +312,8 @@ export const WaypointSearchbar = () => {
 							</div>
 						</ScrollArea>
 						
-						<div className="border-t dark:bg-zinc-900 rounded-b-md px-4 py-2">
-							<div className="hidden sm:flex rounded-b-md justify-between space-x-3">
+						<div className="hidden sm:block border-t dark:bg-zinc-900 rounded-b-md px-4 py-2">
+							<div className="flex rounded-b-md justify-between space-x-3">
 								<div>
 									<span className="text-muted-foreground font-normal">
 										<AnimatedNumber
