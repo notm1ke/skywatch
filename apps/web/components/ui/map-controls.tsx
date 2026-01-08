@@ -144,6 +144,13 @@ const MapAttributions: React.FC = () => (
 	</Dialog>
 );
 
+type SectionType = "zoom-controls" | "map-controls" | "informational";
+
+type CustomMapControl = {
+	section: SectionType;
+	node: (side: Side) => ReactNode;
+}
+
 type MapControlsProps = {
 	ref: RefObject<HTMLDivElement | null>;
 	position: keyof typeof positioning;
@@ -154,7 +161,7 @@ type MapControlsProps = {
 	layers?: MapLayers;
 	layerState?: Set<string>;
 	syncLayers?: (enabled: Set<string>) => void;
-	customControls?: Array<ReactNode>;
+	customControls?: Array<CustomMapControl>;
 }
 
 export const MapControls: React.FC<MapControlsProps> = ({
@@ -205,6 +212,15 @@ export const MapControls: React.FC<MapControlsProps> = ({
 		}
 	});
 	
+	const hasCustomControls = (section: SectionType) => customControls
+		?.some(control => control.section === section);
+	
+	const renderCustomControl = (control: CustomMapControl) => control.node(side);
+	
+	const getCustomControlsForSection = (section: SectionType) => customControls
+		?.filter(control => control.section === section)
+		?.map(renderCustomControl);
+	
 	const side = orientation === "vertical"
 		? tooltipDropdownPosition[position]
 		: position.includes("top")
@@ -234,14 +250,18 @@ export const MapControls: React.FC<MapControlsProps> = ({
 						<MinusIcon />
 					</Button>
 				</TooltipWrapper>
+				
+				{getCustomControlsForSection("zoom-controls")}
 			</ButtonGroup>
 			
-			{(showFullscreen || showReset || layers) && (
+			{(showFullscreen || showReset || layers || hasCustomControls("map-controls")) && (
 				<ButtonGroup
 					orientation={orientation}
 					aria-label="Reset map controls"
 					className="h-fit bg-background rounded-lg"
 				>
+					{getCustomControlsForSection("map-controls")}
+					
 					{layers.length > 0 && (
 						<MapLayerSelector
 							items={layers}
@@ -278,7 +298,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
 				aria-label="Map attributions"
 				className="h-fit bg-background rounded-lg"
 			>
-				{customControls}
+				{getCustomControlsForSection("informational")}
 				<MapAttributions />
 			</ButtonGroup>
 		</div>

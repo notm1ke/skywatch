@@ -65,8 +65,10 @@ export const findById = base
 				})
 				.catch(() => null);
 			
+			const charts = result.charts.filter(chart => chart !== "NOT REQUIRED");
 			if (!marker) return {
 				...result,
+				charts,
 				airports: []
 			}
 			
@@ -84,7 +86,7 @@ export const findById = base
 				})
 				.then(rows => rows.map(row => row.iata_code));
 				
-			return { ...result, airports }
+			return { ...result, charts, airports }
 		})
 	);
 

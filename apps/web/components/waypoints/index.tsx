@@ -7,11 +7,14 @@ import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
 import { WaypointSearchbar } from "./search";
+import { useWaypointControls } from "./store";
 import { useQuery } from "@tanstack/react-query";
-import { useWaypointPageControls } from "./store";
+import { MapStyleSelector } from "./style-selector";
 import { Layer, Map, Source } from "react-map-gl/mapbox";
 import { MapControls, MapLayers } from "../ui/map-controls";
-import { Loader, RefreshCcw, WaypointsIcon } from "lucide-react";
+import { Loader, MapIcon, RefreshCcw, WaypointsIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 import {
 	Empty,
@@ -21,11 +24,11 @@ import {
 	EmptyMedia,
 	EmptyTitle
 } from "../ui/empty";
-import { WaypointDetailsPane } from "./details";
+import { WaypointMapStyleLayer } from "./style-layer";
 
 export const WaypointsTab = () => {
 	const { resolvedTheme: theme } = useTheme();
-	const { active } = useWaypointPageControls();
+	const { active } = useWaypointControls();
 	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.waypoints.geojson.queryOptions());
 	
 	const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -115,11 +118,35 @@ export const WaypointsTab = () => {
 						longitude: -97.583333,
 						zoom: 4.15
 					}}
+					showFullscreen
+					showReset
 					layers={layers}
 					layerState={enabledLayers}
 					syncLayers={setEnabledLayers}
-					showFullscreen
-					showReset
+					customControls={[
+						{
+							section: "map-controls",
+							node: side => (
+								<DropdownMenu key="waypoint-map-style-control">
+									<Tooltip>
+										<DropdownMenuTrigger asChild>
+											<TooltipTrigger asChild>
+												<Button variant="outline" size="icon">
+													<MapIcon />
+												</Button>
+											</TooltipTrigger>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent side={side} align="start">
+											<MapStyleSelector />
+										</DropdownMenuContent>
+										<TooltipContent side={side}>
+											Map styles
+										</TooltipContent>
+									</Tooltip>
+								</DropdownMenu>
+							)
+						}
+					]}
 				/>
 				
 				{isLoading && (
@@ -138,6 +165,8 @@ export const WaypointsTab = () => {
 				
 				{!isLoading && (
 					<>
+						<WaypointMapStyleLayer />
+						
 						{enabledLayers.has("waypoint") && (
 							<Source id="markers" type="geojson" data={data}>
 								<Layer

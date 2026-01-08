@@ -3,11 +3,11 @@ import { useRef, useState } from "react";
 import { Kbd, KbdGroup } from "../ui/kbd";
 import { useMap } from "react-map-gl/mapbox";
 import { cn, immediately } from "~/lib/utils";
+import { useWaypointControls } from "./store";
 import { ScrollArea } from "../ui/scroll-area";
 import { WaypointDetailsPane } from "./details";
 import { useQuery } from "@tanstack/react-query";
 import { UsStateAbbreviations } from "~/lib/geo";
-import { useWaypointPageControls } from "./store";
 import { useDebounce } from "~/hooks/use-debounce";
 import { AnimatedNumber } from "../ui/animated-number";
 import { useKeyHandler } from "~/hooks/use-key-handler";
@@ -28,7 +28,6 @@ import {
 	ArrowUpDown,
 	CircleX,
 	CornerDownLeft,
-	Diamond,
 	FileQuestion,
 	Helicopter,
 	LandPlot,
@@ -38,6 +37,7 @@ import {
 	Navigation,
 	Radar,
 	Search,
+	Sparkle,
 	SplinePointer,
 	Tangent,
 	TriangleAlert
@@ -45,7 +45,7 @@ import {
 
 export const WaypointTypeIcon: Record<string, { icon: LucideIcon, color: string }> = {
 	"RADAR": { icon: Radar, color: "text-green-600" },
-	"WP": { icon: Diamond, color: "text-purple-400 dark:text-purple-700 dark:opacity-85" },
+	"WP": { icon: Sparkle, color: "text-purple-400 dark:text-purple-700 dark:opacity-85" },
 	"CN": { icon: Navigation, color: "text-blue-400" },
 	"MW": { icon: Helicopter, color: "text-lime-800" },
 	"NRS": { icon: LayoutGrid, color: "text-teal-700" },
@@ -55,14 +55,19 @@ export const WaypointTypeIcon: Record<string, { icon: LucideIcon, color: string 
 }
 
 export const renderWaypointLocation = (match: Waypoint) => {
+	if (!match.state_code.trim().length) return "Unknown";
 	if (match.state_code === "OA") return "Atlantic Ocean";
 	if (match.state_code === "OP") return "Pacific Ocean";
 	if (match.state_code === "OG") return "Gulf of America";
+	
+	// islands and other things we don't need to localize
+	if (!UsStateAbbreviations[match.state_code]) return "Unknown";
+	
 	return `${UsStateAbbreviations[match.state_code]}, US`;
 }
 
 export const WaypointSearchbar = () => {
-	const { active, query, activate, deactivate, search } = useWaypointPageControls();
+	const { active, query, style, activate, deactivate, search } = useWaypointControls();
 	
 	const [visible, setVisible] = useState(false);
 	const [selected, setSelected] = useState<number | null>(0);
@@ -70,16 +75,16 @@ export const WaypointSearchbar = () => {
 	const mapRef = useMap();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const detailsRef = useRef<HTMLDivElement>(null);
 	const scrollAreaRef = useRef<HTMLDivElement>(null);
 	const debouncedQuery = useDebounce(query, 250);
 
 	const { data, isLoading, error } = useQuery(orpc.airspace.waypoints.search.queryOptions({
 		input: { query: debouncedQuery },
-		placeholderData: [],
 		enabled: !!debouncedQuery
 	}));
 	
-	const clickWaypoint = (waypoint: Waypoint) => {
+	const activateWaypoint = (waypoint: Waypoint) => {
 		activate(waypoint);
 		mapRef.current?.flyTo({
 			center: {
@@ -87,10 +92,9 @@ export const WaypointSearchbar = () => {
 				lng: waypoint.longitude_deg,
 			},
 			duration: 1500,
-			zoom: 14
+			zoom: 12
 		});
 		
-		search(waypoint.waypoint_id);
 		setVisible(false);
 		setSelected(0);
 		inputRef.current?.blur();
@@ -103,6 +107,7 @@ export const WaypointSearchbar = () => {
 	
 	const dismiss = () => {
 		if (!active) return;
+		search("");
 		deactivate();
 		inputRef?.current?.focus();
 	}
@@ -155,7 +160,7 @@ export const WaypointSearchbar = () => {
 			if (!interactable) return;
 			if (selected !== null) {
 				const waypoint = data![selected];
-				clickWaypoint(waypoint);
+				activateWaypoint(waypoint);
 			}
 		},
 		"keyf": () => {
@@ -167,16 +172,23 @@ export const WaypointSearchbar = () => {
 			if (!visible) return;
 			inputRef.current?.blur();
 			setVisible(false);
-			setSelected(null);
+			setSelected(0);
 		}
 	}, true);
 	
-	useClickOutside(containerRef, () => setVisible(false));
+	useClickOutside(
+		containerRef,
+		() => setVisible(false),
+		[detailsRef]
+	);
 	
 	return (
 		<div ref={containerRef} className="absolute top-2 left-2 w-md">
 			<div className="flex flex-col space-y-2">
-				<InputGroup className="bg-background dark:bg-input/30 dark:backdrop-blur-xl h-10">
+				<InputGroup className={cn(
+					"bg-background dark:bg-input/30 dark:backdrop-blur-xl h-10",
+					style !== "default" && "dark:mix-blend-difference border-none"
+				)}>
 					<InputGroupInput
 						ref={inputRef}
 						value={query}
@@ -195,7 +207,10 @@ export const WaypointSearchbar = () => {
 						{active && (
 							<Tooltip>
 								<TooltipTrigger asChild>
-									<CircleX className="text-muted-foreground size-4 cursor-pointer" onClick={dismiss} />
+									<CircleX
+										className="text-muted-foreground size-4 cursor-pointer"
+										onClick={dismiss}
+									/>
 								</TooltipTrigger>
 								<TooltipContent side="bottom">
 									Dismiss {active.waypoint_id}
@@ -208,10 +223,23 @@ export const WaypointSearchbar = () => {
 					</InputGroupAddon>
 				</InputGroup>
 				
-				{active && <WaypointDetailsPane inputRef={inputRef} />}
+				{active && (
+					<div
+						ref={detailsRef}
+						className={cn(
+							"bg-background dark:bg-input/80 dark:backdrop-blur-xl rounded-sm divide-y dark:divide-zinc-700/80 border border-border dark:border-zinc-700/80",
+							style !== "default" && "dark:bg-input/90"
+						)}
+					>
+						<WaypointDetailsPane />
+					</div>
+				)}
 				
 				{visible && debouncedQuery.length > 0 && !isLoading && (
-					<div className="bg-background/80 dark:bg-input/60 rounded-md backdrop-blur-xl border border-border dark:border-zinc-700/80">
+					<div className={cn(
+						"bg-background/80 dark:bg-input/60 rounded-md backdrop-blur-xl border border-border dark:border-zinc-700/80",
+						active && "absolute top-12 w-full shadow-xl z-10" // overlay atop active pane
+					)}>
 						<ScrollArea
 							ref={scrollAreaRef}
 							className="h-96 rounded-t-md"
@@ -250,7 +278,7 @@ export const WaypointSearchbar = () => {
 										<div
 											key={match.waypoint_id}
 											id={`waypoint-result-${i}`}
-											onClick={() => clickWaypoint(match)}
+											onClick={() => activateWaypoint(match)}
 											onMouseOver={() => setSelected(i)}
 											className={cn(
 												"px-4 py-2 cursor-pointer transition-colors duration-75 hover:bg-zinc-200 dark:hover:bg-muted/80",

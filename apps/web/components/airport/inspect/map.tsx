@@ -193,10 +193,13 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 					syncLayers={setEnabledLayers}
 					customControls={
 						mobile ? [
-							<MobileQuickLinksControl
-								key="mobile-quick-links-map-control"
-								airport={airport}
-							/>
+							{
+								section: "informational",
+								node: <MobileQuickLinksControl
+									key="mobile-quick-links-map-control"
+									airport={airport}
+								/>
+							}
 						] : []
 					}
 					showFullscreen
