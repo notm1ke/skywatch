@@ -34,7 +34,7 @@ const positioning = {
 	"bottom-right": "bottom-2 right-2",
 };
 
-type Side = "top" | "bottom" | "left" | "right";
+export type Side = "top" | "bottom" | "left" | "right";
 
 const tooltipDropdownPosition: Record<keyof typeof positioning, Side> = {
 	"bottom-left": "top",
