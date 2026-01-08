@@ -2,6 +2,7 @@ import { cn } from "~/lib/utils";
 import { Button } from "./button";
 import { Separator } from "./separator";
 import { ButtonGroup } from "./button-group";
+import { useMobile } from "../mobile-provider";
 import { MapLayerSelector } from "./map-layer-select";
 import { useMap, ViewState } from "react-map-gl/mapbox";
 import { TooltipContentProps } from "@radix-ui/react-tooltip";
@@ -177,6 +178,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
 	customControls
 }) => {
 	const mapRef = useMap();
+	const { mobile, pending } = useMobile();
 	
 	const zoomIn = () => mapRef.current?.zoomIn();
 	const zoomOut = () => mapRef.current?.zoomOut();
@@ -275,7 +277,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
 						</MapLayerSelector>
 					)}
 					
-					{showFullscreen && (
+					{(!mobile || pending) && showFullscreen && (
 						<TooltipWrapper content="Toggle fullscreen" opts={{ side }}>
 							<Button variant="outline" size="icon" onClick={fullscreen}>
 								<Maximize />
