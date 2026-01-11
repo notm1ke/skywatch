@@ -7,9 +7,7 @@ export default defineConfig({
 		tasks: true
 	},
 	scheduledTasks: {
-		"*/30 * * * *": [
-			"traffic",
-			"waypoints"
-		]
+		"*/30 * * * *": ["traffic"],
+		"0 * * * *": ["waypoints"]
 	}
 });
