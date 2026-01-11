@@ -10,12 +10,6 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@/prisma/*": ["./prisma/*"],
-			"@/workflows/*": ["./workflows/*"],
 		},
-		"plugins": [
-			{
-				"name": "workflow"
-			}
-		]
 	}
 }
