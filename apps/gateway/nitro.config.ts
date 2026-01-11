@@ -8,6 +8,6 @@ export default defineConfig({
 	},
 	scheduledTasks: {
 		"*/30 * * * *": ["traffic"],
-		"0 0 * * *": ["waypoints"]
+		"0 * * * *": ["waypoints"]
 	}
 });
