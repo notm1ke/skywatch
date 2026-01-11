@@ -103,14 +103,18 @@ const waypoints = defineTask({
 			.then(res => res.data)
 			.then(load)
 			.then($ => $('#content > ul:nth-child(4) > li > a').attr("href"))
-			.then(segment => base + segment);
+			.then(segment => base + segment)
+			.catch(error => console.error("[waypoints] Error retrieving NASR subscription page", error.message));
 		
+		if (!effectivePage) return { result: "Upstream error" };
 		const effectiveDate = await axios
 			.get(effectivePage)
 			.then(res => res.data)
 			.then(load)
-			.then($ => $('.pageTitle').text().split('Effective ')[1]);
+			.then($ => $('.pageTitle').text().split('Effective ')[1])
+			.catch(err => console.error("[waypoints] Error retrieving current subscription data:", err.message));
 		
+		if (!effectiveDate) return { result: "Upstream error" };
 		const nextUpdate = moment(effectiveDate, 'MMMM DD, YYYY').add(28, 'days');
 		console.log(`[waypoints] Effective date: ${effectiveDate}, next update: ${nextUpdate.format('MMMM DD, YYYY')}`);
 		
