@@ -184,9 +184,88 @@ model Waypoint {
    artcc_id_high     String
    artcc_id_low      String
    min_reception_alt Int
-   pitch_flag        Boolean 
+   pitch_flag        Boolean
    catch_flag        Boolean
    special_use_flag  Boolean
 
    @@map("waypoints")
+}
+
+model Aircraft {
+   id                    String  @unique
+   manufacturer          String
+   model                 String
+   aircraft_type         String
+   aircraft_weight       String
+   aircraft_category     String
+   engine_type           String
+   build_cert            String
+   engines               Int
+   seats                 Int
+   type_cert_data_sheet  String?
+   type_cert_data_holder String?
+
+   registrations PlaneRegistration[]
+
+   @@map("aircraft")
+}
+
+model Engine {
+   id           String @unique
+   manufacturer String
+   model        String
+   engine_type  String
+   horsepower   Int
+   thrust       Int
+
+   registrations PlaneRegistration[]
+
+   @@map("engines")
+}
+
+model PlaneRegistration {
+   // ident
+   n_number      String @unique
+   serial_number String
+   unique_id     String
+   mode_s        String
+   mode_s_hex    String
+
+   // details
+   aircraft_id   String
+   aircraft      Aircraft @relation(fields: [aircraft_id], references: [id])
+   aircraft_type String
+
+   engine_id   String?
+   engine      Engine? @relation(fields: [engine_id], references: [id])
+   engine_type String
+
+   // primary
+   owner_name     String
+   owner_street   String
+   owner_street2  String?
+   owner_city     String
+   owner_state    String
+   owner_zip_code String
+   owner_region   String
+   owner_county   String
+   owner_country  String
+
+   // fractional
+   owner_names        String[]
+   fractionally_owned Boolean
+
+   // metadata
+   status           String
+   mfg_year         String?
+   registrant_type  String
+   last_action_date DateTime?
+   airworthy_date   DateTime?
+   expiration_date  DateTime?
+   cert_type        String?
+   cert_issue_date  DateTime?
+   kit_manufacturer String?
+   kit_model        String?
+
+   @@map("plane_registrations")
 }

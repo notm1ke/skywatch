@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from "moment-timezone";
 
 import { DataGridCellProps } from "../types";
 import { Calendar } from "~/components/ui/calendar";
@@ -95,7 +95,7 @@ export function DateCell<TData>({
 			<Popover open={isEditing} onOpenChange={onOpenChange}>
 				<PopoverAnchor asChild>
 					<span data-slot="grid-cell-content">
-						{moment(value).format(format)}
+						{value ? moment(value).format(format) : <span className="text-muted-foreground">Unknown</span>}
 					</span>
 				</PopoverAnchor>
 				{isEditing && (

@@ -27,6 +27,7 @@ interface DataGridProps<TData> extends UseDataGrid<TData>, Omit<ComponentProps<"
 	getRowProps?: GetRowProps<TData>;
 	onRowHoverChange?: (row: Row<TData>, isHovered: boolean) => void;
 	onRowClicked?: (row: Row<TData>) => void;
+	border?: boolean;
 }
 
 export function DataGrid<TData>({
@@ -53,6 +54,7 @@ export function DataGrid<TData>({
 	pasteDialog,
 	onRowAdd,
 	height = 600,
+	border = true,
 	stretchColumns = false,
 	getRowProps,
 	onRowHoverChange,
@@ -82,7 +84,7 @@ export function DataGrid<TData>({
 				data-slot="grid"
 				tabIndex={0}
 				ref={dataGridRef}
-				className="relative grid select-none overflow-auto overflow-x-hidden border focus:outline-none"
+				className={cn("relative grid select-none overflow-auto overflow-x-hidden focus:outline-none", border && "border")}
 				style={{
 					...columnSizeVars,
 					maxHeight: `${height}px`,
