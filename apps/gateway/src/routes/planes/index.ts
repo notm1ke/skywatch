@@ -193,7 +193,6 @@ const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistration
 		}
 	}
 	
-	console.log(native);
 	return {
 		AND: native
 	};
