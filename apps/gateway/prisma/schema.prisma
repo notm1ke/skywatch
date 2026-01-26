@@ -207,6 +207,7 @@ model Aircraft {
 
    registrations PlaneRegistration[]
 
+   @@index([manufacturer, model, engines, engine_type, seats])
    @@map("aircraft")
 }
 
@@ -220,6 +221,7 @@ model Engine {
 
    registrations PlaneRegistration[]
 
+   @@index([manufacturer, model, engine_type])
    @@map("engines")
 }
 
@@ -267,5 +269,6 @@ model PlaneRegistration {
    kit_manufacturer String?
    kit_model        String?
 
+   @@index([aircraft_type, engine_type, owner_name, status])
    @@map("plane_registrations")
 }

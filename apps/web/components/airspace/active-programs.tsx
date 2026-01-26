@@ -166,12 +166,12 @@ export const ActivePrograms = () => {
 						>
 							<div>
 								<div className="flex items-center space-x-3">
-									<SkeletonWithDelay className="h-[25px] w-32 rounded-sm" delay={i * 50} />
-									<SkeletonWithDelay className="h-[25px] w-7 rounded-sm" delay={i * 50} />
+									<SkeletonWithDelay className="h-[25px] w-10 rounded-sm" delay={i * 50} />
+									<SkeletonWithDelay className="h-[25px] w-48 rounded-sm" delay={i * 50} />
 								</div>
 							</div>
 							<div className="flex items-center space-x-3">
-								<SkeletonWithDelay className="h-[25px] w-6 rounded-sm" delay={i * 50} />
+								<SkeletonWithDelay className="h-[20px] w-5 rounded-sm" delay={i * 50} />
 								<SkeletonWithDelay className="h-[25px] w-24 rounded-sm" delay={i * 50} />
 							</div>
 						</div>

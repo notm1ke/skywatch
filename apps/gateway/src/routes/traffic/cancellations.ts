@@ -54,6 +54,6 @@ export const cancellations = base
 			.then(({ total, cancelled }) => ({
 				total,
 				cancelled,
-				interrupted: cancelled / total
+				interrupted: (cancelled / total) * 100
 			}));
 	});

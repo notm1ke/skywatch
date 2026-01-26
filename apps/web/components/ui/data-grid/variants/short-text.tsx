@@ -16,7 +16,7 @@ export function ShortTextCell<TData>({
 	isActiveSearchMatch,
 	readOnly,
 }: DataGridCellProps<TData>) {
-	const initialValue = cell.getValue() as string;
+	const initialValue = cell.getValue();
 	const [value, setValue] = useState(initialValue);
 	
 	const cellRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,7 @@ export function ShortTextCell<TData>({
 	if (initialValue !== prevInitialValueRef.current) {
 		prevInitialValueRef.current = initialValue;
 		setValue(initialValue);
-		if (cellRef.current && !isEditing) {
+		if (typeof initialValue === 'string' && cellRef.current && !isEditing) {
 			cellRef.current.textContent = initialValue;
 		}
 	}

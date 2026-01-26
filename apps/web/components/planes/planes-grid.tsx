@@ -1,13 +1,26 @@
+import { FilterRow } from "./filter-row";
 import { DataGrid } from "../ui/data-grid";
 import { PlaneTypes } from "./plane-types";
-import { RegistrationStatuses } from "./statuses";
 import { ColumnDef } from "@tanstack/react-table";
+import { RegistrationStatuses } from "./statuses";
 import { useDataGrid } from "../ui/data-grid/hook";
+import { usePlaneFilteringControls } from "./store";
+import { RegistrationSearch } from "./filters/registration";
 import { PlaneRegistration } from "@skywatch/gateway/schemas";
-import { IdCardLanyard, ListChecks, Plane, Shapes, UserRound } from "lucide-react";
+
+import {
+	IdCardLanyard,
+	ListChecks,
+	Loader,
+	Plane,
+	Shapes,
+	UserRound
+} from "lucide-react";
 
 type PlanesRegistrationGridProps = {
-	registrations: PlaneRegistration[]
+	loading: boolean;
+	registrations: PlaneRegistration[];
+	count: number;
 }
 
 const columns: ColumnDef<PlaneRegistration>[] = [
@@ -63,33 +76,6 @@ const columns: ColumnDef<PlaneRegistration>[] = [
 		},
 		minSize: 120,
 	},
-	// {
-	// 	id: "engine",
-	// 	accessorFn: row => {
-	// 		if (!row.engine || isNaN(row.aircraft.engines)) return (
-	// 			<span className="text-muted-foreground">Unknown</span>
-	// 		)
-			
-	// 		if (row.aircraft.engines === 0) return (
-	// 			<span className="text-muted-foreground">Unpowered</span>
-	// 		)
-			
-	// 		return (
-	// 			<span>
-	// 				<span className="text-muted-foreground">{row.aircraft.engines}x</span> {row.engine?.manufacturer} {row.engine?.model}
-	// 			</span>
-	// 		);
-	// 	},
-	// 	header: "Engines",
-	// 	enableHiding: false,
-	// 	meta: {
-	// 		cell: {
-	// 			variant: "short-text",
-	// 			icon: Shell
-	// 		},
-	// 	},
-	// 	minSize: 180,
-	// },
 	{
 		id: "owner",
 		accessorFn: row => {
@@ -143,67 +129,10 @@ const columns: ColumnDef<PlaneRegistration>[] = [
 		},
 		minSize: 120,
 	},
-	// {
-	// 	id: "region",
-	// 	accessorKey: "state",
-	// 	header: "Region",
-	// 	enableHiding: false,
-	// 	meta: {
-	// 		cell: {
-	// 			variant: "select",
-	// 			icon: Earth,
-	// 			options: Object
-	// 				.entries(UsStateAbbreviations)
-	// 				.map(([key, value]) => ({
-	// 					label: value,
-	// 					value: key,
-	// 				}))
-	// 		}
-	// 	},
-	// 	minSize: 120,
-	// },
-	// {
-	// 	id: "facility",
-	// 	accessorKey: "facility",
-	// 	header: "ARTCC",
-	// 	enableHiding: false,
-	// 	meta: {
-	// 		cell: {
-	// 			variant: "short-text",
-	// 			icon: TowerControl
-	// 		},
-	// 	},
-	// 	minSize: 150,
-	// },
-	// {
-	// 	id: "modified_date",
-	// 	accessorKey: "mod_date",
-	// 	header: "Last Modified",
-	// 	enableHiding: false,
-	// 	meta: {
-	// 		cell: {
-	// 			variant: "date",
-	// 			format: "MM/DD/YYYY h:mm A [UTC]"
-	// 		},
-	// 	},
-	// 	minSize: 200,
-	// },
-	// {
-	// 	id: "description",
-	// 	accessorKey: "description",
-	// 	header: "Description",
-	// 	enableHiding: false,
-	// 	meta: {
-	// 		cell: {
-	// 			variant: "long-text",
-	// 		},
-	// 	},
-	// 	minSize: 400,
-	// 	maxSize: 400
-	// },
 ];
 
-export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ registrations }) => {
+export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ loading, registrations, count }) => {
+	const { registration, filter } = usePlaneFilteringControls();
 	const { table, ...dataGridProps } = useDataGrid<PlaneRegistration>({
 		columns,
 		data: registrations,
@@ -220,16 +149,6 @@ export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ 
 	
 	return (
 		<div className="flex flex-col w-full h-full divide-y-2">
-			<div className="flex flex-row justify-between h-12 divide-x-2">
-				{/* search */}
-				<div className="w-1/3">
-					
-				</div>
-				
-				{/* filters */}
-				
-				{/* columns */}
-			</div>
 			<DataGrid
 				table={table}
 				border={false}
@@ -247,6 +166,23 @@ export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ 
 				}}
 				{...dataGridProps}
 			/>
+			<div className="flex flex-row justify-between h-10 items-center divide-x">
+				<div className="flex flex-row h-full text-sm divide-x">
+					<div className="flex flex-row gap-2 items-center px-4 font-mono tracking-tight text-sm h-full">
+						{loading && <Loader className="size-4 animate-spin duration-200" />}
+						{!loading && (
+							<>
+								<span className="font-semibold">{count.toLocaleString()}</span> result{count === 1 ? "" : "s"}
+							</>
+						)}
+					</div>
+					<RegistrationSearch
+						value={registration || ""}
+						onChange={registration => filter({ registration })}
+					/>
+				</div>
+				<FilterRow />
+			</div>
 		</div>
 	)
 }

@@ -1,11 +1,14 @@
 "use client";
 
+import { z } from "zod/v4";
 import { orpc } from "~/lib/gateway";
 import { Button } from "../ui/button";
-import { useQuery } from "@tanstack/react-query";
 import { BadgeColorVariants } from "../ui/badge";
 import { PlaneRegistrationsGrid } from "./planes-grid";
-import { LucideIcon, PlaneTakeoff, RefreshCcw } from "lucide-react";
+import { PlaneFilter } from "@skywatch/gateway/schemas";
+import { PlaneRegistrationsGridSkeleton } from "./skeleton";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { PlaneFilteringControls, usePlaneFilteringControls } from "./store";
 
 import {
 	Empty,
@@ -16,21 +19,42 @@ import {
 	EmptyTitle
 } from "../ui/empty";
 
+import {
+	LucideIcon,
+	PlaneTakeoff,
+	RefreshCcw,
+} from "lucide-react";
+
 export type SelectOption = {
 	label: string;
 	value: string;
 	icon?: LucideIcon;
 	color: BadgeColorVariants;
+	varColor: string;
 }
 
+const storeToInput = (store: PlaneFilteringControls): Array<z.infer<typeof PlaneFilter>> => {
+	const { aircraft_type, engine_type, fractionally_owned, manufacturer, model, owner_name, registration, status } = store;
+	return [
+		{ type: "status", input: status },
+		{ type: "manufacturer", input: manufacturer },
+		{ type: "model", input: model },
+		{ type: "aircraft_type", input: aircraft_type },
+		{ type: "engine_type", input: engine_type },
+		{ type: "owner_name", input: owner_name },
+		{ type: "fractionally_owned", input: fractionally_owned },
+		{ type: "n_number", input: [registration ?? ""] }
+	].filter(filter => filter.input?.length) as Array<z.infer<typeof PlaneFilter>>;
+};
+
 export const PlanesTab = () => {
-	const { data, isLoading, error, refetch } = useQuery(orpc.planes.list.queryOptions({
-		input: {
-			
-		}
+	const filters = usePlaneFilteringControls();
+	const { data, isLoading, error, refetch } = useQuery(orpc.planes.search.queryOptions({
+		input: { filters: storeToInput(filters) },
+		placeholderData: keepPreviousData
 	}));
 
-	if (isLoading) return <>loading</>;
+	if (!data && isLoading) return <PlaneRegistrationsGridSkeleton />;
 
 	if (error || !data) return (
 		<div className="h-[calc(100vh-8rem)] flex flex-col items-center justify-center bg-muted/5">
@@ -65,7 +89,9 @@ export const PlanesTab = () => {
 	return (
 		<div className="flex flex-col">
 			<PlaneRegistrationsGrid
+				loading={isLoading}
 				registrations={data.results}
+				count={data.count}
 			/>
 		</div>
 	)
