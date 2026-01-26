@@ -118,6 +118,7 @@ const search = base
 
 const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistrationWhereInput => {
 	const native = Array<PlaneRegistrationWhereInput>();
+	console.log(filters);
 	for (const filter of filters) {
 		switch (filter.type) {
 			case "n_number": {
@@ -187,11 +188,12 @@ const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistration
 				});
 				break;
 			case "fractionally_owned":
-				native.push({ fractionally_owned: filter.input.map(Boolean).at(0) });
+				native.push({ fractionally_owned: filter.input.map(item => item === "true").at(0) });
 				break;
 		}
 	}
 	
+	console.log(native);
 	return {
 		AND: native
 	};
