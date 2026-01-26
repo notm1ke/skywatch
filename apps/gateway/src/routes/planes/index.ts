@@ -21,6 +21,12 @@ type FilterInput = {
 }
 
 const FilterInputType: Record<z.infer<typeof PlaneFilterType>, FilterInput> = {
+	n_number: {
+		type: z.string(),
+		multiple: false,
+		hasDefault: false,
+		table: "planeRegistration"
+	},
 	status: {
 		type: z.string(),
 		multiple: true,
@@ -186,7 +192,6 @@ const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistration
 		}
 	}
 	
-	console.log(native);
 	return {
 		AND: native
 	};
