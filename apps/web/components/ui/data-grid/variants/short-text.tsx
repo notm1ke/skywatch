@@ -1,7 +1,7 @@
 import { cn } from "~/lib/utils";
 import { DataGridCellProps } from "../types";
 import { DataGridCellWrapper } from "../cell-wrapper";
-import { useCallback, useRef, useState } from "react";
+import { ReactNode, useCallback, useRef, useState } from "react";
 
 export function ShortTextCell<TData>({
 	cell,
@@ -16,7 +16,7 @@ export function ShortTextCell<TData>({
 	isActiveSearchMatch,
 	readOnly,
 }: DataGridCellProps<TData>) {
-	const initialValue = cell.getValue();
+	const initialValue = cell.getValue() as string | ReactNode;
 	const [value, setValue] = useState(initialValue);
 	
 	const cellRef = useRef<HTMLDivElement>(null);
@@ -102,8 +102,7 @@ export function ShortTextCell<TData>({
 				onInput={onInput}
 				suppressContentEditableWarning
 				className={cn("size-full overflow-hidden outline-none", {
-					"whitespace-nowrap **:inline **:whitespace-nowrap [&_br]:hidden":
-						isEditing,
+					"whitespace-nowrap **:inline **:whitespace-nowrap [&_br]:hidden": isEditing
 				})}
 			>
 				{displayValue}
