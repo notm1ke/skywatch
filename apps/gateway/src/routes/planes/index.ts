@@ -118,7 +118,6 @@ const search = base
 
 const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistrationWhereInput => {
 	const native = Array<PlaneRegistrationWhereInput>();
-	console.log(filters);
 	for (const filter of filters) {
 		switch (filter.type) {
 			case "n_number": {
