@@ -49,7 +49,7 @@ const storeToInput = (store: PlaneFilteringControls): Array<z.infer<typeof Plane
 
 export const PlanesTab = () => {
 	const filters = usePlaneFilteringControls();
-	const { data, isLoading, error, refetch } = useQuery(orpc.planes.search.queryOptions({
+	const { data, isLoading, isFetching, error, refetch } = useQuery(orpc.planes.search.queryOptions({
 		input: { filters: storeToInput(filters) },
 		placeholderData: keepPreviousData
 	}));
@@ -89,7 +89,7 @@ export const PlanesTab = () => {
 	return (
 		<div className="flex flex-col">
 			<PlaneRegistrationsGrid
-				loading={isLoading}
+				loading={isFetching}
 				registrations={data.results}
 				count={data.count}
 			/>

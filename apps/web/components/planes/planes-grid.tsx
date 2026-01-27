@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { FilterRow } from "./filter-row";
 import { DataGrid } from "../ui/data-grid";
 import { PlaneTypes } from "./plane-types";
@@ -5,20 +6,17 @@ import { ColumnDef } from "@tanstack/react-table";
 import { RegistrationStatuses } from "./statuses";
 import { useDataGrid } from "../ui/data-grid/hook";
 import { usePlaneFilteringControls } from "./store";
+import { AnimatedNumber } from "../ui/animated-number";
 import { RegistrationSearch } from "./filters/registration";
 import { PlaneRegistration } from "@skywatch/gateway/schemas";
 
 import {
 	IdCardLanyard,
 	ListChecks,
-	Loader,
 	Plane,
 	Shapes,
 	UserRound
 } from "lucide-react";
-import { motion } from "motion/react";
-import { SlidingNumber } from "../ui/sliding-number";
-import { AnimatedNumber } from "../ui/animated-number";
 
 type PlanesRegistrationGridProps = {
 	loading: boolean;
@@ -113,7 +111,7 @@ const columns: ColumnDef<PlaneRegistration>[] = [
 		meta: {
 			cell: {
 				variant: "date",
-				format: "MM/DD/YYYY"
+				format: "MMMM Do, YYYY"
 			},
 		},
 		minSize: 90,
@@ -175,24 +173,23 @@ export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ 
 					{...dataGridProps}
 				/>
 			</motion.div>
+			
 			<div className="hidden sm:flex flex-row justify-between h-10 items-center divide-x">
 				<div className="flex flex-row h-full text-sm divide-x">
 					<div className="flex flex-row gap-2 items-center px-4 font-mono tracking-tight text-sm h-full">
-						{loading && <Loader className="size-4 animate-spin duration-200" />}
-						{!loading && (
-							<div className="w-32 flex flex-row gap-2 justify-center">
-								<AnimatedNumber
-									value={count}
-									className="font-semibold text-sm"
-									springOptions={{
-										bounce: 0,
-										duration: 350,
-									}}
-								/> <div>result{count === 1 ? "" : "s"}</div>
-							</div>
-						)}
+						<div className="w-32 flex flex-row gap-2 justify-center">
+							<AnimatedNumber
+								value={count}
+								className="font-semibold text-sm"
+								springOptions={{
+									bounce: 0,
+									duration: 350,
+								}}
+							/> <div>result{count === 1 ? "" : "s"}</div>
+						</div>
 					</div>
 					<RegistrationSearch
+						loading={loading}
 						value={registration || ""}
 						onChange={registration => filter({ registration })}
 					/>
