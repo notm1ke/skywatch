@@ -223,6 +223,7 @@ export const seedPlanes = async () => {
 	await prisma.engine.createMany({ data: engines });
 	engineCsv = null;
 	engines = [];
+	Bun.gc(true);
 	console.log("Available memory:", process.availableMemory());
 	
 	const aircraftPath = path.join(handle, "ACFTREF.txt");
@@ -266,6 +267,7 @@ export const seedPlanes = async () => {
 	
 	aircraftCsv = null;
 	aircraft = [];
+	Bun.gc(true);
 	console.log("Available memory:", process.availableMemory());
 	
 	const registrationPath = path.join(handle, "MASTER.txt");
@@ -309,6 +311,7 @@ export const seedPlanes = async () => {
 	
 	registrationCsv = null;
 	registrations = [];
+	Bun.gc(true);
 	await cleanupTemp(handle);
 	
 	console.log(`[planes] Done in ${Date.now() - start}ms.`);
