@@ -7,12 +7,12 @@ import { useWaypointControls } from "./store";
 import { useMobile } from "../mobile-provider";
 import { ScrollArea } from "../ui/scroll-area";
 import { WaypointDetailsPane } from "./details";
-import { useQuery } from "@tanstack/react-query";
 import { UsStateAbbreviations } from "~/lib/geo";
 import { useDebounce } from "~/hooks/use-debounce";
 import { AnimatedNumber } from "../ui/animated-number";
 import { useKeyHandler } from "~/hooks/use-key-handler";
 import { useClickOutside } from "~/hooks/use-click-outside";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Waypoint, WaypointUseLocalizations } from "@skywatch/gateway/schemas";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
@@ -83,7 +83,8 @@ export const WaypointSearchbar = () => {
 
 	const { data, isLoading, error } = useQuery(orpc.airspace.waypoints.search.queryOptions({
 		input: { query: debouncedQuery },
-		enabled: !!debouncedQuery
+		placeholderData: keepPreviousData,
+		enabled: !!debouncedQuery,
 	}));
 	
 	const activateWaypoint = (waypoint: Waypoint) => {
