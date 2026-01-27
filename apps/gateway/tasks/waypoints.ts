@@ -1,7 +1,7 @@
 import axios from "axios";
-import moment from "moment";
 import path from "node:path";
 import unzipper from "unzipper";
+import moment from "moment-timezone";
 
 import { load } from "cheerio";
 import { tmpdir } from "node:os";
@@ -159,9 +159,15 @@ const waypoints = defineTask({
 		console.log(`[waypoints] Discovered ${data.length} waypoints - saving to database..`)
 		
 		await prisma.waypoint.deleteMany();
-		const created = await prisma.waypoint.createMany({ data });
-		if (created.count < data.length) console.warn(
-			`[waypoints] ${created.count} waypoint${created.count === 1 ? '' : 's'} generated (${(created.count / data.length).toFixed(1)}% loss).`
+		let created = 0;
+		for (let i = 0; i < data.length; i += 25000) {
+			const batch = data.slice(i, i + 25000);
+			const result = await prisma.waypoint.createMany({ data: batch });
+			created += result.count;
+		}
+		
+		if (created < data.length) console.warn(
+			`[waypoints] ${created} waypoint${created === 1 ? '' : 's'} generated (${(created / data.length).toFixed(1)}% loss).`
 		);
 		
 		await cleanupTemp(handle);

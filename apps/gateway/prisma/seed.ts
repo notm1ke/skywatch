@@ -1,5 +1,6 @@
 import { redis } from "@/services/redis";
 import { prisma } from "@/services/prisma";
+import { seedPlanes } from "./seed/planes";
 import { seedAirports } from "./seed/airport";
 import { seedAirlineHubs } from "./seed/airline-hubs";
 import { seedAirportHasRvrs } from "./seed/airport-rvr";
@@ -32,7 +33,10 @@ await seedAirlineHubs();
 await seedAirportHasAtis();
 await seedAirportHasClear();
 await seedAirportHasPrecheck();
-await seedAirportHasRvrs()
+await seedAirportHasRvrs();
+
+// planes
+await seedPlanes();
 
 console.log(`Finished seeding database in ${(Date.now() - start).toFixed(2)}ms.`);
 await redis.set("db:seed", start);
