@@ -15,6 +15,7 @@ import {
 	EngineCreateInput,
 	PlaneRegistrationCreateManyInput,
 } from "@/prisma/generated/models";
+import { BatchPayload } from "../generated/internal/prismaNamespace";
 
 type RawAircraft = {
 	CODE: string;
@@ -203,7 +204,7 @@ export const seedPlanes = async () => {
 		process.exit(-1);
 	}
 	
-	const engineCsv = await readFile(enginePath, { encoding: "utf8" })
+	let engineCsv = await readFile(enginePath, { encoding: "utf8" })
 		.then(contents => contents.slice(1).replaceAll("\"", ""))
 		.catch(() => null);
 	
@@ -212,17 +213,17 @@ export const seedPlanes = async () => {
 		process.exit(-1);
 	}
 	
-	const engines = parse<RawEngine>(engineCsv, { columns: true, skip_empty_lines: true, trim: true })
+	let engines = parse<RawEngine>(engineCsv, { columns: true, skip_empty_lines: true, trim: true })
 		.map(toNativeEngine)
 		.filter(Boolean) as EngineCreateInput[];
 	
 	console.log(`[planes] Discovered ${engines.length} engine definitions - saving to database..`)
 	
 	await prisma.engine.deleteMany();
-	const createdEngines = await prisma.engine.createMany({ data: engines });
-	if (createdEngines.count < engines.length) console.warn(
-		`[planes] ${createdEngines.count} engine${createdEngines.count === 1 ? '' : 's'} generated (${(createdEngines.count / engines.length).toFixed(1)}% loss).`
-	);
+	await prisma.engine.createMany({ data: engines });
+	engineCsv = null;
+	engines = [];
+	console.log("Available memory:", process.availableMemory());
 	
 	const aircraftPath = path.join(handle, "ACFTREF.txt");
 	if (!existsSync(aircraftPath)) {
@@ -230,7 +231,7 @@ export const seedPlanes = async () => {
 		process.exit(-1);
 	}
 	
-	const aircraftCsv = await readFile(aircraftPath, { encoding: "utf8" })
+	let aircraftCsv = await readFile(aircraftPath, { encoding: "utf8" })
 		.then(contents => contents.slice(1).replaceAll("\"", ""))
 		.catch(() => null);
 	
@@ -239,7 +240,7 @@ export const seedPlanes = async () => {
 		process.exit(-1);
 	}
 	
-	const aircraft = parse<RawAircraft>(aircraftCsv, { columns: true, skip_empty_lines: true })
+	let aircraft = parse<RawAircraft>(aircraftCsv, { columns: true, skip_empty_lines: true })
 		.map(toNativeAircraft)
 		.filter(Boolean) as AircraftCreateInput[];
 	
@@ -250,16 +251,22 @@ export const seedPlanes = async () => {
 	let batchCount = 0;
 	
 	for (let i = 0; i < aircraft.length; i += BATCH_SIZE) {
-		const batch = aircraft.slice(i, i + BATCH_SIZE);
+		let batch = aircraft.slice(i, i + BATCH_SIZE);
 		console.time(` - Batch ${++batchCount}`);
-		const result = await prisma.aircraft.createMany({ data: batch });
+		let result: BatchPayload | null = await prisma.aircraft.createMany({ data: batch });
 		console.timeEnd(` - Batch ${batchCount}`);
 		createdAircraft += result.count;
+		result = null;
+		batch = [];
 	}
 	
 	if (createdAircraft < aircraft.length) console.warn(
 		`[planes] ${createdAircraft} aircraft generated (${(createdAircraft / aircraft.length).toFixed(1)}% loss).`
 	);
+	
+	aircraftCsv = null;
+	aircraft = [];
+	console.log("Available memory:", process.availableMemory());
 	
 	const registrationPath = path.join(handle, "MASTER.txt");
 	if (!existsSync(registrationPath)) {
@@ -267,7 +274,7 @@ export const seedPlanes = async () => {
 		process.exit(-1);
 	}
 	
-	const registrationCsv = await readFile(registrationPath, { encoding: "utf8" })
+	let registrationCsv = await readFile(registrationPath, { encoding: "utf8" })
 		.then(contents => contents.slice(1).replaceAll("\"", ""))
 		.catch(() => null);
 	
@@ -276,7 +283,7 @@ export const seedPlanes = async () => {
 		process.exit(-1);
 	}
 	
-	const registrations = parse<RawRegistration>(registrationCsv, { columns: true, skip_empty_lines: true, trim: true })
+	let registrations = parse<RawRegistration>(registrationCsv, { columns: true, skip_empty_lines: true, trim: true })
 		.map(toNativeRegistration)
 		.filter(Boolean) as PlaneRegistrationCreateManyInput[];
 	
@@ -287,17 +294,21 @@ export const seedPlanes = async () => {
 	batchCount = 0;
 	
 	for (let i = 0; i < registrations.length; i += BATCH_SIZE) {
-		const batch = registrations.slice(i, i + BATCH_SIZE);
+		let batch = registrations.slice(i, i + BATCH_SIZE);
 		console.time(` - Batch ${++batchCount}`);
-		const result = await prisma.planeRegistration.createMany({ data: batch });
+		let result: BatchPayload | null = await prisma.planeRegistration.createMany({ data: batch });
 		console.timeEnd(` - Batch ${batchCount}`);
 		createdRegistrations += result.count;
+		batch = [];
+		result = null;
 	}
 	
 	if (createdRegistrations < registrations.length) console.warn(
 		`[planes] ${createdRegistrations} registration${createdRegistrations === 1 ? '' : 's'} generated (${(createdRegistrations / registrations.length).toFixed(1)}% loss).`
 	);
 	
+	registrationCsv = null;
+	registrations = [];
 	await cleanupTemp(handle);
 	
 	console.log(`[planes] Done in ${Date.now() - start}ms.`);

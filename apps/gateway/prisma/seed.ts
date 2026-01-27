@@ -35,9 +35,6 @@ await seedAirportHasClear();
 await seedAirportHasPrecheck();
 await seedAirportHasRvrs();
 
-// planes
-await seedPlanes();
-
 console.log(`Finished seeding database in ${(Date.now() - start).toFixed(2)}ms.`);
 await redis.set("db:seed", start);
 

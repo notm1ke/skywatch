@@ -6,11 +6,12 @@
 	"packageManager": "bun@1.2.14",
 	"scripts": {
 		"dev": "nitro dev",
-		"build": "bun run db:gen && nitro build && bun run db:push && bun run db:seed",
+		"build": "bun run db:gen && nitro build && bun run db:push && bun run db:seed && bun run seed:planes",
 		"start": "bun run ./.output/server/index.mjs",
 		"db:gen": "bunx prisma generate",
 		"db:seed": "bunx prisma db seed",
-		"db:push": "bunx prisma migrate deploy"
+		"db:push": "bunx prisma migrate deploy",
+		"seed:planes": "bun --smol run ./prisma/seed/planes.ts"
 	},
 	"dependencies": {
 		"@orpc/client": "^1.13.0",
