@@ -1,7 +1,8 @@
 {
 	"name": "skywatch",
 	"devDependencies": {
-		"turbo": "latest"
+		"next": "^16.1.5",
+		"turbo": "^2.7.3"
 	},
 	"packageManager": "bun@1.2.14",
 	"private": true,
