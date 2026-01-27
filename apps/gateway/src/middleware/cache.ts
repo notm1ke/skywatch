@@ -5,11 +5,19 @@ import { redis } from "@/services/redis";
 
 type CacheKeyGenerator<TInput> = (input: TInput) => string;
 
+type UseCache<TInput> = (input: TInput) => boolean;
+
 export const cache = <TInput extends Record<string, any>, TOutput>(
 	key: CacheKeyGenerator<TInput> | string,
 	ttl: Duration.DurationInput,
 	schema: z.ZodType<TOutput>,
+	enableFn: UseCache<TInput> = () => true
 ) => os.middleware(async ({ next }, input, output) => {
+	if (!enableFn(input as TInput)) {
+		const result = await next(input as TInput);
+		return output(result.output as TOutput);
+	}
+	
 	const cacheKey = typeof key === "string" ? key : key(input as TInput);
 	const cached = await redis.get(cacheKey);
 	if (cached) {

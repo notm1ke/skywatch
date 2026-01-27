@@ -1,8 +1,14 @@
 import { z } from "zod/v4";
 import { base } from "@/utils";
 import { ORPCError } from "@orpc/server";
+import { cache } from "@/middleware/cache";
 import { prisma } from "@/services/prisma";
-import { PlaneFilter, PlaneFilterType } from "@/schemas";
+
+import {
+	PlaneFilter,
+	PlaneFilterType,
+	PlaneRegistration
+} from "@/schemas";
 
 import {
 	AircraftScalarFieldEnum,
@@ -101,7 +107,7 @@ const search = base
 		])
 		
 		if (!results.length) return {
-			results: [],
+			results: [] as PlaneRegistration[],
 			count: 0,
 			nextPage: null
 		};
@@ -222,11 +228,33 @@ const findByRegistration = base
 		})
 	);
 
+
+const filterOptionsInput = z.object({
+	type: PlaneFilterType,
+	input: z.unknown().optional()
+});
+
+const filterOptionsResponse = z.array(z.string());
+
 const filterOptions = base
-	.input(z.object({
-		type: PlaneFilterType,
-		input: z.unknown().optional()
-	}))
+	.input(filterOptionsInput)
+	.use(cache<
+		z.infer<typeof filterOptionsInput>,
+		z.infer<typeof filterOptionsResponse>
+	>(
+		({ type }) => `__planes:filter:${type}`,
+		"30 minutes",
+		filterOptionsResponse,
+		({ type }) => {
+			/**
+			 * we only want to cache things that have a reasonable amount of items to speed up initial load,
+			 * other things like owner, mfg, aircraft are instant loaded and require searching, so we don't
+			 * care about those.
+			 */
+			const typeDef = FilterInputType[type];
+			return typeDef.hasDefault;
+		}
+	))
 	.handler(async ({ input: { type, input: rawInput } }) => {
 		const typeDef = FilterInputType[type];
 		const field = type as PlaneRegistrationScalarFieldEnum | AircraftScalarFieldEnum;

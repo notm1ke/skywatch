@@ -223,8 +223,6 @@ export const seedPlanes = async () => {
 	await prisma.engine.createMany({ data: engines });
 	engineCsv = null;
 	engines = [];
-	Bun.gc(true);
-	console.log("Available memory:", process.availableMemory());
 	
 	const aircraftPath = path.join(handle, "ACFTREF.txt");
 	if (!existsSync(aircraftPath)) {
@@ -267,8 +265,6 @@ export const seedPlanes = async () => {
 	
 	aircraftCsv = null;
 	aircraft = [];
-	Bun.gc(true);
-	console.log("Available memory:", process.availableMemory());
 	
 	const registrationPath = path.join(handle, "MASTER.txt");
 	if (!existsSync(registrationPath)) {
@@ -301,18 +297,12 @@ export const seedPlanes = async () => {
 		let result: BatchPayload | null = await prisma.planeRegistration.createMany({ data: batch });
 		console.timeEnd(` - Batch ${batchCount}`);
 		createdRegistrations += result.count;
-		batch = [];
-		result = null;
 	}
 	
 	if (createdRegistrations < registrations.length) console.warn(
 		`[planes] ${createdRegistrations} registration${createdRegistrations === 1 ? '' : 's'} generated (${(createdRegistrations / registrations.length).toFixed(1)}% loss).`
 	);
 	
-	registrationCsv = null;
-	registrations = [];
-	Bun.gc(true);
 	await cleanupTemp(handle);
-	
 	console.log(`[planes] Done in ${Date.now() - start}ms.`);
 }

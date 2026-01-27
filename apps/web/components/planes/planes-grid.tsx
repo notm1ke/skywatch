@@ -16,6 +16,9 @@ import {
 	Shapes,
 	UserRound
 } from "lucide-react";
+import { motion } from "motion/react";
+import { SlidingNumber } from "../ui/sliding-number";
+import { AnimatedNumber } from "../ui/animated-number";
 
 type PlanesRegistrationGridProps = {
 	loading: boolean;
@@ -148,32 +151,45 @@ export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ 
 	});
 	
 	return (
-		<div className="flex flex-col w-full h-full divide-y-2">
-			<DataGrid
-				table={table}
-				border={false}
-				height={900}
-				stretchColumns
-				onRowClicked={row => {
-					const stale = table.getSelectedRowModel().flatRows.map(r => r.original.n_number);
-					const updated = {
-						[row.original.n_number]: true,
-						...stale.reduce((acc, id) => ({ ...acc, [id]: false }), {})
-					};
-					
-					// clickRow(row.original)
-					table.setRowSelection(updated);
-				}}
-				{...dataGridProps}
-			/>
-			<div className="flex flex-row justify-between h-10 items-center divide-x">
+		<div className="flex flex-col w-full h-full divide-y">
+			<motion.div
+				animate={{ height: 900 }}
+				transition={{ duration: 0.25, ease: "easeInOut" }}
+				className="overflow-hidden"
+			>
+				<DataGrid
+					table={table}
+					border={false}
+					height={900}
+					stretchColumns
+					onRowClicked={row => {
+						const stale = table.getSelectedRowModel().flatRows.map(r => r.original.n_number);
+						const updated = {
+							[row.original.n_number]: true,
+							...stale.reduce((acc, id) => ({ ...acc, [id]: false }), {})
+						};
+						
+						// clickRow(row.original)
+						table.setRowSelection(updated);
+					}}
+					{...dataGridProps}
+				/>
+			</motion.div>
+			<div className="hidden sm:flex flex-row justify-between h-10 items-center divide-x">
 				<div className="flex flex-row h-full text-sm divide-x">
 					<div className="flex flex-row gap-2 items-center px-4 font-mono tracking-tight text-sm h-full">
 						{loading && <Loader className="size-4 animate-spin duration-200" />}
 						{!loading && (
-							<>
-								<span className="font-semibold">{count.toLocaleString()}</span> result{count === 1 ? "" : "s"}
-							</>
+							<div className="w-32 flex flex-row gap-2 justify-center">
+								<AnimatedNumber
+									value={count}
+									className="font-semibold text-sm"
+									springOptions={{
+										bounce: 0,
+										duration: 350,
+									}}
+								/> <div>result{count === 1 ? "" : "s"}</div>
+							</div>
 						)}
 					</div>
 					<RegistrationSearch

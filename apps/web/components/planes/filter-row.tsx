@@ -17,7 +17,7 @@ const Filters: React.FC[] = [
 ]
 
 export const FilterRow = () => (
-	<div className="flex flex-row space-x-2 items-center px-2">
+	<div className="hidden sm:flex flex-row space-x-2 items-center px-2">
 		{Object.entries(Filters).map(([type, Component]) => (
 			<Component key={type} />
 		))}

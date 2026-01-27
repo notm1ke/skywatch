@@ -3,7 +3,7 @@ import { orpc } from "~/lib/gateway";
 import { useQuery } from "@tanstack/react-query";
 import { RegistrationStatuses } from "../statuses";
 import { usePlaneFilteringControls } from "../store";
-import { ComboboxButton } from "~/components/ui/combobox";
+import { ComboboxButton, ComboboxSkeleton } from "~/components/ui/combobox";
 
 export const RegistrationStatusFilter = () => {
 	const { status, filter } = usePlaneFilteringControls();
@@ -11,13 +11,18 @@ export const RegistrationStatusFilter = () => {
 		input: { type: "status" },
 	}));
 	
-	if (!data || isLoading) return null;
+	if (!data || isLoading) return (
+		<ComboboxSkeleton label="Status" />
+	);
+	
 	const items = data
 		.map(item => RegistrationStatuses.find(entry => entry.value.toLowerCase() === item.toLowerCase()))
 		.filter(Boolean)
 		.sort((a, b) => a!.label.localeCompare(b!.label)) as SelectOption[];
 	
-	if (!items) return null;
+	if (!items) return (
+		<ComboboxSkeleton label="Status" />
+	);
 	
 	return (
 		<ComboboxButton

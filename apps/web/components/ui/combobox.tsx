@@ -1,14 +1,21 @@
 "use client"
 
-import { Check, ChevronDown, Circle, LucideIcon, XIcon } from "lucide-react"
+import { cn } from "~/lib/utils"
 import { motion, AnimatePresence } from "motion/react";
 
-import { cn } from "~/lib/utils"
 import {
 	Popover,
 	PopoverContent,
 	PopoverAnchor,
 } from "~/components/ui/popover"
+
+import {
+	Check,
+	ChevronDown,
+	Circle,
+	LucideIcon,
+	XIcon
+} from "lucide-react"
 
 import {
 	Command,
@@ -17,7 +24,15 @@ import {
 	CommandItem,
 	CommandList,
 } from "~/components/ui/command"
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import {
+	ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from "react";
 
 export interface ComboboxItem {
 	label: string
@@ -44,6 +59,20 @@ export interface ComboboxButtonProps {
 
 const defaultFilterFn = (item: ComboboxItem, query: string) =>
 	item.label.toLowerCase().startsWith(query.toLowerCase())
+
+export function ComboboxSkeleton({ label }: Pick<ComboboxButtonProps, "label">) {
+	return (
+		<button
+			disabled
+			key="button"
+			type="button"
+			className="flex h-7 items-center gap-1 px-2 text-xs border-transparent bg-secondary text-secondary-foreground font-medium rounded-sm animate-pulse"
+		>
+			{label}
+			<ChevronDown className="size-3 shrink-0 opacity-50" />
+		</button>
+	)
+}
 
 export function ComboboxButton({
 	label,
@@ -243,7 +272,7 @@ export function ComboboxButton({
 									initial={{ opacity: 0, x: -10 }}
 									animate={{ opacity: 1, x: 0 }}
 									exit={{ opacity: 0, x: -10 }}
-									transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+									transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
 									onAnimationComplete={handleInputAnimationComplete}
 								>
 									<input
@@ -283,10 +312,10 @@ export function ComboboxButton({
 									type="button"
 									className={cn("flex h-7 items-center gap-1 px-2 text-xs", className)}
 									onClick={handleButtonClick}
-									initial={{ opacity: 0, x: 10 }}
-									animate={{ opacity: 1, x: 0 }}
+									// initial={{ opacity: 0, x: 10 }}
+									// animate={{ opacity: 1, x: 0 }}
 									exit={{ opacity: 0, x: 10 }}
-									transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+									transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
 								>
 									{label}
 									{value.length > 0 ? (

@@ -3,7 +3,7 @@ import { orpc } from "~/lib/gateway";
 import { PlaneTypes } from "../plane-types";
 import { useQuery } from "@tanstack/react-query";
 import { usePlaneFilteringControls } from "../store";
-import { ComboboxButton } from "~/components/ui/combobox";
+import { ComboboxButton, ComboboxSkeleton } from "~/components/ui/combobox";
 
 export const AirplaneTypeFilter = () => {
 	const { aircraft_type, filter } = usePlaneFilteringControls();
@@ -11,13 +11,18 @@ export const AirplaneTypeFilter = () => {
 		input: { type: "aircraft_type" },
 	}));
 	
-	if (!data || isLoading) return null;
+	if (!data || isLoading) return (
+		<ComboboxSkeleton label="Type" />
+	);
+	
 	const items = data
 		.map(item => PlaneTypes.find(entry => entry.value.toLowerCase() === item.toLowerCase()))
 		.filter(Boolean)
 		.sort((a, b) => a!.label.localeCompare(b!.label)) as SelectOption[];
 	
-	if (!items) return null;
+	if (!items) return (
+		<ComboboxSkeleton label="Type" />
+	);
 	
 	return (
 		<ComboboxButton
