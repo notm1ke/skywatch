@@ -7,7 +7,7 @@ import { HeaderStats } from "./header-stats";
 export const StatisticsTab = () => {
 	return (
 		<div className="min-h-screen overflow-hidden">
-			<div className="w-full max-w-[2200px] mx-auto pl-[35px] overflow-hidden">
+			<div className="w-full max-w-[2200px] mx-auto sm:pl-[35px] overflow-hidden">
 				{/* mobile */}
 				<div className="flex flex-col min-[961px]:hidden">
 					<div className="w-full h-[200px] flex justify-center pointer-events-none z-1 translate-x-2.5">
