@@ -9,13 +9,13 @@ import { prisma } from "@/services/prisma";
 import { pipeline } from "node:stream/promises";
 import { mkdir, readFile, rm } from "node:fs/promises";
 import { createWriteStream, existsSync } from "node:fs";
+import { BatchPayload } from "../generated/internal/prismaNamespace";
 
 import {
 	AircraftCreateInput,
 	EngineCreateInput,
 	PlaneRegistrationCreateManyInput,
 } from "@/prisma/generated/models";
-import { BatchPayload } from "../generated/internal/prismaNamespace";
 
 type RawAircraft = {
 	CODE: string;

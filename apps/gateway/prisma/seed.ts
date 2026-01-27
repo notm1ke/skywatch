@@ -1,6 +1,5 @@
 import { redis } from "@/services/redis";
 import { prisma } from "@/services/prisma";
-import { seedPlanes } from "./seed/planes";
 import { seedAirports } from "./seed/airport";
 import { seedAirlineHubs } from "./seed/airline-hubs";
 import { seedAirportHasRvrs } from "./seed/airport-rvr";
