@@ -1,6 +1,5 @@
 import { Button } from "~/components/ui/button";
 import { AirportAdvisory } from "~/lib/schemas";
-import { Separator } from "~/components/ui/separator";
 import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 
@@ -120,68 +119,71 @@ const TrendIndicator: React.FC<{ trend: string }> = ({ trend }) => {
 	);
 }
 
-const SingleModeInfo: React.FC<{ advisory: AirportAdvisory }> = ({ advisory }) => (
-	<div className="flex flex-col space-y-4">
-		<div className="flex flex-col space-y-1">
-			<span className="text-sm">The reason for this delay is:</span>
-			<pre className="font-mono text-xs text-muted-foreground wrap-break-word">
-				{delayReason(advisory.departureDelay!.reason)}
-			</pre>
+const SingleModeInfo: React.FC<{ advisory: AirportAdvisory }> = ({ advisory }) => {
+	const mode = advisory.arrivalDelay ? "arrivalDelay" : "departureDelay";
+	return (
+		<div className="flex flex-col space-y-4">
+			<div className="flex flex-col space-y-1">
+				<span className="text-sm">The reason for this delay is:</span>
+				<pre className="font-mono text-xs text-muted-foreground wrap-break-word">
+					{advisory[mode]!.reason}
+				</pre>
+			</div>
+			
+			<div className="grid grid-cols-2 gap-2 w-full">
+				<Item variant="outline">
+					<ItemHeader>
+						<Avatar>
+							<AvatarFallback className="bg-green-300 dark:bg-green-500">
+								<ClockArrowDown className="size-4.5 text-white" />
+							</AvatarFallback>
+						</Avatar>
+					</ItemHeader>
+					<ItemContent>
+						<ItemTitle>Minimum</ItemTitle>
+						<ItemDescription className="text-xs">
+							{parseDelayTime(advisory[mode]!.arrivalDeparture.min)}
+						</ItemDescription>
+					</ItemContent>
+				</Item>
+				
+				<Item variant="outline">
+					<ItemHeader>
+						<Avatar>
+							<AvatarFallback className="bg-red-300 dark:bg-red-500">
+								<ClockArrowUp className="size-4.5 text-white" />
+							</AvatarFallback>
+						</Avatar>
+					</ItemHeader>
+					<ItemContent>
+						<ItemTitle>Maximum</ItemTitle>
+						<ItemDescription className="text-xs">
+							{parseDelayTime(advisory[mode]!.arrivalDeparture.max)}
+						</ItemDescription>
+					</ItemContent>
+				</Item>
+				
+				<Item variant="outline">
+					<ItemHeader>
+						<Avatar>
+							<AvatarFallback className="bg-amber-300 dark:bg-amber-500">
+								<ClockFading className="size-4.5 text-white" />
+							</AvatarFallback>
+						</Avatar>
+					</ItemHeader>
+					<ItemContent>
+						<ItemTitle>Average</ItemTitle>
+						<ItemDescription className="text-xs">
+							{getLatestTimeValue(parseInt(advisory[mode]!.averageDelay) * 60 * 1000, ' ')}
+						</ItemDescription>
+					</ItemContent>
+				</Item>
+				
+				<TrendIndicator trend={advisory[mode]!.arrivalDeparture.trend} />
+			</div>
 		</div>
-		
-		<div className="grid grid-cols-2 gap-2 w-full">
-			<Item variant="outline">
-				<ItemHeader>
-					<Avatar>
-						<AvatarFallback className="bg-green-300 dark:bg-green-500">
-							<ClockArrowDown className="size-4.5 text-white" />
-						</AvatarFallback>
-					</Avatar>
-				</ItemHeader>
-				<ItemContent>
-					<ItemTitle>Minimum</ItemTitle>
-					<ItemDescription className="text-xs">
-						{parseDelayTime(advisory.departureDelay!.arrivalDeparture.min)}
-					</ItemDescription>
-				</ItemContent>
-			</Item>
-			
-			<Item variant="outline">
-				<ItemHeader>
-					<Avatar>
-						<AvatarFallback className="bg-red-300 dark:bg-red-500">
-							<ClockArrowUp className="size-4.5 text-white" />
-						</AvatarFallback>
-					</Avatar>
-				</ItemHeader>
-				<ItemContent>
-					<ItemTitle>Maximum</ItemTitle>
-					<ItemDescription className="text-xs">
-						{parseDelayTime(advisory.departureDelay!.arrivalDeparture.max)}
-					</ItemDescription>
-				</ItemContent>
-			</Item>
-			
-			<Item variant="outline">
-				<ItemHeader>
-					<Avatar>
-						<AvatarFallback className="bg-amber-300 dark:bg-amber-500">
-							<ClockFading className="size-4.5 text-white" />
-						</AvatarFallback>
-					</Avatar>
-				</ItemHeader>
-				<ItemContent>
-					<ItemTitle>Average</ItemTitle>
-					<ItemDescription className="text-xs">
-						{getLatestTimeValue(parseInt(advisory.departureDelay!.averageDelay) * 60 * 1000, ' ')}
-					</ItemDescription>
-				</ItemContent>
-			</Item>
-			
-			<TrendIndicator trend={advisory.departureDelay!.arrivalDeparture.trend} />
-		</div>
-	</div>
-);
+	);
+};
 
 export const DelayProgram: React.FC<{ airport: AirportWithJoins, advisory: AirportAdvisory }> = ({ airport, advisory }) => {
 	const mode: DelayType = (advisory.arrivalDelay && advisory.departureDelay)
@@ -236,13 +238,7 @@ export const DelayProgram: React.FC<{ airport: AirportWithJoins, advisory: Airpo
 								<DialogTitle>
 									{shortenAirportName(airport.name)} has {dialogTitle} 
 								</DialogTitle>
-								<DialogDescription>
-									{/*This closure will be in effect until{" "}
-									{moment.utc(advisory.airportClosure!.endTime).format('ddd, MMM Do YYYY [at] h:mm A')}.*/}
-								</DialogDescription>
 							</DialogHeader>
-							
-							<Separator />
 							
 							{mode !== "both" && <SingleModeInfo advisory={advisory} />}
 							{mode === "both" && <>{/* todo */}</>}

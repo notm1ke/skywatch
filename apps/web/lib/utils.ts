@@ -82,7 +82,7 @@ export const shortenAirportName = (name: string) => {
 };
 
 export const delayReason = (raw: string) => {
-	if (/:wx$/g.test(raw.toLowerCase()))
+	if (/(:wx$|wx:)/g.test(raw.toLowerCase()))
 		return "Weather";
 	if (raw.toLowerCase().includes("multi-taxi"))
 		return "Taxiway Congestion";

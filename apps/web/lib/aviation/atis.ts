@@ -265,7 +265,7 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 			description: "Time-critical aeronautical information, such as closures or hazards."
 		})
 	},
-	createSimpleKeyword(["BIRD ACTIVITY"], true, "orange", () => ({
+	createSimpleKeyword(["BIRD ACTIVITY", "BA ADZYS"], true, "orange", () => ({
 		title: "Bird Activity",
 		description: "Warning of increased bird presence in the airport vicinity, potential strike hazard."
 	})),
