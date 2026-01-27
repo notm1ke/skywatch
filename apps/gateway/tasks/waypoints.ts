@@ -85,6 +85,8 @@ export const transformWaypoint = (raw: RawWaypoint): WaypointCreateInput | null 
 	return payload;
 }
 
+const BATCH_SIZE = 10000;
+
 const waypoints = defineTask({
 	meta: {
 		name: "waypoints",
@@ -160,8 +162,8 @@ const waypoints = defineTask({
 		
 		await prisma.waypoint.deleteMany();
 		let created = 0;
-		for (let i = 0; i < data.length; i += 25000) {
-			const batch = data.slice(i, i + 25000);
+		for (let i = 0; i < data.length; i += BATCH_SIZE) {
+			const batch = data.slice(i, i + BATCH_SIZE);
 			const result = await prisma.waypoint.createMany({ data: batch });
 			created += result.count;
 		}

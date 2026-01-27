@@ -171,6 +171,8 @@ const toNativeRegistration = (row: RawRegistration): PlaneRegistrationCreateMany
 	kit_model: row["KIT MODEL"].trim() || null
 })
 
+const BATCH_SIZE = 10000;
+
 export const seedPlanes = async () => {
 	const start = Date.now();
 	const handle = await createTemp();
@@ -247,8 +249,8 @@ export const seedPlanes = async () => {
 	let createdAircraft = 0;
 	let batchCount = 0;
 	
-	for (let i = 0; i < aircraft.length; i += 25000) {
-		const batch = aircraft.slice(i, i + 25000);
+	for (let i = 0; i < aircraft.length; i += BATCH_SIZE) {
+		const batch = aircraft.slice(i, i + BATCH_SIZE);
 		console.time(` - Batch ${++batchCount}`);
 		const result = await prisma.aircraft.createMany({ data: batch });
 		console.timeEnd(` - Batch ${batchCount}`);
@@ -284,8 +286,8 @@ export const seedPlanes = async () => {
 	let createdRegistrations = 0;
 	batchCount = 0;
 	
-	for (let i = 0; i < registrations.length; i += 25000) {
-		const batch = registrations.slice(i, i + 25000);
+	for (let i = 0; i < registrations.length; i += BATCH_SIZE) {
+		const batch = registrations.slice(i, i + BATCH_SIZE);
 		console.time(` - Batch ${++batchCount}`);
 		const result = await prisma.planeRegistration.createMany({ data: batch });
 		console.timeEnd(` - Batch ${batchCount}`);
