@@ -158,13 +158,13 @@ export const TrafficFlowChart = () => {
 							<TowerControl />
 							Traffic by Center
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => handleSetMode('traffic_by_airline')}>
-							<TicketsPlane />
-							Traffic by Airline
-						</DropdownMenuItem>
 						<DropdownMenuItem onClick={() => handleSetMode('traffic_by_aircraft')}>
 							<Plane />
 							Traffic by Aircraft
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => handleSetMode('traffic_by_airline')}>
+							<TicketsPlane />
+							Traffic by Airline
 						</DropdownMenuItem>
 						<DropdownMenuItem onClick={() => handleSetMode('arrival_capacity')}>
 							<PlaneLanding />

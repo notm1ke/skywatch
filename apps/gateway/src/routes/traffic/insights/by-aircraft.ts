@@ -2,6 +2,7 @@ import { z } from "zod/v4";
 import { base } from "@/utils";
 import { TrafficFlow } from "@/schemas";
 import { prisma } from "@/services/prisma";
+import { Prisma } from "@/prisma/generated/client";
 import { injectDataMarker } from "@/middleware/traffic-marker";
 
 export type CommonPaxAircraftType = typeof CommonPaxAircraft[number];
@@ -17,30 +18,39 @@ const CommonPaxAircraft = [
 	"E145", "E170", "E195", "E290", "E295", "E45X", "E75L", "E75S"
 ] as const;
 
+type QueryResponse = {
+	plane: string;
+	flights: number;
+}
+
 export const aircraft = base
 	.input(z.void())
 	.use(injectDataMarker)
 	.handler(async ({ context: { marker } }) => {
-		const records = await prisma.airportTrafficFlowRecord.findMany({
-			where: marker,
-			select: {
-				time: true,
-				flights: true
-			}
-		});
-
-		const tracked = new Set<CommonPaxAircraftType>();
-		const dataPoints = records.reduce((acc, bucket) => {
-			const { flights } = bucket;
-			for (const flight of flights) {
-				const type = flight.type as CommonPaxAircraftType;
-				if (!CommonPaxAircraft.includes(type)) continue;
-				if (!tracked.has(type)) tracked.add(type);
-				acc[type] = (acc[type] || 0) + 1;
-			}
-
-			return acc;
-		}, {} as Record<CommonPaxAircraftType, number>);
+		const records = await prisma.$queryRaw<QueryResponse[]>`
+			SELECT 
+				(flight->>'type') AS plane,
+				COUNT(*)::int AS flights
+			FROM airport_traffic_record,
+			LATERAL jsonb_array_elements(flights::jsonb) AS flight
+			WHERE 1=1
+				AND (flight->>'type') IN (${Prisma.join(CommonPaxAircraft)})
+				AND day = ${marker.day}
+				AND month = ${marker.month}
+				AND year = ${marker.year}
+			GROUP BY plane
+			ORDER BY flights DESC
+		`;
+		
+		const tracked = new Set<string>();
+		const datum = {} as Record<string, number>;
+		let cumulative = 0;
+		
+		for (const { plane, flights } of records) {
+			if (!tracked.has(plane)) tracked.add(plane);
+			datum[plane] = flights;
+			cumulative += flights;
+		}
 
 		// d3 treechart, not recharts, so this is a non-standard response
 		const flow: TrafficFlow<string> = {
@@ -49,8 +59,8 @@ export const aircraft = base
 			data: [
 				{
 					time: "",
-					datum: dataPoints,
-					cumulative: Object.values(dataPoints).reduce((acc, val) => acc + val, 0)
+					datum,
+					cumulative
 				}
 			]
 		}

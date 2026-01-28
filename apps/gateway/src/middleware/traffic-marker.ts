@@ -38,6 +38,6 @@ export const injectDataMarker = base.middleware<
 	if (!marker) throw new ORPCError("NO_DATA_ERROR", {
 		message: "There isn't any traffic data yet"
 	});
-
+	
 	return next({ context: { marker } })
 });
