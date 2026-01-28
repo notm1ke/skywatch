@@ -2,12 +2,12 @@ import { unrollDatum } from ".";
 import { FlowStatusMetricKeys, TrafficFlow } from "@skywatch/gateway/schemas";
 import { cn, flowStatusColors, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "~/components/ui/chart";
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 export const TrafficByStatusChart: React.FC<{ chart: TrafficFlow }> = ({ chart }) => (
 	<ChartContainer config={chart.config} className={cn("min-h-[200px] h-[200px] w-full")}>
 		<ResponsiveContainer width="100%" height={200}>
-			<LineChart data={unrollDatum(chart.data)} accessibilityLayer>
+			<AreaChart data={unrollDatum(chart.data)} accessibilityLayer>
 				<XAxis dataKey="time" hide />
 				<YAxis
 					width={30}
@@ -16,7 +16,10 @@ export const TrafficByStatusChart: React.FC<{ chart: TrafficFlow }> = ({ chart }
 					tickFormatter={tick => shortNumberFormatter.format(tick)}
 				/>
 
-				<CartesianGrid strokeDasharray="3 3" />
+				<CartesianGrid
+					vertical={false}
+					strokeDasharray="3 3"
+				/>
 
 				<ChartTooltip
 					content={
@@ -27,7 +30,7 @@ export const TrafficByStatusChart: React.FC<{ chart: TrafficFlow }> = ({ chart }
 						/>}
 				/>
 
-				{chart.dataKeys.map(item => (
+				{/*{chart.dataKeys.map(item => (
 					<Line
 						key={item}
 						dataKey={item}
@@ -36,8 +39,21 @@ export const TrafficByStatusChart: React.FC<{ chart: TrafficFlow }> = ({ chart }
 						strokeWidth={1.75}
 						dot={false}
 					/>
+				))}*/}
+				
+				{chart.dataKeys.map(item => (
+					<Area
+						key={item}
+						dataKey={item}
+						type="monotone"
+						fill={flowStatusColors(item as FlowStatusMetricKeys)}
+						fillOpacity={0.4}
+						stroke={flowStatusColors(item as FlowStatusMetricKeys)}
+						strokeWidth={1.75}
+						dot={false}
+					/>
 				))}
-			</LineChart>
+			</AreaChart>
 		</ResponsiveContainer>
 	</ChartContainer>
 );

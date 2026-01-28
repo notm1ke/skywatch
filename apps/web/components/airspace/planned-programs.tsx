@@ -110,10 +110,10 @@ export const AirspacePlannedEvents = () => {
 									transition={{ delay: i * (50 / 1000) }}
 								>
 									<div>
-										<div className="flex items-center gap-1">
+										<div className="flex items-center gap-0.5">
 											<Tooltip>
 												<TooltipTrigger>
-													<span className="text-zinc-500 font-mono tracking-tighter text-sm ligatures">
+													<span className="text-zinc-500 font-mono tracking-tighter text-sm ligatures align-text-top">
 														{plan.forecastType === 'after' ? '>=' : '<='}
 														{plan.time}
 													</span>
@@ -126,7 +126,7 @@ export const AirspacePlannedEvents = () => {
 													</div>
 												</TooltipContent>
 											</Tooltip>
-											<span className="text-sm font-mono px-2">at {airport.iata_code}</span>
+											<span className="text-sm font-mono px-2 pointer-events-none">at {airport.iata_code}</span>
 											{/*<span className="text-sm font-bold">{shortenAirportName(airport.name)}</span>*/}
 										</div>
 									</div>

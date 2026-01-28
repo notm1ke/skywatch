@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TrafficByCenterChart } from "./by-center";
 import { TrafficByStatusChart } from "./by-status";
+import { TrafficByAirlineChart } from "./by-airline";
 import { TrafficByAircraftChart } from "./by-aircraft";
 import { TrafficChartSkeleton } from "./skeletons/chart";
 import { ErrorSection } from "~/components/error-section";
@@ -24,6 +25,7 @@ import {
 	CircleDotDashed,
 	Plane,
 	PlaneLanding,
+	TicketsPlane,
 	TowerControl
 } from "lucide-react";
 
@@ -31,7 +33,7 @@ type CallerType =
 	| "traffic_by_status"
 	| "traffic_by_center"
 	| "traffic_by_aircraft"
-	// | "traffic_by_airline"
+	| "traffic_by_airline"
 	| "arrival_capacity";
 
 type UnrolledData<T extends string = string> = {
@@ -51,7 +53,7 @@ const localizeCallerType = (mode: CallerType) => {
 		case "traffic_by_status": return "Traffic by Status";
 		case "traffic_by_center": return "Traffic by Center";
 		case "traffic_by_aircraft": return "Traffic by Aircraft";
-		// case "traffic_by_airline": return "Traffic by Airline"
+		case "traffic_by_airline": return "Traffic by Airline";
 		case "arrival_capacity": return "Arrival Capacity";
 	}
 }
@@ -61,6 +63,7 @@ const rpc = (mode: CallerType) => {
 		case "traffic_by_status": return orpc.traffic.statuses;
 		case "traffic_by_center": return orpc.traffic.centers;
 		case "traffic_by_aircraft": return orpc.traffic.aircraft;
+		case "traffic_by_airline": return orpc.traffic.airline;
 		case "arrival_capacity": return orpc.traffic.arrivalCapacity;
 	}
 }
@@ -81,7 +84,7 @@ const TotalBadge: React.FC<TotalBadgeProps> = ({ mode, response }) => {
 		return shortNumberFormatter.format(total);
 	}
 	
-	if (mode === "traffic_by_aircraft") {
+	if (mode === "traffic_by_aircraft" || mode === "traffic_by_airline") {
 		const dataset = response.data.at(0);
 		if (!dataset || response.data.length !== 1) return "Unknown";
 		return shortNumberFormatter.format(dataset.cumulative);
@@ -91,7 +94,8 @@ const TotalBadge: React.FC<TotalBadgeProps> = ({ mode, response }) => {
 }
 
 const LegendDisabled: Array<CallerType> = [
-	"traffic_by_aircraft"
+	"traffic_by_aircraft",
+	"traffic_by_airline",
 ];
 
 export const TrafficFlowChart = () => {
@@ -124,7 +128,7 @@ export const TrafficFlowChart = () => {
 
 	if (isLoading) switch (mode) {
 		case "traffic_by_aircraft":
-		// case "traffic_by_airline":
+		case "traffic_by_airline":
 			return <TrafficTreemapSkeleton />
 		case "arrival_capacity":
 		case "traffic_by_center":
@@ -154,10 +158,10 @@ export const TrafficFlowChart = () => {
 							<TowerControl />
 							Traffic by Center
 						</DropdownMenuItem>
-						{/*<DropdownMenuItem onClick={() => handleSetMode('traffic_by_airline')}>
+						<DropdownMenuItem onClick={() => handleSetMode('traffic_by_airline')}>
 							<TicketsPlane />
 							Traffic by Airline
-						</DropdownMenuItem>*/}
+						</DropdownMenuItem>
 						<DropdownMenuItem onClick={() => handleSetMode('traffic_by_aircraft')}>
 							<Plane />
 							Traffic by Aircraft
@@ -193,6 +197,7 @@ export const TrafficFlowChart = () => {
 				{!errored && mode === 'traffic_by_status' && <TrafficByStatusChart chart={chart} />}
 				{!errored && mode === 'traffic_by_center' && <TrafficByCenterChart chart={chart} />}
 				{!errored && mode === "traffic_by_aircraft" && <TrafficByAircraftChart chart={chart} />}
+				{!errored && mode === "traffic_by_airline" && <TrafficByAirlineChart chart={chart} />}
 				{!errored && mode === 'arrival_capacity' && <ArrivalCapacityChart chart={chart} />}
 
 				{(!LegendDisabled.includes(mode) && !errored) && (
