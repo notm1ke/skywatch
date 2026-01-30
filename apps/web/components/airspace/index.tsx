@@ -3,8 +3,9 @@
 import { AirspaceMap } from "./airspace-map";
 import { TrafficFlowChart } from "./traffic";
 import { useMobile } from "../mobile-provider";
+import { FlightStatuses } from "./flight-stats";
+import { ActiveAdvisories } from "./advisories";
 import { ActivePrograms } from "./active-programs";
-import { CancellationsPieChart } from "./cancellations";
 import { AirspacePlannedEvents } from "./planned-programs";
 
 export const AirspaceTab = () => {
@@ -25,7 +26,7 @@ export const AirspaceTab = () => {
 			</div>
 			<div className="sm:basis-1/3 border-t border-l-0 sm:border-l sm:border-t-0">
 				<TrafficFlowChart />
-				<CancellationsPieChart />
+				<FlightStatuses />
 			</div>
 		</div>
 	)
@@ -41,13 +42,14 @@ export const AirspaceTab = () => {
 						<TrafficFlowChart />
 					</div>
 					<div className="border-t">
-						<CancellationsPieChart />
+						<FlightStatuses />
 					</div>
 				</div>
 			</div>
 			<div className="sm:basis-1/3 border-t border-l-0 sm:border-l sm:border-t-0">
 				<ActivePrograms />
 				<AirspacePlannedEvents />
+				<ActiveAdvisories />
 			</div>
 		</div>
 	)

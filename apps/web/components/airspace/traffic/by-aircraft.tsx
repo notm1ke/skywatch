@@ -1,6 +1,7 @@
 import aircraftDb from "~/lib/datasets/icao-aircrafts.json";
 
 import { unrollDatum } from ".";
+import { useTheme } from "next-themes";
 import { useTrafficFlowPrefs } from "./store";
 import { Plane, Star, StarOff } from "lucide-react";
 import { TrafficFlow } from "@skywatch/gateway/schemas";
@@ -32,7 +33,7 @@ type RawCellData = {
 	value: number;
 }
 
-const collate = (data: RawCellData[], width: number, height: number, watched: string[]): Cell[] => {
+const collate = (data: RawCellData[], width: number, height: number, watched: string[], theme: string): Cell[] => {
 	if (data.length === 0) return []
 
 	const sorted = [...data].sort((a, b) => b.value - a.value)
@@ -65,7 +66,7 @@ const collate = (data: RawCellData[], width: number, height: number, watched: st
 			height: node.y1 - node.y0,
 			color: getColorForValue(
 				watched.includes(node.data.id),
-				node.data.value, maxValue
+				node.data.value, maxValue, theme
 			),
 		})
 	})
@@ -73,16 +74,16 @@ const collate = (data: RawCellData[], width: number, height: number, watched: st
 	return cells
 }
 
-const getColorForValue = (watched: boolean, value: number, maxValue: number) => {
+const getColorForValue = (watched: boolean, value: number, maxValue: number, theme: string) => {
 	if (watched) return "#D08700";
 	
 	const ratio = value / maxValue;
-	if (ratio > 0.7) return "#3b82f6";
-	if (ratio > 0.4) return "#2563eb";
-	if (ratio > 0.2) return "#1e40af"; 
-	if (ratio > 0.1) return "#1e3a8a";
+	if (ratio > 0.7) return theme === "light" ? "#7aabf9" : "#3b82f6";
+	if (ratio > 0.4) return theme === "light" ? "#457ef9" : "#2563eb";
+	if (ratio > 0.2) return theme === "light" ? "#4765c6" : "#1e40af";
+	if (ratio > 0.1) return theme === "light" ? "#415ba3" : "#1e3a8a";
 	
-	return "#172554"; 
+	return "#4f619b"; 
 }
 
 const reservedKeys = ["time", "cumulative"];
@@ -90,6 +91,7 @@ const reservedKeys = ["time", "cumulative"];
 export const TrafficByAircraftChart: React.FC<{ chart: TrafficFlow }> = ({ chart }) => {
 	const data = unrollDatum(chart.data);
 	const store = useTrafficFlowPrefs();
+	const { resolvedTheme: theme } = useTheme();
 	
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [hoveredCell, setHoveredCell] = useState<Cell | null>(null);
@@ -124,9 +126,9 @@ export const TrafficByAircraftChart: React.FC<{ chart: TrafficFlow }> = ({ chart
 
 		return collate(
 			entries, dimensions.width, dimensions.height,
-			store?.watchedAircraft ?? []
+			store?.watchedAircraft ?? [], theme ?? "light"
 		);
-	}, [dataset, dimensions, store]);
+	}, [dataset, dimensions, store, theme]);
 	
 	const aircraftInfo = useMemo(() => 
 		Object
@@ -236,7 +238,7 @@ export const TrafficByAircraftChart: React.FC<{ chart: TrafficFlow }> = ({ chart
 									height={cell.height}
 									fill={cell.color}
 									strokeWidth={2}
-									className="cursor-pointer transition-opacity duration-200 hover:opacity-80 stroke-zinc-300 dark:stroke-[#0a0e13]"
+									className="cursor-pointer transition-opacity duration-200 hover:opacity-80 stroke-zinc-50 dark:stroke-[#0a0e13]"
 									onContextMenu={(e) => handleContextMenu(e, cell)}
 									onMouseMove={(e) => handleMouseMove(e, cell)}
 									onMouseLeave={() => setHoveredCell(null)}

@@ -215,7 +215,7 @@ export const ActivePrograms = () => {
 				</div>
 			</div>
 			<div className="border-t">
-				<ScrollArea maskHeight={20} className="sm:min-h-auto h-[300px] sm:h-[559px] sm:max-h-[800px]">
+				<ScrollArea maskHeight={20} className="sm:min-h-auto h-[300px] sm:h-[342px] sm:max-h-[800px]">
 					{!advisories.length && (
 						<Empty>
 							<EmptyHeader>

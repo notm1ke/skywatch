@@ -25,7 +25,7 @@ const AirspaceContext = createContext<AirspaceContextType | undefined>(undefined
 export const AirspaceProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
-	const { data, isLoading: loading, error, refetch: refresh } = useQuery(orpc.airspace.advisories.all.queryOptions());
+	const { data, isLoading: loading, error, refetch: refresh } = useQuery(orpc.airspace.interruptions.all.queryOptions());
 	const value = useMemo(
 		() => ({
 			advisories: data?.active ?? [],

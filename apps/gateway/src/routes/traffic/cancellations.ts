@@ -52,7 +52,7 @@ export const cancellations = base
 				cancelled: cancelled_flights ?? 0
 			}))
 			.then(({ total, cancelled }) => ({
-				total,
+				total: total - cancelled,
 				cancelled,
 				interrupted: (cancelled / total) * 100
 			}));

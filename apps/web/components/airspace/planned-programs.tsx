@@ -95,7 +95,7 @@ export const AirspacePlannedEvents = () => {
 				)}
 				
 				{planned.length > 0 && (
-					<ScrollArea className="py-2 h-[252px]">
+					<ScrollArea className="py-2 h-[175px]">
 						{planned.map((plan, i) => {
 							const airport = airports.find(airport => airport.iata_code === plan.iataCode);
 							if (!airport) return null;

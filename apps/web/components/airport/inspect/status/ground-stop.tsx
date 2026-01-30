@@ -81,7 +81,7 @@ export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: 
 					<CircleOff className="size-4" />
 					Ground Stop
 				</span>
-				<span className="hidden sm:flex text-sm text-orange-400/70">
+				<span className="hidden sm:flex text-sm text-orange-600/70">
 					{capitalizeFirst(advisory.groundStop!.impactingCondition)}
 				</span>
 			</div>

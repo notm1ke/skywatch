@@ -1,87 +1,104 @@
 import axios from "axios";
+import moment from "moment-timezone";
 
 import { z } from "zod/v4";
 import { base } from "@/utils";
-import { ORPCError } from "@orpc/server";
+import { load } from "cheerio";
+import { ORPCError } from "@orpc/client";
 import { cache } from "@/middleware/cache";
-import { capitalizeFirst, formatFaaTime } from "@/utils";
+import { AirspaceAdvisory } from "@/schemas";
 
-import {
-	AirportAdvisory,
-	PlannedAirportEvent,
-	RawPlannedEvent
-} from "@/schemas/faa";
-
-const AirspaceAdvisories = z.array(AirportAdvisory);
-
-const active = base
-	.input(z.void())
-	.use(cache(
-		"__airspace:status",
-		"1 minutes",
-		AirspaceAdvisories,
-	))
-	.handler(async () => axios
-		.get('https://nasstatus.faa.gov/api/airport-events')
-		.then(res => res.data)
-		.then(AirspaceAdvisories.safeParse)
-		.then(result => {
-			if (result.success) return result.data;
-			throw new ORPCError("UPSTREAM_ERROR");
-		})
-	)
-	.callable();
-
-const PlannedAdvisories = z.array(PlannedAirportEvent);
-
-const OpsPlanResponse = z.object({
-	link: z.string(),
-	terminalPlanned: z.array(RawPlannedEvent),
-	enRoutePlanned: z.array(RawPlannedEvent),
-});
-
-const planned = base
-	.input(z.void())
-	.use(cache(
-		"__airspace:planned",
-		"5 minutes",
-		PlannedAdvisories
-	))
-	.handler(async () => axios
-		.get('https://nasstatus.faa.gov/api/operations-plan')
-		.then(res => res.data)
-		.then(OpsPlanResponse.safeParse)
-		.then(raw => {
-			if (!raw.success) throw new ORPCError("UPSTREAM_ERROR");
-			return raw.data;
-		})
-		.then(data => data.terminalPlanned.map(entry => {
-			const [iataCode, ...eventType] = entry.event.split(' ');
-			const rawTime = entry.time.split(' ')[1];
-
-			return {
-				iataCode,
-				time: formatFaaTime(rawTime),
-				forecastType: entry.time.split(' ')[0] === 'AFTER'
-					? 'after'
-					: 'until',
-				eventType: capitalizeFirst(eventType.join(' ').toLowerCase())
-			} as z.infer<typeof PlannedAirportEvent>;
-		}))
-	)
-	.callable();
+const AirspaceAdvisories = z.array(AirspaceAdvisory);
+const advisoryTableSelector = ".mainArea > table > tbody > tr > td > table > tbody > tr";
 
 const all = base
 	.input(z.void())
-	.handler(async () => {
-		const [current, plannedEvents] = await Promise.all([
-			active(),
-			planned()
-		]);
+	.use(cache(
+		"__airspace:advisories",
+		"5 minutes",
+		AirspaceAdvisories,
+	))
+	.handler(async () => await axios
+		.get(createAdvisoriesUrl())
+		.then(res => res.data)
+		.then(load)
+		.then($ => ({ $, rows: $(advisoryTableSelector).slice(2, -2) }))
+		.then(({ $, rows }) => rows
+			.map((_i, element) => {
+				const $row = $(element);
+				const $cells = $row.find('td');
+				const row = {
+					advisoryUrl: "https://www.fly.faa.gov" + $cells.eq(0).find("a").attr("href"),
+					advisoryNumber: parseInt($cells.eq(0).text().trim()),
+					facilities: $cells.eq(1).text().trim().split("/"),
+					date: $cells.eq(2).text().trim(),
+					brief: $cells.eq(3).text().trim(),
+					createdAt: moment($cells.eq(4).text().trim(), "MM/DD/YYYY hh:mm").format("MMM Do, YYYY [at] h:mm A")
+				};
+				
+				const parsed = AirspaceAdvisory.safeParse(row);
+				return parsed.success ? parsed.data : null;
+			})
+			.filter(Boolean)
+			.toArray() as z.infer<typeof AirspaceAdvisories>
+		).catch(() => {
+			throw new ORPCError("UPSTREAM_ERROR");
+		}));
 
-		return { active: current, planned: plannedEvents };
-	});
+const createAdvisoriesUrl = () => {
+	const date = moment().format('yyyy-MM-DD');
+	const url = new URL("https://www.fly.faa.gov/adv/adv_list");
+	url.searchParams.append('whichAdvisories', 'ATCSCC');
+	url.searchParams.append('advisoryCategory', 'All');
+	url.searchParams.append('date', date);
+	url.searchParams.append('airflow', 'true');
+	url.searchParams.append('_airflow', 'on');
+	url.searchParams.append('ctop', 'true');
+	url.searchParams.append('_ctop', 'on');
+	url.searchParams.append('gStop', 'true');
+	url.searchParams.append('_gStop', 'on');
+	url.searchParams.append('gDelay', 'true');
+	url.searchParams.append('_gDelay', 'on');
+	url.searchParams.append('route', 'true');
+	url.searchParams.append('_route', 'on');
+	url.searchParams.append('other', 'true');
+	url.searchParams.append('_other', 'on');
+	return url.toString();
+}
+
+const advisoryDetailsInput = z.object({
+	advisoryNumber: z.number()
+});
+
+const details = base
+	.input(advisoryDetailsInput)
+	.use(cache<
+		z.infer<typeof advisoryDetailsInput>,
+		string
+	>(
+		({ advisoryNumber }) => `__airspace:advisories:${advisoryNumber}`,
+		"2 minutes",
+		z.string()
+	))
+	.handler(async ({ input: { advisoryNumber } }) => await axios
+		.get(createAdvisoryDetailsUrl(advisoryNumber))
+		.then(res => res.data)
+		.then(load)
+		.then($ => $(".val > pre").text())
+		.catch(() => {
+			throw new ORPCError("UPSTREAM_ERROR");
+		})
+	);
+
+const createAdvisoryDetailsUrl = (advisoryNumber: number) => {
+	const date = moment().format('MMDDyyyy');
+	const url = new URL("https://www.fly.faa.gov/adv/adv_otherdis");
+	
+	url.searchParams.set("adv_date", date);
+	url.searchParams.set("advn", advisoryNumber.toString());
+	return url.toString();
+}
 
 export const advisories = {
-	all, active, planned
+	all, details
 }

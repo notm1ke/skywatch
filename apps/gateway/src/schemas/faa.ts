@@ -142,6 +142,15 @@ export const AirportAdvisory = z.object({
 	longitude: z.string(),
 });
 
+export const AirspaceAdvisory = z.object({
+	advisoryUrl: z.string(),
+	advisoryNumber: z.number(),
+	facilities: z.array(z.string()).min(1),
+	date: z.string(),
+	brief: z.string(),
+	createdAt: z.string()
+});
+
 export const RawPlannedEvent = z.object({
 	time: z.string(),
 	event: z.string()

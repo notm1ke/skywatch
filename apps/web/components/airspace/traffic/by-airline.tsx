@@ -1,6 +1,7 @@
 import airlineDb from "~/lib/datasets/icao-airlines.json";
 
 import { unrollDatum } from ".";
+import { useTheme } from "next-themes";
 import { TrafficFlow } from "@skywatch/gateway/schemas";
 import { ErrorSection } from "~/components/error-section";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -21,7 +22,7 @@ type RawCellData = {
 	value: number;
 }
 
-const collate = (data: RawCellData[], width: number, height: number): Cell[] => {
+const collate = (data: RawCellData[], width: number, height: number, theme: string): Cell[] => {
 	if (data.length === 0) return []
 
 	const sorted = [...data].sort((a, b) => b.value - a.value)
@@ -52,21 +53,21 @@ const collate = (data: RawCellData[], width: number, height: number): Cell[] => 
 			y: node.y0,
 			width: node.x1 - node.x0,
 			height: node.y1 - node.y0,
-			color: getColorForValue(node.data.value, maxValue)
+			color: getColorForValue(node.data.value, maxValue, theme)
 		})
 	})
 
 	return cells
 }
 
-const getColorForValue = (value: number, maxValue: number) => {
+const getColorForValue = (value: number, maxValue: number, theme: string) => {
 	const ratio = value / maxValue;
-	if (ratio > 0.7) return "#3b82f6";
-	if (ratio > 0.4) return "#2563eb";
-	if (ratio > 0.2) return "#1e40af"; 
-	if (ratio > 0.1) return "#1e3a8a";
+	if (ratio > 0.7) return theme === "light" ? "#7aabf9" : "#3b82f6";
+	if (ratio > 0.4) return theme === "light" ? "#457ef9" : "#2563eb";
+	if (ratio > 0.2) return theme === "light" ? "#4765c6" : "#1e40af";
+	if (ratio > 0.1) return theme === "light" ? "#415ba3" : "#1e3a8a";
 	
-	return "#172554"; 
+	return "#4f619b"; 
 }
 
 const reservedKeys = ["time", "cumulative"];
@@ -74,9 +75,9 @@ const reservedKeys = ["time", "cumulative"];
 export const TrafficByAirlineChart: React.FC<{ chart: TrafficFlow }> = ({ chart }) => {
 	const data = unrollDatum(chart.data);
 	const containerRef = useRef<HTMLDivElement>(null);
+	const { resolvedTheme: theme } = useTheme();
 	
 	const [hoveredCell, setHoveredCell] = useState<Cell | null>(null);
-	const [ctxMenuCell, setCtxMenuCell] = useState<Cell | null>(null);
 	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 	const [dimensions, setDimensions] = useState({ width: 1600, height: 900 });
 
@@ -105,8 +106,8 @@ export const TrafficByAirlineChart: React.FC<{ chart: TrafficFlow }> = ({ chart 
 			}))
 			.sort((a, b) => b.value - a.value);
 
-		return collate(entries, dimensions.width, dimensions.height);
-	}, [dataset, dimensions]);
+		return collate(entries, dimensions.width, dimensions.height, theme ?? "light");
+	}, [dataset, dimensions, theme]);
 	
 	const airlineInfo = useMemo(() => 
 		Object
@@ -125,19 +126,6 @@ export const TrafficByAirlineChart: React.FC<{ chart: TrafficFlow }> = ({ chart 
 		setMousePosition({ x: e.clientX, y: e.clientY })
 	}
 	
-	const handleContextMenu = (e: React.MouseEvent, cell: Cell) => {
-		document.dispatchEvent(new KeyboardEvent('keyup', {
-			key: 'Escape',
-			code: 'Escape',
-			bubbles: true,
-			cancelable: false,
-		}));
-
-		setTimeout(() => {
-			setCtxMenuCell(cell);
-		}, 50);
-	}
-
 	const tooltipContent = (cell: Cell | null) => {
 		if (!cell) return null;
 		const airline = airlineInfo[cell.id];
@@ -201,8 +189,7 @@ export const TrafficByAirlineChart: React.FC<{ chart: TrafficFlow }> = ({ chart 
 							height={cell.height}
 							fill={cell.color}
 							strokeWidth={2}
-							className="cursor-pointer transition-opacity duration-200 hover:opacity-80 stroke-zinc-300 dark:stroke-[#0a0e13]"
-							onContextMenu={(e) => handleContextMenu(e, cell)}
+							className="cursor-pointer transition-opacity duration-200 hover:opacity-80 stroke-zinc-50 dark:stroke-[#0a0e13]"
 							onMouseMove={(e) => handleMouseMove(e, cell)}
 							onMouseLeave={() => setHoveredCell(null)}
 						/>
@@ -224,7 +211,6 @@ export const TrafficByAirlineChart: React.FC<{ chart: TrafficFlow }> = ({ chart 
 					</g>
 				))}
 			</svg>
-			{!ctxMenuCell && tooltipContent(hoveredCell)}
 		</div>
 	);
 }
