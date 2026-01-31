@@ -32,7 +32,7 @@ export const AirspacePlannedEvents = () => {
 				</div>
 			</div>
 			<div className="border-t">
-				<div className="py-2 max-h-[340px] space-y-2">
+				<div className="py-2 max-h-[175px] space-y-2">
 					{Array.from({ length: 6 }).map((_, i) => (
 						<div key={`planned-programs-skeleton-${i}`} className="flex flex-row justify-between px-3 py-1.5">
 							<div className="flex items-center gap-2">
