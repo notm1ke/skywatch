@@ -31,13 +31,13 @@ export const AirspaceAdvisoryDetails: React.FC<{ advisory: z.infer<typeof Airspa
 			<motion.div layout className={cn(
 				"flex flex-col space-y-2 divide-y",
 				expanded
-					? "min-w-5xl max-w-5xl"
-					: "min-w-xl max-w-2xl"
+					? "sm:min-w-5xl sm:max-w-5xl"
+					: "sm:min-w-xl sm:max-w-2xl"
 			)}>
 				<div className="bg-zinc-50 dark:bg-zinc-900 px-4 py-2.5 flex flex-row items-center justify-between">
 					<h2 className="font-medium">Advisory #{advisory.advisoryNumber}</h2>
 					<div className="flex flex-row space-x-4 items-center">
-						<button className="cursor-pointer" onClick={() => setExpanded(!expanded)}>
+						<button className="hidden sm:flex cursor-pointer" onClick={() => setExpanded(!expanded)}>
 							{expanded
 								? <Minimize className="size-4 text-zinc-700 dark:text-zinc-300" />
 								: <Maximize className="size-4 text-zinc-700 dark:text-zinc-300" />}
@@ -80,7 +80,7 @@ export const AirspaceAdvisoryDetails: React.FC<{ advisory: z.infer<typeof Airspa
 							</EmptyMedia>
 							<EmptyTitle>Error retrieving advisory</EmptyTitle>
 							<EmptyDescription>
-								Something went 
+								Something went wrong while retrieving the advisory details.
 							</EmptyDescription>
 						</EmptyHeader>
 					</Empty>
@@ -88,7 +88,9 @@ export const AirspaceAdvisoryDetails: React.FC<{ advisory: z.infer<typeof Airspa
 				
 				{data && (
 					<ScrollArea className={cn(expanded ? "h-[650px]" : "h-[500px]")}>
-						<pre className="px-3 py-2 whitespace-pre-wrap text-sm">
+						<pre className="px-3 py-2 whitespace-pre-wrap text-sm sm:max-w-[71ch] wrap-break-word">
+							{advisory.brief.replaceAll("_", " ")}{"\n"}
+							____________________________________________________________________{"\n\n"}
 							{data
 								.replace(/\\\\/gi, "")
 								.replace(/\\n/gi, "\n")

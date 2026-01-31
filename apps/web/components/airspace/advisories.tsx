@@ -124,8 +124,8 @@ export const ActiveAdvisories = () => {
 													</span>
 													<span className="text-sm font-mono px-2 pointer-events-none">{advisory.facilities.join(", ")}</span>
 												</div>
-												<div className="text-sm max-w-[30ch] truncate">
-													{advisory.brief}
+												<div className="text-sm max-w-[40ch] truncate">
+													{advisory.brief.replaceAll("_", " ")}
 												</div>
 											</motion.div>
 										</MorphingDialogTrigger>

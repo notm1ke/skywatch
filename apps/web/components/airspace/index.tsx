@@ -19,6 +19,7 @@ export const AirspaceTab = () => {
 					<div className="border-t border-r">
 						<ActivePrograms />
 						<AirspacePlannedEvents />
+						<ActiveAdvisories />
 					</div>
 				</div>
 			</div>
