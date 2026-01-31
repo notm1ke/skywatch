@@ -10,7 +10,7 @@ import { AirspacePlannedEvents } from "./planned-programs";
 
 export const AirspaceTab = () => {
 	const { mobile, pending } = useMobile();
-	if (pending) return <div className="min-h-screen bg-muted-foreground/10 animate-pulse" />;
+	if (pending) return <div className="min-h-[80vh] bg-muted-foreground/10 animate-pulse" />;
 	if (mobile) return (
 		<div className="flex flex-col">
 			<div className="basis-full sm:basis-2/3">

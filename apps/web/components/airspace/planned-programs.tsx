@@ -32,7 +32,7 @@ export const AirspacePlannedEvents = () => {
 				</div>
 			</div>
 			<div className="border-t">
-				<div className="py-2 max-h-[175px] space-y-2">
+				<ScrollArea className="py-2 h-[173px]">
 					{Array.from({ length: 6 }).map((_, i) => (
 						<div key={`planned-programs-skeleton-${i}`} className="flex flex-row justify-between px-3 py-1.5">
 							<div className="flex items-center gap-2">
@@ -42,7 +42,7 @@ export const AirspacePlannedEvents = () => {
 							<SkeletonWithDelay className="h-4 w-64 rounded" delay={i * 50} />
 						</div>
 					))}
-				</div>
+				</ScrollArea>
 			</div>
 		</div>
 	);

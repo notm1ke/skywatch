@@ -158,8 +158,8 @@ export const ActivePrograms = () => {
 				</div>
 			</div>
 			<div className="border-t">
-				<ScrollArea className="min-h-auto h-[559px] max-h-[800px]">
-					{Array(5).fill(null).map((_, i) => (
+				<ScrollArea className="min-h-auto h-[300px] sm:h-[342px] sm:max-h-[800px]">
+					{Array(7).fill(null).map((_, i) => (
 						<div
 							key={`active-programs-skeleton-${i}`}
 							className="group flex flex-row justify-between px-3 pb-3 pt-3 cursor-not-allowed border-b"
