@@ -15,16 +15,14 @@ export const AirspaceTab = () => {
 		<div className="flex flex-col">
 			<div className="basis-full sm:basis-2/3">
 				<div className="grid grid-cols-1 sm:grid-cols-3">
-					<div className="sm:col-span-3">
-						<AirspaceMap />
-					</div>
-					<div className="sm:col-span-2 border-t border-r">
+					<AirspaceMap />
+					<div className="border-t border-r">
 						<ActivePrograms />
 						<AirspacePlannedEvents />
 					</div>
 				</div>
 			</div>
-			<div className="sm:basis-1/3 border-t border-l-0 sm:border-l sm:border-t-0">
+			<div className="divide-y border-l-0 sm:border-l sm:border-t-0">
 				<FlightStatuses />
 				<TrafficFlowChart />
 			</div>

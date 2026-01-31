@@ -2,6 +2,7 @@ import { orpc } from "~/lib/gateway";
 import { motion } from "motion/react";
 import { ClipboardCheck } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
+import { ErrorSection } from "../error-section";
 import { useQuery } from "@tanstack/react-query";
 import { AirspaceAdvisoryDetails } from "./advisory-details";
 import { Skeleton, SkeletonWithDelay } from "../ui/skeleton";
@@ -19,7 +20,6 @@ import {
 	EmptyMedia,
 	EmptyTitle
 } from "../ui/empty";
-import { ErrorSection } from "../error-section";
 
 export const ActiveAdvisories = () => {
 	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.advisories.all.queryOptions());
