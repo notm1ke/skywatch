@@ -25,8 +25,8 @@ export const AirspaceTab = () => {
 				</div>
 			</div>
 			<div className="sm:basis-1/3 border-t border-l-0 sm:border-l sm:border-t-0">
-				<TrafficFlowChart />
 				<FlightStatuses />
+				<TrafficFlowChart />
 			</div>
 		</div>
 	)

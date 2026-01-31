@@ -4,11 +4,11 @@ import { ClipboardCheck } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { AirspaceAdvisoryDetails } from "./advisory-details";
+import { Skeleton, SkeletonWithDelay } from "../ui/skeleton";
 
 import {
 	MorphingDialog,
 	MorphingDialogContainer,
-	MorphingDialogContent,
 	MorphingDialogTrigger
 } from "../ui/morphing-dialog";
 
@@ -19,11 +19,62 @@ import {
 	EmptyMedia,
 	EmptyTitle
 } from "../ui/empty";
+import { ErrorSection } from "../error-section";
 
 export const ActiveAdvisories = () => {
-	const { data, isLoading, error } = useQuery(orpc.airspace.advisories.all.queryOptions());
-	if (isLoading) return <>loading</>;
-	if (error || !data) return <>error</>;
+	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.advisories.all.queryOptions());
+	
+	if (isLoading) return (
+		<div className="border-t">
+			<div className="flex flex-row px-3 py-2 justify-between border-b">
+				<div className="text-md font-semibold pointer-events-none">
+					Airspace Advisories
+				</div>
+				<div className="flex px-2 text-sm items-center rounded-sm font-mono tabular-nums">
+					<Skeleton className="w-12 h-6 rounded" />
+				</div>
+			</div>
+			<div className="border-t">
+				<ScrollArea className="min-h-auto h-[246px]">
+					<div className="flex flex-col divide-y">
+						{Array(8).fill(null).map((_, i) => (
+							<div
+								key={`active-programs-skeleton-${i}`}
+								className="group flex flex-row justify-between px-3 py-2.5 hover:bg-muted/30 transition-colors duration-300 ease-out"
+							>
+								<div className="flex items-center gap-2">
+									<SkeletonWithDelay className="h-5 w-7 rounded-sm" delay={i * 50} />
+									<SkeletonWithDelay className="h-5 w-18 rounded-sm" delay={i * 50} />
+								</div>
+								<div className="flex items-center space-x-3">
+									<SkeletonWithDelay className="h-5 w-[30ch] rounded-sm" delay={i * 50} />
+								</div>
+							</div>
+						))}
+					</div>
+				</ScrollArea>
+			</div>
+		</div>
+	);
+	
+	if (error || !data) return (
+		<div className="border-t">
+			<div className="flex flex-row px-3 py-2 justify-between">
+				<div className="text-md font-semibold pointer-events-none">
+					Airspace Advisories
+				</div>
+				<div className="flex px-2 text-sm items-center rounded-sm font-mono tabular-nums">
+					<Skeleton className="w-12 h-6 rounded" />
+				</div>
+			</div>
+			<ErrorSection
+				title="Error loading airspace advisories"
+				className="border-t rounded-none border-solid"
+				error={error?.message}
+				refresh={refetch}
+			/>
+		</div>
+	);
 
 	return (
 		<div className="border-t">

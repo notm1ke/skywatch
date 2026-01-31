@@ -143,19 +143,19 @@ export const FlightStatuses: React.FC = () => {
 						<div className="flex flex-row items-center space-x-1">
 							<Squircle className="size-3 text-green-400 fill-green-500" />
 							<span>
-								Normal: <AnimatedNumber value={data.stats.normal} />
+								Normal: <AnimatedNumber value={data.stats.normal} className="font-mono tracking-tighter" />
 							</span>
 						</div>
 						<div className="flex flex-row items-center space-x-1">
 							<Squircle className="size-3 text-amber-400 fill-amber-500" />
 							<span>
-								Delayed: <AnimatedNumber value={data.stats.delayed} />
+								Delayed: <AnimatedNumber value={data.stats.delayed} className="font-mono tracking-tighter" />
 							</span>
 						</div>
 						<div className="flex flex-row items-center space-x-1">
 							<Squircle className="size-3 text-red-400 fill-red-500" />
 							<span>
-								Cancelled: <AnimatedNumber value={data.stats.cancelled} />
+								Cancelled: <AnimatedNumber value={data.stats.cancelled} className="font-mono tracking-tighter" />
 							</span>
 						</div>
 					</div>
