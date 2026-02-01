@@ -174,27 +174,13 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 	
 	return (
 		<div className="border-b border-border">
-			<div className="flex flex-row px-3 py-[7px] justify-between">
+			<div className="flex flex-row px-3 py-[8px] justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">
 						ATIS
 					</span>
 				</div>
-				<div className="flex flex-row">
-					{active && (
-						<div>
-							<FullScreen active={active}>
-								<Button
-									variant="ghost"
-									size="sm"
-									className="h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10 text-black/60 dark:text-white/60 hover:text-black/90 dark:hover:text-white/90 cursor-pointer"
-								>
-									<Maximize className="h-3.5 w-3.5" />
-								</Button>
-							</FullScreen>
-						</div>
-					)}
-					
+				<div className="flex flex-row space-x-2">
 					{types.length > 1 && (
 						<div className="space-x-1">
 							{types.map(type => (
@@ -210,6 +196,20 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 							))}
 						</div>
 					)}
+					
+					{/*{active && (
+						<div>
+							<FullScreen active={active}>
+								<Button
+									variant="ghost"
+									size="sm"
+									className="h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10 text-black/60 dark:text-white/60 hover:text-black/90 dark:hover:text-white/90 cursor-pointer"
+								>
+									<Maximize className="h-3.5 w-3.5" />
+								</Button>
+							</FullScreen>
+						</div>
+					)}*/}
 				</div>
 			</div>
 

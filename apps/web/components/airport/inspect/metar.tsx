@@ -31,6 +31,7 @@ import {
 	TrendingUp,
 	Wind
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
 type MeterologicalReportProps = {
 	airport: AirportWithJoins;
@@ -43,7 +44,10 @@ const getCloudCoverLabel = (cover: z.infer<typeof CloudCover>) => {
 		case "FEW": return "Few"
 		case "SCT": return "Scattered"
 		case "BKN": return "Broken"
-		case "OVC": return "Overcast"
+		
+		case "OVC":
+		case "OVX":
+		case "VV": return "Overcast"
 
 		case "SKC":
 		case "CLR": return "Clear"
@@ -128,7 +132,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 							<span className="text-black/70 dark:text-white/40">Wind:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
 								{metar.wdir != null
-									? `${metar.wdir.toString().padStart(3, "0")}° at ${metar.wspd}kt`
+									? `${metar.wspd}kt at ${metar.wdir.toString().padStart(3, "0")}°`
 									: `${metar.wspd}kt`}
 							</span>
 						</div>
@@ -136,7 +140,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 						{metar.slp && (
 							<div className="flex justify-between">
 								<span className="text-black/70 dark:text-white/40">Sea Level:</span>
-								<span className="text-black/90 dark:text-white/90 font-mono">{(metar.slp / 33.8639).toFixed(1)} inHg</span>
+								<span className="text-black/90 dark:text-white/90 font-mono">{(metar.slp / 33.8639).toFixed(2)} inHg</span>
 							</div>
 						)}
 
@@ -378,7 +382,7 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 			</div>
 
 			<div className="p-3 border-t">
-				<div className="grid grid-cols-3 gap-3">
+				<div className="grid grid-cols-3 gap-[17px]">
 					<div className="flex items-start gap-2">
 						<ThermometerSun className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
 						<div className="flex-1 min-w-0">
@@ -424,7 +428,7 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 							<div className="font-mono text-sm text-black/80 dark:text-white/90">{(metar.altim / 33.8639).toFixed(2)} inHg</div>
 							{metar.slp && (
 								<div className="text-xs text-black/40 dark:text-white/40 mt-0.5">
-									Sea Level: {(metar.slp / 33.8639).toFixed(1)} inHg
+									Sea Level: {(metar.slp / 33.8639).toFixed(2)} inHg
 								</div>
 							)}
 						</div>
@@ -434,7 +438,21 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 						<div className="flex items-start gap-2">
 							<CloudRain className="h-4 w-4 text-slate-600 dark:text-slate-400 mt-0.5 shrink-0" />
 							<div className="flex-1 min-w-0">
-								<div className="text-xs text-black/60 dark:text-white/80 mb-1">Clouds</div>
+								<div className="text-xs text-black/60 dark:text-white/80 mb-1">
+									Clouds
+									{metar.clouds.length > 2 && (
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<span className="cursor-help text-[10px] font-mono tracking-tighter text-black/60 dark:text-white/80"> (+{metar.clouds.length - 2} more)</span>
+											</TooltipTrigger>
+											<TooltipContent>
+												See all cloud layers in the full
+												<br />report by clicking the report icon
+												<br />in the top right.
+											</TooltipContent>
+										</Tooltip>
+									)}
+								</div>
 
 								{metar.clouds.length === 0 && (
 									<div className="font-mono text-sm text-black/80 dark:text-white/90">
@@ -443,8 +461,8 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 								)}
 
 								{metar.clouds.length > 0 && (
-									<div className="space-y-0.5">
-										{metar.clouds.map((cloud, idx) => (
+									<div className="space-y-1">
+										{metar.clouds.slice(0, 2).map((cloud, idx) => (
 											<div key={idx} className="flex flex-row space-x-2 text-xs text-black/80 dark:text-white/90 font-mono">
 												<div className="px-2 bg-blue-300 dark:bg-blue-500 rounded-md">{formatAltToFL(cloud.base)}</div>
 												<span>{getCloudCoverLabel(cloud.cover)}</span>

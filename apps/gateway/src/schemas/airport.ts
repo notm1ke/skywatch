@@ -25,6 +25,7 @@ export const CloudCover = z.enum([
 	"SCT", // scattered clouds
 	"BKN", // broken clouds
 	"OVC", // overcast
+	"OVX", // overcast
 	"VV"   // vertical visibility (completely obscured)
 ]);
 
