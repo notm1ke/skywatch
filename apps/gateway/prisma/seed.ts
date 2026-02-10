@@ -4,6 +4,7 @@ import { seedAirports } from "./seed/airport";
 import { seedAirlineHubs } from "./seed/airline-hubs";
 import { seedAirportHasRvrs } from "./seed/airport-rvr";
 import { seedAirportHasAtis } from "./seed/airport-atis";
+import { seedAirportTimezones } from "./seed/airport-tz";
 import { seedAirportHasClear } from "./seed/airport-clear";
 import { seedAirportNasrData } from "./seed/airport-nasr-data";
 import { seedAirportHasPrecheck } from "./seed/airport-precheck";
@@ -34,6 +35,7 @@ await seedAirportHasAtis();
 await seedAirportHasClear();
 await seedAirportHasPrecheck();
 await seedAirportHasRvrs();
+await seedAirportTimezones();
 
 // nasr
 await seedAirportNasrData();

@@ -181,7 +181,7 @@ export const HistoricalStatusSkeletonLoader = () => (
 					data={Array
 						.from({ length: 45 })
 						.map((_, i) => ({
-							color: "bg-zinc-700 dark:bg-zinc-400 animate-pulse",
+							color: "bg-zinc-700 dark:bg-zinc-600 animate-pulse",
 							style: { animationDelay: `${i * 50}ms` }
 						}))
 					}

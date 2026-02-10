@@ -81,10 +81,11 @@ const incidentsByIata = base
 				return prevPriority < curPriority ? prev : cur;
 			}, "normal" as any);
 			
+			const dt = new Date(date.toDate().toDateString());
+			
 			days.push({
-				dt: date.toDate(),
+				dt, incidents,
 				indicator: major,
-				incidents,
 			})
 		}
 		
