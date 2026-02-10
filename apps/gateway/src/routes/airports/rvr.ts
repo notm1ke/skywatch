@@ -5,6 +5,7 @@ import { load } from "cheerio";
 import { padZero } from "@/utils";
 import { base, iataInput } from "@/utils";
 import { cache } from "@/middleware/cache";
+import { AirportRunway } from "@/prisma/generated/client";
 
 import {
 	AirportExtendable,
@@ -34,9 +35,19 @@ const RawProbeTypeLookup: Record<RawProbeType, number> = {
 
 const FAULT = -1;
 
+const ValidRunwayIdentRegex = /^\d/gi;
+
+const validRunway = (runway: AirportRunway | string) => {
+	if (typeof runway === "string") return ValidRunwayIdentRegex.test(runway);
+	return runway.le_ident
+		&& runway.he_ident
+		&& ValidRunwayIdentRegex.test(runway.le_ident)
+		&& ValidRunwayIdentRegex.test(runway.he_ident);
+}
+
 type AirportWithRunways = AirportExtendable<{
 	include: { runways: true }
-}>
+}>;
 
 export const rvr = base
 	.input(iataInput)
@@ -56,7 +67,7 @@ export const rvr = base
 		if (!airport.supports_rvr) return {
 			iata: airport.iata_code!,
 			updatedAt: Date.now(),
-			runways: airport.runways.map(rwy => ({
+			runways: airport.runways.filter(validRunway).map(rwy => ({
 				name: padZero(rwy.le_ident!),
 				illumination: {}
 			}))

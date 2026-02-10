@@ -139,39 +139,41 @@ type HistoricalInterruptionsProps = {
 	airport: AirportWithJoins;
 }
 
+export const HistoricalStatusSkeletonLoader = () => (
+	<div className="border-r border-border">
+		<div className="flex flex-row px-3 py-2 justify-between">
+			<div className="flex fle-row space-x-2 items-center">
+				<span className="text-md font-semibold pointer-events-none">
+					Historical Status
+				</span>
+			</div>
+		</div>
+		
+		<div className="border-t divide-y">
+			<div className="p-3">
+				<Tracker
+					data={Array
+						.from({ length: 45 })
+						.map((_, i) => ({
+							color: "bg-zinc-700 dark:bg-zinc-400 animate-pulse",
+							style: { animationDelay: `${i * 50}ms` }
+						}))
+					}
+				/>
+			</div>
+			<div className="p-3">
+				
+			</div>
+		</div>
+	</div>
+)
+
 export const HistoricalStatus: React.FC<HistoricalInterruptionsProps> = ({ airport }) => {
 	const { data, isLoading, error, refetch } = useQuery(orpc.airports.historical.incidentsByIata.queryOptions({
 		input: { iata_code: airport.iata_code }
 	}));
 	
-	if (isLoading) return (
-		<div className="border-r border-border">
-			<div className="flex flex-row px-3 py-2 justify-between">
-				<div className="flex fle-row space-x-2 items-center">
-					<span className="text-md font-semibold pointer-events-none">
-						Historical Status
-					</span>
-				</div>
-			</div>
-			
-			<div className="border-t divide-y">
-				<div className="p-3">
-					<Tracker
-						data={Array
-							.from({ length: 45 })
-							.map((_, i) => ({
-								color: "bg-zinc-700 dark:bg-zinc-400 animate-pulse",
-								style: { animationDelay: `${i * 50}ms` }
-							}))
-						}
-					/>
-				</div>
-				<div className="p-3">
-					
-				</div>
-			</div>
-		</div>
-	);
+	if (isLoading) return <HistoricalStatusSkeletonLoader />;
 	
 	if (!data || error) return (
 		<div className="border-r border-border">

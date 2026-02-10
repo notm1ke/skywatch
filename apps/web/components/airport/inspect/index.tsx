@@ -15,6 +15,8 @@ import { useAirspace } from "~/components/airspace/provider";
 import { AirportMap, AirportMapSkeletonLoader } from "./map";
 import { AtisBroadcastSkeletonLoader } from "./operations/atis";
 import { TsaWaitTimesSkeletonLoader } from "./operations/tsa-wait";
+import { HistoricalStatusSkeletonLoader } from "./operations/historical";
+import { AirportAdvisoriesSkeletonLoader } from "./operations/advisories";
 
 // todo
 import { RunwaysSkeletonLoader } from "./operations/runways";
@@ -80,6 +82,8 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 					<div className="grid grid-cols-1 sm:grid-cols-2 divide-x-2 divide-y-2">
 						<AtisBroadcastSkeletonLoader />
 						<RunwaysSkeletonLoader />
+						<HistoricalStatusSkeletonLoader />
+						<AirportAdvisoriesSkeletonLoader />
 					</div>
 				</div>
 				<div className="sm:basis-1/3 border-l">

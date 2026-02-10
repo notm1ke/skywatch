@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 import { base } from "@/utils";
 import { ORPCError } from "@orpc/server";
 import { cache } from "@/middleware/cache";
+import { prisma } from "@/services/prisma";
 import { capitalizeFirst, formatFaaTime } from "@/utils";
 
 import {
@@ -25,9 +26,14 @@ const active = base
 		.get('https://nasstatus.faa.gov/api/airport-events')
 		.then(res => res.data)
 		.then(AirspaceInterruptions.safeParse)
-		.then(result => {
-			if (result.success) return result.data;
-			throw new ORPCError("UPSTREAM_ERROR");
+		.then(async result => {
+			if (!result.success) throw new ORPCError("UPSTREAM_ERROR");
+			const tracked = await prisma
+				.airport
+				.findMany({ select: { iata_code: true }, distinct: ["iata_code"] })
+				.then(results => new Set(...[results.map(result => result.iata_code)]));
+		
+			return result.data.filter(entry => tracked.has(entry.airportId));
 		})
 	)
 	.callable();

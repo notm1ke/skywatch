@@ -279,29 +279,29 @@ export const MetarSkeletonLoader = () => (
 		</div>
 
 		<div className="p-3 border-t">
-			<div className="grid grid-cols-3 gap-3">
+			<div className="grid grid-cols-3 gap-3 space-y-0.5">
 				<div className="flex items-start gap-2">
 					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
 					<div className="flex-1 min-w-0">
-						<Skeleton className="h-3 w-20 mb-1.5" />
-						<Skeleton className="h-4 w-24 mb-1" />
-						<Skeleton className="h-3 w-16" />
+						<Skeleton className="h-3.5 w-20 mb-1.5" />
+						<Skeleton className="h-4 w-24 mb-1.5" />
+						<Skeleton className="h-3.5 w-16" />
 					</div>
 				</div>
 
 				<div className="flex items-start gap-2">
 					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
 					<div className="flex-1 min-w-0">
-						<Skeleton className="h-3 w-12 mb-1.5" />
+						<Skeleton className="h-3.5 w-12 mb-1.5" />
 						<Skeleton className="h-4 w-28 mb-1" />
-						<Skeleton className="h-3 w-16" />
+						<Skeleton className="h-3.5 w-16" />
 					</div>
 				</div>
 
 				<div className="flex items-start gap-2">
 					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
 					<div className="flex-1 min-w-0">
-						<Skeleton className="h-3 w-16 mb-1.5" />
+						<Skeleton className="h-3.5 w-16 mb-1.5" />
 						<Skeleton className="h-4 w-20" />
 					</div>
 				</div>
@@ -309,19 +309,19 @@ export const MetarSkeletonLoader = () => (
 				<div className="flex items-start gap-2">
 					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
 					<div className="flex-1 min-w-0">
-						<Skeleton className="h-3 w-16 mb-1.5" />
+						<Skeleton className="h-3.5 w-16 mb-1.5" />
 						<Skeleton className="h-4 w-24 mb-1" />
-						<Skeleton className="h-3 w-28" />
+						<Skeleton className="h-3.5 w-28" />
 					</div>
 				</div>
 
 				<div className="flex items-start gap-2">
 					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
 					<div className="flex-1 min-w-0">
-						<Skeleton className="h-3 w-14 mb-1.5" />
+						<Skeleton className="h-3.5 w-14 mb-1.5" />
 						<div className="space-y-1">
 							<Skeleton className="h-4 w-32" />
-							<Skeleton className="h-3 w-28" />
+							<Skeleton className="h-3.5 w-28" />
 						</div>
 					</div>
 				</div>
@@ -329,7 +329,7 @@ export const MetarSkeletonLoader = () => (
 				<div className="flex items-start gap-2">
 					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
 					<div className="flex-1 min-w-0">
-						<Skeleton className="h-3 w-24 mb-1.5" />
+						<Skeleton className="h-3.5 w-24 mb-1.5" />
 						<Skeleton className="h-4 w-16" />
 					</div>
 				</div>
@@ -337,7 +337,7 @@ export const MetarSkeletonLoader = () => (
 				<div className="flex items-start gap-2">
 					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
 					<div className="flex-1 min-w-0">
-						<Skeleton className="h-3 w-16 mb-1.5" />
+						<Skeleton className="h-3.5 w-16 mb-1.5" />
 						<Skeleton className="h-4 w-24 mb-1" />
 						<Skeleton className="h-4 w-28" />
 					</div>
@@ -346,10 +346,10 @@ export const MetarSkeletonLoader = () => (
 				<div className="flex items-start gap-2">
 					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
 					<div className="flex-1 min-w-0">
-						<Skeleton className="h-3 w-14 mb-1.5" />
+						<Skeleton className="h-3.5 w-14 mb-1.5" />
 						<div className="space-y-1">
 							<Skeleton className="h-4 w-32" />
-							<Skeleton className="h-3 w-28" />
+							<Skeleton className="h-3.5 w-28" />
 						</div>
 					</div>
 				</div>
@@ -357,7 +357,7 @@ export const MetarSkeletonLoader = () => (
 				<div className="flex items-start gap-2">
 					<Skeleton className="h-4 w-4 mt-0.5 shrink-0 rounded" />
 					<div className="flex-1 min-w-0">
-						<Skeleton className="h-3 w-24 mb-1.5" />
+						<Skeleton className="h-3.5 w-24 mb-1.5" />
 						<Skeleton className="h-4 w-16" />
 					</div>
 				</div>

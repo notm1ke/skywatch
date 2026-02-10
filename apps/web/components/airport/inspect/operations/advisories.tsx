@@ -19,43 +19,45 @@ type AirportAdvisoriesProps = {
 	airport: AirportWithJoins;
 }
 
+export const AirportAdvisoriesSkeletonLoader = () => (
+	<div className="border-r border-border">
+		<div className="flex flex-row px-3 py-2 justify-between">
+			<div className="flex fle-row space-x-2 items-center">
+				<span className="text-md font-semibold pointer-events-none">
+					Related Advisories
+				</span>
+			</div>
+		</div>
+		
+		<div className="border-t">
+			<ScrollArea className="min-h-auto h-[288px]">
+				<div className="flex flex-col divide-y">
+					{Array(7).fill(null).map((_, i) => (
+						<div
+							key={`active-programs-skeleton-${i}`}
+							className="group flex flex-row justify-between px-3 py-2.5 hover:bg-muted/30 transition-colors duration-300 ease-out"
+						>
+							<div className="flex items-center gap-2">
+								<SkeletonWithDelay className="h-5 w-7 rounded-sm" delay={i * 50} />
+								<SkeletonWithDelay className="h-5 w-18 rounded-sm" delay={i * 50} />
+							</div>
+							<div className="flex items-center space-x-3">
+								<SkeletonWithDelay className="h-5 w-[30ch] rounded-sm" delay={i * 50} />
+							</div>
+						</div>
+					))}
+				</div>
+			</ScrollArea>
+		</div>
+	</div>
+)
+
 export const AirportAdvisories: React.FC<AirportAdvisoriesProps> = ({ airport }) => {
 	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.advisories.airportRelated.queryOptions({
 		input: { iata_code: airport.iata_code }
 	}));
 	
-	if (isLoading) return (
-		<div className="border-r border-border">
-			<div className="flex flex-row px-3 py-2 justify-between">
-				<div className="flex fle-row space-x-2 items-center">
-					<span className="text-md font-semibold pointer-events-none">
-						Related Advisories
-					</span>
-				</div>
-			</div>
-			
-			<div className="border-t">
-				<ScrollArea className="min-h-auto h-[288px]">
-					<div className="flex flex-col divide-y">
-						{Array(7).fill(null).map((_, i) => (
-							<div
-								key={`active-programs-skeleton-${i}`}
-								className="group flex flex-row justify-between px-3 py-2.5 hover:bg-muted/30 transition-colors duration-300 ease-out"
-							>
-								<div className="flex items-center gap-2">
-									<SkeletonWithDelay className="h-5 w-7 rounded-sm" delay={i * 50} />
-									<SkeletonWithDelay className="h-5 w-18 rounded-sm" delay={i * 50} />
-								</div>
-								<div className="flex items-center space-x-3">
-									<SkeletonWithDelay className="h-5 w-[30ch] rounded-sm" delay={i * 50} />
-								</div>
-							</div>
-						))}
-					</div>
-				</ScrollArea>
-			</div>
-		</div>
-	);
+	if (isLoading) return <AirportAdvisoriesSkeletonLoader />;
 	
 	if (!data || error) return (
 		<div className="border-r border-border">
