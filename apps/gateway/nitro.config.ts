@@ -9,6 +9,6 @@ export default defineConfig({
 	scheduledTasks: {
 		"*/5 * * * *": ["airport-status"],
 		"*/30 * * * *": ["traffic"],
-		"0 * * * *": ["waypoints"]
+		// "0 * * * *": ["waypoints"]
 	}
 });

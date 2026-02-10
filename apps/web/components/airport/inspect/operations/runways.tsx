@@ -424,7 +424,6 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 				.runways
 				.filter(rwy => {
 					const pattern = /\d{1,2}(L|R|C)?/g;
-					console.log(rwy);
 					return (pattern.test(rwy.le_ident!) || pattern.test(rwy.he_ident!)) && !rwy.closed;
 				})
 				.map(rwy => {
