@@ -31,6 +31,41 @@ const incidentsByIata = base
 		
 		const dayFmt = "MM/DD/yyyy";
 		const dayMappings = Object.groupBy(history, item => moment(item.observed_at).format(dayFmt));
+ 
+		// create ranges for multi-day spanning incidents
+		for (const incident of history) {
+			const start = moment(incident.observed_at).startOf('day');
+			
+			// ongoing and still today or ended & same day
+			if ((!incident.resolved_at && start.isSame(moment(), 'day')) || (incident.resolved_at && start.isSame(moment(incident.resolved_at), 'day'))) {
+				continue;
+			}
+			
+			// still ongoing - extend to today
+			if (!incident.resolved_at && !moment().isSame(incident.observed_at, 'day')) {
+				const end = moment().startOf('day');
+				const range = Array.from({ length: end.diff(start, 'days') }).map((_, i) => start.clone().add(i+1, 'day'));
+				for (const day of range) {
+					dayMappings[day.format(dayFmt)] = dayMappings[day.format(dayFmt)] || [];
+					dayMappings[day.format(dayFmt)]!.push(incident);
+				}
+				
+				continue;
+			}
+			
+			// ended but multi-day
+			if (incident.resolved_at) {
+				const end = moment(incident.resolved_at).startOf('day');
+				const range = Array.from({ length: end.diff(start, 'days') }).map((_, i) => start.clone().add(i+1, 'day'));
+				for (const day of range) {
+					dayMappings[day.format(dayFmt)] = dayMappings[day.format(dayFmt)] || [];
+					dayMappings[day.format(dayFmt)]!.push(incident);
+				}
+				
+				continue;
+			}	
+		}
+		
 		const sortOrder = Object.keys(IncidentType).map((key, i) => ({
 			incidentType: key,
 			priority: i
