@@ -5,6 +5,7 @@ import { seedAirlineHubs } from "./seed/airline-hubs";
 import { seedAirportHasRvrs } from "./seed/airport-rvr";
 import { seedAirportHasAtis } from "./seed/airport-atis";
 import { seedAirportHasClear } from "./seed/airport-clear";
+import { seedAirportNasrData } from "./seed/airport-nasr-data";
 import { seedAirportHasPrecheck } from "./seed/airport-precheck";
 
 const gap = 5 * 60 * 1000;
@@ -33,6 +34,9 @@ await seedAirportHasAtis();
 await seedAirportHasClear();
 await seedAirportHasPrecheck();
 await seedAirportHasRvrs();
+
+// nasr
+await seedAirportNasrData();
 
 console.log(`Finished seeding database in ${(Date.now() - start).toFixed(2)}ms.`);
 await redis.set("db:seed", start);

@@ -92,6 +92,8 @@ export const delayReason = (raw: string) => {
 		return "Staffing";
 	if (raw.toLowerCase().includes("parking"))
 		return "Parking Space";
+	if (raw.toLowerCase().includes("rwy:maintenance"))
+		return "Runway Maintenance";
 	return raw;
 }
 

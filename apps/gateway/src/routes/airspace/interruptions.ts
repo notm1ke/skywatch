@@ -56,11 +56,26 @@ const planned = base
 			return raw.data;
 		})
 		.then(data => data.terminalPlanned.map(entry => {
+			// nas started reporting `time` as ""
+			if (!entry.time.trim()) {
+				const [rawTime, rest] = entry.event.split('\t');
+				const [iataCode, ...eventType] = rest.split(' ');
+				
+				return {
+					iataCode: iataCode.slice(1).split('/'),
+					time: formatFaaTime(rawTime.split(' ')[1]),
+					forecastType: rawTime.split(' ')[0] === 'AFTER'
+						? 'after'
+						: 'until',
+					eventType: capitalizeFirst(eventType.join(' ').toLowerCase())
+				} as z.infer<typeof PlannedAirportEvent>;
+			}
+			
 			const [iataCode, ...eventType] = entry.event.split(' ');
 			const rawTime = entry.time.split(' ')[1];
 
 			return {
-				iataCode,
+				iataCode: iataCode.split('/'),
 				time: formatFaaTime(rawTime),
 				forecastType: entry.time.split(' ')[0] === 'AFTER'
 					? 'after'

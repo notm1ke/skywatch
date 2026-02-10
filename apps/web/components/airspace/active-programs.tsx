@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { motion } from "motion/react";
+import { Button } from "../ui/button";
 import { useAirspace } from "./provider";
 import { ScrollArea } from "../ui/scroll-area";
 import { ErrorSection } from "../error-section";
@@ -16,7 +17,14 @@ import { Skeleton, SkeletonWithDelay } from "../ui/skeleton";
 import { AirportClosureProgram } from "./programs/airport-closure";
 import { SpecialAdvisoryProgram } from "./programs/special-advisory";
 import { Disclosure, DisclosureContent, DisclosureTrigger } from "../ui/disclosure";
-import { ChevronRight, CircleArrowRight, CircleCheckBig, Snowflake } from "lucide-react";
+
+import {
+	ArrowUpRight,
+	ChevronRight,
+	CircleArrowRight,
+	CircleCheckBig,
+	Snowflake
+} from "lucide-react";
 
 import {
 	Empty,
@@ -265,6 +273,20 @@ export const ActivePrograms = () => {
 										<div className="border-t border-spacing-x-5 border-dashed" />
 										<div className="p-3">
 											{programContent(advisory)}
+											
+											{/* common */}
+											<div className="flex flex-col space-y-2 mt-2">
+												<div className="flex flex-row justify-between">
+													<div className="text-sm">Links</div>
+													<div className="text-sm tabular-nums font-mono tracking-tighter">
+														<Link prefetch href={`/airports/${airport.iata_code}`}>
+															<Button variant="secondary" size="xs" className="cursor-pointer">
+																Airport <ArrowUpRight />
+															</Button>
+														</Link>
+													</div>
+												</div>
+											</div>
 										</div>
 									</DisclosureContent>
 								</Disclosure>

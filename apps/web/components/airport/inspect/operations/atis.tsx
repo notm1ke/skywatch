@@ -35,7 +35,7 @@ export const AtisBroadcastSkeletonLoader = () => (
 
 		<div className="border-t divide-y divide-white/10">
 			<div className="p-3">
-				<div className="h-[235px] space-y-2">
+				<div className="h-[264px] space-y-2">
 					<Skeleton className="h-4 w-full" />
 					<Skeleton className="h-4 w-[90%]" />
 					<Skeleton className="h-4 w-[95%]" />
@@ -133,13 +133,14 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 		queryKey: ["atis", airport.iata_code]
 	}));
 	
+	const [selected, setSelected] = useState<z.infer<typeof AirportAtisType>>();
+	
 	useEffect(() => {
 		if (!isLoading && atis?.length) {
 			setSelected(atis[0].type);
 		}
 	}, [atis, isLoading]);
 	
-	const [selected, setSelected] = useState<z.infer<typeof AirportAtisType>>();
 	const types = useMemo(
 		() => [...new Set(atis?.map(atis => atis.type))],
 		[atis]
@@ -164,7 +165,7 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 			<div className="border-t">
 				<ErrorSection
 					title="Error loading ATIS information"
-					className="border-t rounded-none border-solid"
+					className="border-t rounded-none border-solid h-[288px]"
 					error={error?.message}
 					refresh={refetch}
 				/>
@@ -173,8 +174,8 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 	);
 	
 	return (
-		<div className="border-b border-border">
-			<div className="flex flex-row px-3 py-[7px] justify-between">
+		<div>
+			{/*<div className="flex flex-row px-3 py-[6px] justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">
 						ATIS
@@ -211,11 +212,28 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 						</div>
 					)}
 				</div>
+			</div>*/}
+			
+			<div className="flex flex-row px-3 py-2 justify-between">
+				<div className="flex flex-row space-x-2 items-center">
+					<span className="text-md font-semibold pointer-events-none">
+						ATIS
+					</span>
+				</div>
+				<FullScreen active={active}>
+					<Button
+						variant="ghost"
+						size="sm"
+						className="h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10 text-black/60 dark:text-white/60 hover:text-black/90 dark:hover:text-white/90 cursor-pointer"
+					>
+						<Maximize className="h-3.5 w-3.5" />
+					</Button>
+				</FullScreen>
 			</div>
 
 			<div className="border-t divide-y divide-white/10">
 				<div className="p-3">
-					<ScrollArea className="h-[235px]">
+					<ScrollArea className="h-[264px]">
 						{atisBody(active)}
 						<ScrollBar orientation="vertical" />
 					</ScrollArea>

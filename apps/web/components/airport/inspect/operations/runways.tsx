@@ -344,7 +344,7 @@ export const RunwaysSkeletonLoader: React.FC<Partial<RunwayConditionsProps>> = (
 		</div>
 
 		<div className="border-t divide-y divide-white/10">
-			<ScrollArea className="h-[235px]">
+			<ScrollArea className="h-[270px]">
 				{Array.from({ length: airport?.runways?.length ?? 4 }).map((_, index) => (
 					<div key={index} className="p-3">
 						<div className="flex items-center justify-between gap-6">
@@ -468,20 +468,18 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 			</div>
 
 			<div className="border-t">
-				<ScrollArea className="h-[235px]">
-					<ErrorSection
-						title="Error loading runway conditions"
-						className="border-t rounded-none border-solid"
-						error={error?.message}
-						refresh={refetch}
-					/>
-				</ScrollArea>
+				<ErrorSection
+					title="Error loading runway conditions"
+					className="border-t rounded-none border-solid h-[288px]"
+					error={error?.message}
+					refresh={refetch}
+				/>
 			</div>
 		</div>
 	);
 
 	return (
-		<div className="border-b border-border">
+		<div>
 			<style>{chevronAnimationStyles}</style>
 
 			<div className="flex flex-row px-3 py-2 justify-between">
@@ -503,7 +501,7 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 			</div>
 
 			<div className="border-t divide-y divide-white/10">
-				<ScrollArea className="sm:h-[265px]">
+				<ScrollArea className="sm:h-[270px]">
 					{runways.map((rwy, i) => (
 						<motion.div
 							key={rwy.name}

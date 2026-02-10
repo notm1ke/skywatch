@@ -4,12 +4,12 @@ import { StatusRibbon } from "./status";
 import { TabSwitcher } from "./switcher";
 import { useRouter } from "next/navigation";
 import { useAirportInspector } from "./store";
-import { MetarSkeletonLoader } from "./metar";
 import { Button } from "~/components/ui/button";
 import { AirportAdvisory } from "~/lib/schemas";
 import { ArrowLeft, Plane } from "lucide-react";
 import { Skeleton } from "~/components/ui/skeleton";
 import { InspectorOperationsTab } from "./operations";
+import { MetarSkeletonLoader } from "./operations/metar";
 import { useAirports } from "~/components/airport-provider";
 import { useAirspace } from "~/components/airspace/provider";
 import { AirportMap, AirportMapSkeletonLoader } from "./map";
@@ -127,7 +127,7 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 	);
 	
 	return (
-		<div className="min-h-screen overflow-hidden">
+		<div className="overflow-hidden">
 			<AirportMap airport={airport} />
 			<AdvisoryRibbon airport={airport} />
 			<TabSwitcher />

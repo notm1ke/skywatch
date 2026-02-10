@@ -3,6 +3,7 @@ import { rvr } from "./rvr";
 import { tsa } from "./tsa";
 import { atis } from "./atis";
 import { weather } from "./weather";
+import { historical } from "./historical";
 import { base, iataInput } from "@/utils";
 import { prisma } from "@/services/prisma";
 import { AirportGetPayload } from "@/prisma/generated/models";
@@ -56,7 +57,7 @@ const findByIata = base
 
 export const airportRouter = {
 	airports: {
-		findAll, findByIata,
+		findAll, findByIata, historical,
 		atis, weather, rvr, tsa
 	}
 }

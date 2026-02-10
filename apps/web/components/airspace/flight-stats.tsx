@@ -6,8 +6,8 @@ import { Squircle } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { ErrorSection } from "../error-section";
 import { useQuery } from "@tanstack/react-query";
-import { cn, shortNumberFormatter } from "~/lib/utils";
 import { AnimatedNumber } from "../ui/animated-number";
+import { cn, shortNumberFormatter } from "~/lib/utils";
 
 const busiestAirportMedal = (rank: number) => {
 	if (rank === 1) return "bg-yellow-400 text-yellow-900 dark:bg-yellow-500 dark:text-yellow-950";

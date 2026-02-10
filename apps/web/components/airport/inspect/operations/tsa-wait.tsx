@@ -26,6 +26,14 @@ const getColor = (waitTime: number) => {
 	return `rgba(239, 68, 68, ${0.3 + Math.min((waitTime - 15) / 10, 1) * 0.4})`;
 }
 
+const getBorderColor = (waitTime: number) => {
+	if (waitTime === 0) return "rgba(82, 82, 91, 0.1)";
+	if (waitTime <= 5) return `rgba(34, 197, 94, ${0.3 + (waitTime / 5) * 0.4})`;
+	if (waitTime <= 10) return `rgba(234, 179, 8, ${0.3 + ((waitTime - 5) / 5) * 0.4})`;
+	if (waitTime <= 15) return `rgba(249, 115, 22, ${0.3 + ((waitTime - 10) / 5) * 0.4})`;
+	return `rgba(239, 68, 68, ${0.3 + Math.min((waitTime - 15) / 10, 1) * 0.4})`;
+}
+
 const SecurityIcon: React.FC<PropsWithChildren<{ tooltip: ReactNode }>> = ({ children, tooltip }) => (
 	<Tooltip>
 		<TooltipTrigger className="cursor-help">
@@ -239,7 +247,7 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 		: currentHourData.waitTime
 
 	return (
-		<div className="border-b border-border">
+		<div>
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<div className="flex flex-row space-x-2 items-center">
 					<span className="text-md font-semibold pointer-events-none">
@@ -322,8 +330,8 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 						{hourlyData.slice(0, 12).map((item, index) => (
 							<motion.div
 								key={`am-${index}`}
-								className="aspect-square rounded-sm cursor-pointer border border-zinc-200 dark:border-zinc-800"
-								style={{ backgroundColor: getColor(item.waitTime) }}
+								className="aspect-square rounded-sm cursor-pointer border"
+								style={{ backgroundColor: getColor(item.waitTime), borderColor: getBorderColor(item.waitTime) }}
 								onMouseEnter={() => setHoveredCell(index)}
 								onMouseLeave={() => setHoveredCell(null)}
 								whileHover={{ scale: 1.1 }}
@@ -352,8 +360,8 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 						{hourlyData.slice(12, 24).map((item, index) => (
 							<motion.div
 								key={`pm-${index}`}
-								className="aspect-square rounded-sm cursor-pointer border border-zinc-200 dark:border-zinc-800"
-								style={{ backgroundColor: getColor(item.waitTime) }}
+								className="aspect-square rounded-sm cursor-pointer border"
+								style={{ backgroundColor: getColor(item.waitTime), borderColor: getBorderColor(item.waitTime) }}
 								onMouseEnter={() => setHoveredCell(index + 12)}
 								onMouseLeave={() => setHoveredCell(null)}
 								whileHover={{ scale: 1.1 }}
@@ -369,8 +377,8 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 							{[0, 5, 10, 15, 20].map(waitTime => (
 								<div
 									key={`tsa-wait-legend-${waitTime}`}
-									className="w-3 h-3 rounded-sm border border-zinc-200 dark:border-zinc-800"
-									style={{ backgroundColor: getColor(waitTime) }}
+									className="w-3 h-3 rounded-sm border"
+									style={{ backgroundColor: getColor(waitTime), borderColor: getBorderColor(waitTime) }}
 								/>
 							))}
 						</div>

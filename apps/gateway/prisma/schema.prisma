@@ -19,32 +19,48 @@ model Airport {
    ident             String  @unique
    type              String
    name              String
+   icao_code         String  @unique
+   iata_code         String  @unique
    latitude_deg      Float
    longitude_deg     Float
    elevation_ft      Int?
-   continent         String?
-   iso_country       String?
-   iso_region        String?
-   municipality      String?
+   continent         String
+   iso_country       String
+   iso_region        String
+   municipality      String
    scheduled_service String?
-   icao_code         String? @unique
-   iata_code         String? @unique
-   gps_code          String?
-   local_code        String?
-   home_link         String?
-   wikipedia_link    String?
-   keywords          String?
+   gps_code          String
+   local_code        String
+   home_link         String  @default("")
+   wikipedia_link    String  @default("")
+   keywords          String  @default("")
    supports_atis     Boolean @default(false)
    supports_rvr      Boolean @default(false)
    supports_precheck Boolean @default(false)
    supports_clear    Boolean @default(false)
    timezone          String?
 
-   frequencies  AirportFrequency[]
-   navaids      AirportNav[]
-   runways      AirportRunway[]
-   traffic      AirportTrafficFlow[]
-   airline_hubs AirportAirlineHub[]
+   // nasr
+   artcc           String    @default("")
+   fuel_types      String[]  @default([])
+   fss_number      String?
+   rescue_flags    String[]  @default([])
+   nasp_flags      String[]  @default([])
+   has_cbp         Boolean   @default(false)
+   mil_joint_use   Boolean   @default(false)
+   mil_ldg_rights  Boolean   @default(false)
+   inspection_type String?
+   inspection_date DateTime?
+   inspector_type  String?
+   atc_type        String?
+
+   // linked
+   frequencies    AirportFrequency[]
+   navaids        AirportNav[]
+   runways        AirportRunway[]
+   traffic        AirportTrafficFlow[]
+   airline_hubs   AirportAirlineHub[]
+   status_history AirportStatusHistory[]
 
    @@map("airports")
 }
@@ -167,6 +183,27 @@ model AirportAirlineHub {
 
    @@unique([airline_iata, airport_iata])
    @@map("airport_airline_hubs")
+}
+
+enum AirportInterruptionType {
+   airport_closure
+   ground_stop
+   ground_delay
+   dual_delay
+   arrival_delay
+   departure_delay
+}
+
+model AirportStatusHistory {
+   event_id     String                  @id @default(uuid())
+   event_type   AirportInterruptionType
+   airport_iata String
+   airport      Airport                 @relation(fields: [airport_iata], references: [iata_code])
+   observed_at  DateTime
+   resolved_at  DateTime?
+
+   @@unique([airport_iata, event_type, observed_at])
+   @@map("airport_status_history")
 }
 
 model Waypoint {

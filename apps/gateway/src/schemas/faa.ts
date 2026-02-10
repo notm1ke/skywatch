@@ -168,7 +168,7 @@ export const PlannedAirportEvent = z.object({
 		"until",
 		"after"
 	]),
-	iataCode: z.string(),
+	iataCode: z.array(z.string()),
 	eventType: z.string()
 });
 

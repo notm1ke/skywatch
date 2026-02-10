@@ -43,7 +43,7 @@ export const AirportMetar = z.object({
 	obsTime: z.number(),
 	temp: z.number(), // celcius
 	dewp: z.number(), // celcius
-	wdir: z.number(), // wind direction (deg)
+	wdir: z.union([z.coerce.number(), z.literal("VRB")]), // wind direction (deg) or variable
 	wspd: z.number(), // wind speed (kts)
 	wgst: z.number().nullish(), // wind gust (kts)
 	visib: z.union([z.string(), z.number()]), // "n+" or just n (statute miles)
@@ -118,3 +118,30 @@ export const Rvr = z.object({
 	updatedAt: z.number(),
 	runways: z.array(RvrProbe)
 });
+
+export const IncidentType = z.enum([
+	"airport_closure",
+	"ground_stop",
+	"ground_delay",
+	"dual_delay",
+	"arrival_delay",
+	"departure_delay"
+]);
+
+export const IncidentIndication = z.union([
+	IncidentType,
+	z.literal("normal")
+]);
+
+export const IncidentHistoryEntry = z.object({
+	dt: z.date(),
+	indicator: IncidentIndication,
+	incidents: z.array(z.object({
+		event_type: IncidentType,
+		event_id: z.string(),
+		observed_at: z.date(),
+		resolved_at: z.date().nullish()
+	}))
+});
+
+export const IncidentHistory = z.array(IncidentHistoryEntry);

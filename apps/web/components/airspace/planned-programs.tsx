@@ -4,7 +4,6 @@ import { ClockCheck } from "lucide-react";
 import { useMobile } from "../mobile-provider";
 import { ScrollArea } from "../ui/scroll-area";
 import { ErrorSection } from "../error-section";
-import { useAirports } from "../airport-provider";
 import { Skeleton, SkeletonWithDelay } from "../ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
@@ -18,7 +17,6 @@ import {
 
 export const AirspacePlannedEvents = () => {
 	const { mobile } = useMobile();
-	const { airports } = useAirports();
 	const { planned, loading, error, refresh } = useAirspace();
 	
 	if (loading) return (
@@ -79,7 +77,7 @@ export const AirspacePlannedEvents = () => {
 			</div>
 			<div className="border-t">
 				{!planned.length && (
-					<Empty>
+					<Empty className="h-[176px]">
 						<EmptyHeader>
 							<EmptyMedia>
 								<div className="bg-green-200 dark:bg-green-700 p-2 rounded-lg">
@@ -96,46 +94,40 @@ export const AirspacePlannedEvents = () => {
 				
 				{planned.length > 0 && (
 					<ScrollArea className="py-2 h-[175px]">
-						{planned.map((plan, i) => {
-							const airport = airports.find(airport => airport.iata_code === plan.iataCode);
-							if (!airport) return null;
-							
-							return (
-								<motion.div
-									key={`planned-${plan.iataCode}-${i}`}
-									className="group flex flex-row justify-between px-3 py-1.5"
-									initial={{ opacity: 0, y: -20 }}
-									animate={{ opacity: 1, y: 0 }}
-									exit={{ opacity: 0, y: -20 }}
-									transition={{ delay: i * (50 / 1000) }}
-								>
-									<div>
-										<div className="flex items-center gap-0.5">
-											<Tooltip>
-												<TooltipTrigger>
-													<span className="text-zinc-500 font-mono tracking-tighter text-sm ligatures align-text-top">
-														{plan.forecastType === 'after' ? '>=' : '<='}
-														{plan.time}
-													</span>
-												</TooltipTrigger>
-												<TooltipContent side="left">
-													<div className="text-center">
-														Plan in effect {plan.forecastType}
-														<br />
-														<span className="font-semibold font-mono tracking-tighter">{plan.time}</span>
-													</div>
-												</TooltipContent>
-											</Tooltip>
-											<span className="text-sm font-mono px-2 pointer-events-none">at {airport.iata_code}</span>
-											{/*<span className="text-sm font-bold">{shortenAirportName(airport.name)}</span>*/}
-										</div>
+						{planned.map((plan, i) => (
+							<motion.div
+								key={`planned-${plan.iataCode}-${i}`}
+								className="group flex flex-row justify-between px-3 py-1.5"
+								initial={{ opacity: 0, y: -20 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -20 }}
+								transition={{ delay: i * (50 / 1000) }}
+							>
+								<div>
+									<div className="flex items-center gap-0.5">
+										<Tooltip>
+											<TooltipTrigger>
+												<span className="text-zinc-500 font-mono tracking-tighter text-sm ligatures align-text-top">
+													{plan.forecastType === 'after' ? '>=' : '<='}
+													{plan.time}
+												</span>
+											</TooltipTrigger>
+											<TooltipContent side="left">
+												<div className="text-center">
+													Plan in effect {plan.forecastType}
+													<br />
+													<span className="font-semibold font-mono tracking-tighter">{plan.time}</span>
+												</div>
+											</TooltipContent>
+										</Tooltip>
+										<span className="text-sm font-mono px-2 pointer-events-none">at {plan.iataCode.join(', ')}</span>
 									</div>
-									<div className="text-sm">
-										{mobile ? plan.eventType.replace("Program", "") : plan.eventType}
-									</div>
-								</motion.div>
-							);
-						})}
+								</div>
+								<div className="text-sm">
+									{mobile ? plan.eventType.replace("Program", "") : plan.eventType}
+								</div>
+							</motion.div>
+						))}
 					</ScrollArea>
 				)}
 			</div>

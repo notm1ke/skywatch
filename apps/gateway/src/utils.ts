@@ -1,5 +1,7 @@
 import { z } from "zod/v4";
 import { os } from "@orpc/server";
+import { AirportAdvisory } from "./schemas";
+import { AirportInterruptionType } from "@/prisma/generated/enums";
 
 export const base = os.errors({
 	UPSTREAM_ERROR: {},
@@ -45,4 +47,14 @@ export const padZero = (input: string) => {
 	if (int < 10) return `0${int}`;
 
 	return int.toString();
+}
+
+export const toAirportIncidentType = (advisory: z.infer<typeof AirportAdvisory>): AirportInterruptionType | null => {
+	if (advisory.airportClosure) return "airport_closure";
+	if (advisory.groundStop) return "ground_stop";
+	if (advisory.groundDelay) return "ground_delay";
+	if (advisory.arrivalDelay && advisory.departureDelay) return "dual_delay";
+	if (advisory.arrivalDelay) return "arrival_delay";
+	if (advisory.departureDelay) return "departure_delay";
+	return null;
 }

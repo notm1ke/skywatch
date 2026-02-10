@@ -2,11 +2,12 @@ import axios from "axios";
 import moment from "moment-timezone";
 
 import { z } from "zod/v4";
-import { base } from "@/utils";
 import { load } from "cheerio";
 import { ORPCError } from "@orpc/client";
+import { base, iataInput } from "@/utils";
 import { cache } from "@/middleware/cache";
 import { AirspaceAdvisory } from "@/schemas";
+import { injectAirportByIata } from "@/middleware/airport-by-iata";
 
 const AirspaceAdvisories = z.array(AirspaceAdvisory);
 const advisoryTableSelector = ".mainArea > table > tbody > tr > td > table > tbody > tr";
@@ -43,7 +44,8 @@ const all = base
 			.toArray() as z.infer<typeof AirspaceAdvisories>
 		).catch(() => {
 			throw new ORPCError("UPSTREAM_ERROR");
-		}));
+		}))
+	.callable();
 
 const createAdvisoriesUrl = () => {
 	const date = moment().format('yyyy-MM-DD');
@@ -99,6 +101,14 @@ const createAdvisoryDetailsUrl = (advisoryNumber: number) => {
 	return url.toString();
 }
 
+const airportRelated = base
+	.input(iataInput)
+	.use(injectAirportByIata())
+	.handler(async ({ context: { airport } }) => {
+		const advisories = await all();
+		return advisories.filter(advisory => advisory.facilities.includes(airport.iata_code) || advisory.facilities.includes(airport.artcc));
+	})
+
 export const advisories = {
-	all, details
+	all, airportRelated, details
 }

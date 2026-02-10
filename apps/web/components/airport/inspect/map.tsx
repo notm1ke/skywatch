@@ -254,7 +254,7 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 			
 			<div className="block sm:hidden absolute left-0 top-0 min-w-full border border-border/50 bg-white/65 dark:bg-[#0a0a0a]/65 backdrop-blur-sm">
 				<div className="items-center gap-2 text-xs hidden sm:flex">
-					<div className="flex items-center gap-3 mt-2 text-xs text-zinc-800 dark:text-white/80">
+					<div className="flex items-center gap-3 mt-2 text-xs border dark:border-none text-zinc-800 dark:text-white/80">
 						<div className="flex items-center gap-1">
 							<Mountain className="h-3 w-3" />
 							<span>{airport.elevation_ft!.toLocaleString()} ft</span>
