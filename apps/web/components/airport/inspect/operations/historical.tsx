@@ -68,7 +68,7 @@ const incidentDuration = (incident: IncidentEntry) => {
 	return (
 		<span className="text-zinc-400 dark:text-zinc-500">
 			{getLatestTimeValue(moment
-				.duration(moment(incident.resolved_at).diff(moment(incident.observed_at)))
+				.duration(moment.utc(incident.resolved_at).diff(moment.utc(incident.observed_at)))
 				.asMilliseconds(), ' ', true, 2)}
 		</span>
 	);
@@ -90,10 +90,10 @@ const blockColor = (entry: z.infer<typeof IncidentHistoryEntry>) => {
 
 const ongoingTimer = (entry: z.infer<typeof IncidentHistoryEntry>, incident: IncidentEntry) => {
 	// same day
-	if (moment(entry.dt).isSame(moment(incident.observed_at), 'day')) return `Ongoing since ${moment(incident.observed_at).format("h:mm A")}`;
+	if (moment.utc(entry.dt).isSame(moment.utc(incident.observed_at), 'day')) return `Ongoing since ${moment.utc(incident.observed_at).format("h:mm A")}`;
 	
 	// spanning
-	return `Ongoing since ${moment(incident.observed_at).format("M/D [at] h:mm A")}`;
+	return `Ongoing since ${moment.utc(incident.observed_at).format("M/D [at] h:mm A")}`;
 }
 
 const resolutionTimer = (entry: z.infer<typeof IncidentHistoryEntry>, incident: IncidentEntry) => {
