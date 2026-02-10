@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { orpc } from "~/lib/gateway";
-import { Check, Maximize } from "lucide-react";
+import { Maximize } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "~/components/ui/skeleton";

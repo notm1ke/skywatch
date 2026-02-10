@@ -117,13 +117,20 @@ export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: 
 						
 						<Separator />
 						
+						<span className="text-sm text-muted-foreground">
+							{advisory.groundStop!.impactingCondition}
+						</span>
+						
+						<Separator />
+						
 						<div className="flex flex-col space-y-1">
 							<span className="text-sm">This affects flights to the following airspaces:</span>
-							
-							<div className="flex flex-row">
-								{advisory.groundStop!.includedFacilities.map((airspace) => (
-									<CenterBadge key={airspace} center={airspace} />
-								))}
+							<div className="grid grid-cols-10 gap-0.5">
+								{advisory
+									.groundStop!
+									.includedFacilities
+									.filter(center => center.startsWith("Z"))
+									.map((airspace) => <CenterBadge key={airspace} center={airspace} />)}
 							</div>
 						</div>
 						

@@ -50,7 +50,10 @@ const getCloudCoverLabel = (cover: z.infer<typeof CloudCover>) => {
 		case "FEW": return "Few"
 		case "SCT": return "Scattered"
 		case "BKN": return "Broken"
-		case "OVC": return "Overcast"
+		
+		case "OVC":
+		case "OVX":
+		case "VV": return "Overcast"
 
 		case "SKC":
 		case "CLR": return "Clear"
@@ -135,7 +138,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 							<span className="text-black/70 dark:text-white/40">Wind:</span>
 							<span className="text-black/90 dark:text-white/90 font-mono">
 								{metar.wdir != null
-									? `${metar.wdir.toString().padStart(3, "0")}° at ${metar.wspd}kt`
+									? `${metar.wspd}kt at ${metar.wdir.toString().padStart(3, "0")}°`
 									: `${metar.wspd}kt`}
 							</span>
 						</div>
@@ -143,7 +146,7 @@ const FullReport: React.FC<PropsWithChildren<{ metar: MetarResponse }>> = ({ chi
 						{metar.slp && (
 							<div className="flex justify-between">
 								<span className="text-black/70 dark:text-white/40">Sea Level:</span>
-								<span className="text-black/90 dark:text-white/90 font-mono">{(metar.slp / 33.8639).toFixed(1)} inHg</span>
+								<span className="text-black/90 dark:text-white/90 font-mono">{(metar.slp / 33.8639).toFixed(2)} inHg</span>
 							</div>
 						)}
 
@@ -470,7 +473,7 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 							<div className="font-mono text-sm text-black/80 dark:text-white/90">{(metar.altim / 33.8639).toFixed(2)} inHg</div>
 							{metar.slp && (
 								<div className="text-xs text-black/40 dark:text-white/40 mt-0.5">
-									Sea Level: {(metar.slp / 33.8639).toFixed(1)} inHg
+									Sea Level: {(metar.slp / 33.8639).toFixed(2)} inHg
 								</div>
 							)}
 						</div>
@@ -557,7 +560,6 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 						</div>
 					</div>
 				</div>
-				
 			</div>
 		</div>
 	);

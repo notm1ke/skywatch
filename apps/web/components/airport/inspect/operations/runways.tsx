@@ -404,7 +404,7 @@ const ProbeIndicator: React.FC<{ data: RvrProbe, target: RvrProbeType }> = ({ da
 				/>
 			)}
 			
-			<div className="text-xs font-mono font-semibold relative">
+			<div className="text-xs font-mono font-semibold relative pointer-events-none">
 				<span>{formatVisibility(probe.visibilityFt)}</span>
 			</div>
 		</div>

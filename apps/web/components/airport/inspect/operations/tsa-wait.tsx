@@ -2,6 +2,7 @@ import moment from "moment-timezone";
 
 import { orpc } from "~/lib/gateway";
 import { motion } from "motion/react";
+import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "~/hooks/use-debounce";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -26,8 +27,8 @@ const getColor = (waitTime: number) => {
 	return `rgba(239, 68, 68, ${0.3 + Math.min((waitTime - 15) / 10, 1) * 0.4})`;
 }
 
-const getBorderColor = (waitTime: number) => {
-	if (waitTime === 0) return "rgba(82, 82, 91, 0.1)";
+const getBorderColor = (waitTime: number, theme: string = "light") => {
+	if (waitTime === 0) return theme === "light" ? "rgba(82, 82, 91, 0.1)" : "rgba(82, 82, 91, 0.6)";
 	if (waitTime <= 5) return `rgba(34, 197, 94, ${0.3 + (waitTime / 5) * 0.4})`;
 	if (waitTime <= 10) return `rgba(234, 179, 8, ${0.3 + ((waitTime - 5) / 5) * 0.4})`;
 	if (waitTime <= 15) return `rgba(249, 115, 22, ${0.3 + ((waitTime - 10) / 5) * 0.4})`;
@@ -169,6 +170,7 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 		queryKey: ["tsa", "waitTimes", airport.iata_code]
 	}));
 	
+	const { resolvedTheme: theme } = useTheme();
 	const [hoveredCell, setHoveredCell] = useState<number | null>(null);
 	const debouncedHoverCell = useDebounce(hoveredCell, 250);
 	
@@ -331,7 +333,7 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 							<motion.div
 								key={`am-${index}`}
 								className="aspect-square rounded-sm cursor-pointer border"
-								style={{ backgroundColor: getColor(item.waitTime), borderColor: getBorderColor(item.waitTime) }}
+								style={{ backgroundColor: getColor(item.waitTime), borderColor: getBorderColor(item.waitTime, theme) }}
 								onMouseEnter={() => setHoveredCell(index)}
 								onMouseLeave={() => setHoveredCell(null)}
 								whileHover={{ scale: 1.1 }}
@@ -361,7 +363,7 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 							<motion.div
 								key={`pm-${index}`}
 								className="aspect-square rounded-sm cursor-pointer border"
-								style={{ backgroundColor: getColor(item.waitTime), borderColor: getBorderColor(item.waitTime) }}
+								style={{ backgroundColor: getColor(item.waitTime), borderColor: getBorderColor(item.waitTime, theme) }}
 								onMouseEnter={() => setHoveredCell(index + 12)}
 								onMouseLeave={() => setHoveredCell(null)}
 								whileHover={{ scale: 1.1 }}
@@ -378,7 +380,7 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 								<div
 									key={`tsa-wait-legend-${waitTime}`}
 									className="w-3 h-3 rounded-sm border"
-									style={{ backgroundColor: getColor(waitTime), borderColor: getBorderColor(waitTime) }}
+									style={{ backgroundColor: getColor(waitTime), borderColor: getBorderColor(waitTime, theme) }}
 								/>
 							))}
 						</div>

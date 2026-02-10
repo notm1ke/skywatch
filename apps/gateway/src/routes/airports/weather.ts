@@ -26,9 +26,13 @@ export const weather = base
 				taf: true
 			}
 		})
-		.then(res => res.data)
+		.then(res => {
+			console.log(res.data);
+			return res.data;
+		})
 		.then(z.array(AirportMetar).safeParse)
 		.then(parsed => {
+			console.log(parsed);
 			if (!parsed.success) throw new ORPCError("UPSTREAM_ERROR");
 			return parsed.data.at(0);
 		})
