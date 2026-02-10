@@ -98,25 +98,25 @@ const ongoingTimer = (entry: z.infer<typeof IncidentHistoryEntry>, incident: Inc
 
 const resolutionTimer = (entry: z.infer<typeof IncidentHistoryEntry>, incident: IncidentEntry) => {
 	// same day
-	if (moment(entry.dt).isSame(moment(incident.observed_at), 'day') && moment(entry.dt).isSame(moment(incident.resolved_at), 'day'))
-		return `${moment(incident.observed_at).format("h:mm A")} - ${moment(incident.resolved_at).format("h:mm A")}`;
+	if (moment.utc(entry.dt).isSame(moment.utc(incident.observed_at), 'day') && moment.utc(entry.dt).isSame(moment.utc(incident.resolved_at), 'day'))
+		return `${moment.utc(incident.observed_at).format("h:mm A")} - ${moment.utc(incident.resolved_at).format("h:mm A")}`;
 	
 	// starting same day
-	if (moment(entry.dt).isSame(moment(incident.observed_at), 'day'))
-		return `${moment(incident.observed_at).format("h:mm A")} - ${moment(incident.resolved_at).format("M/D [at] h:mm A")}`;
+	if (moment.utc(entry.dt).isSame(moment.utc(incident.observed_at), 'day'))
+		return `${moment.utc(incident.observed_at).format("h:mm A")} - ${moment.utc(incident.resolved_at).format("M/D [at] h:mm A")}`;
 	
 	// ending same day
-	if (moment(entry.dt).isSame(moment(incident.resolved_at), 'day'))
-		return `${moment(incident.observed_at).format("M/D [at] h:mm A")} - ${moment(incident.resolved_at).format("h:mm A")}`;
+	if (moment.utc(entry.dt).isSame(moment.utc(incident.resolved_at), 'day'))
+		return `${moment.utc(incident.observed_at).format("M/D [at] h:mm A")} - ${moment.utc(incident.resolved_at).format("h:mm A")}`;
 	
 	// spanning days
-	return `${moment(incident.observed_at).format("M/D [at] h:mm A")} - ${moment(incident.resolved_at).format("M/D [at] h:mm A")}`;
+	return `${moment.utc(incident.observed_at).format("M/D [at] h:mm A")} - ${moment.utc(incident.resolved_at).format("M/D [at] h:mm A")}`;
 }
 
 const blockTooltip = (entry: z.infer<typeof IncidentHistoryEntry>) => (
 	<div className="flex flex-col space-y-2">
 		<div className="font-bold px-3 py-2 border-b border-zinc-500/80 bg-zinc-800 dark:bg-zinc-200 rounded-t-lg">
-			{moment(entry.dt).format('MMMM Do, YYYY')}
+			{moment.utc(entry.dt).format('MMMM Do, YYYY')}
 		</div>
 		
 		{entry.incidents.length === 0 && (
