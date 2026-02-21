@@ -1,3 +1,5 @@
+import moment from "moment-timezone";
+
 import { twMerge } from "tailwind-merge";
 import { clsx, type ClassValue } from "clsx";
 import { UsStateAbbreviations } from "./geo";
@@ -111,6 +113,11 @@ export const parseDelayTime = (time: string) => {
 	if (minutes)          return `${minutes}m`;
 	
 	return '';
+}
+
+export const localizedOrUtc = (date: Date, tz: string | undefined | null) => {
+	if (!tz) return moment.utc(date);
+	return moment.tz(date, tz);
 }
 
 export const getLatestTimeValue = (time: number, delimiter = ', ', short = true, top?: number) => {

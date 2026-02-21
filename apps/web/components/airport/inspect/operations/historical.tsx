@@ -4,8 +4,8 @@ import { z } from "zod/v4";
 import { orpc } from "~/lib/gateway";
 import { useQuery } from "@tanstack/react-query";
 import { Tracker } from "~/components/ui/tracker";
-import { cn, getLatestTimeValue } from "~/lib/utils";
 import { ErrorSection } from "~/components/error-section";
+import { cn, getLatestTimeValue, localizedOrUtc } from "~/lib/utils";
 import { AirportWithJoins, IncidentHistoryEntry } from "@skywatch/gateway/schemas";
 
 import {
@@ -88,32 +88,38 @@ const blockColor = (entry: z.infer<typeof IncidentHistoryEntry>) => {
 	}
 }
 
-const ongoingTimer = (entry: z.infer<typeof IncidentHistoryEntry>, incident: IncidentEntry) => {
+const ongoingTimer = (entry: z.infer<typeof IncidentHistoryEntry>, incident: IncidentEntry, airport: AirportWithJoins) => {
+	const start = localizedOrUtc(incident.observed_at, airport.timezone);
+	
 	// same day
-	if (moment.utc(entry.dt).isSame(moment.utc(incident.observed_at), 'day')) return `Ongoing since ${moment.utc(incident.observed_at).format("h:mm A")}`;
+	if (localizedOrUtc(entry.dt, airport.timezone).isSame(start, 'day')) return `Ongoing since ${start.format("h:mm A")}`;
 	
 	// spanning
-	return `Ongoing since ${moment.utc(incident.observed_at).format("M/D [at] h:mm A")}`;
+	return `Ongoing since ${start.format("M/D [at] h:mm A")}`;
 }
 
-const resolutionTimer = (entry: z.infer<typeof IncidentHistoryEntry>, incident: IncidentEntry) => {
+const resolutionTimer = (entry: z.infer<typeof IncidentHistoryEntry>, incident: IncidentEntry, airport: AirportWithJoins) => {
+	const marker = localizedOrUtc(entry.dt, airport.timezone);
+	const start = localizedOrUtc(incident.observed_at, airport.timezone);
+	const end = localizedOrUtc(incident.resolved_at!, airport.timezone);
+	
 	// same day
-	if (moment.utc(entry.dt).isSame(moment.utc(incident.observed_at), 'day') && moment.utc(entry.dt).isSame(moment.utc(incident.resolved_at), 'day'))
-		return `${moment.utc(incident.observed_at).format("h:mm A")} - ${moment.utc(incident.resolved_at).format("h:mm A")}`;
+	if (marker.isSame(start, 'day') && marker.isSame(end, 'day'))
+		return `${start.format("h:mm A")} - ${end.format("h:mm A")}`;
 	
 	// starting same day
-	if (moment.utc(entry.dt).isSame(moment.utc(incident.observed_at), 'day'))
-		return `${moment.utc(incident.observed_at).format("h:mm A")} - ${moment.utc(incident.resolved_at).format("M/D [at] h:mm A")}`;
+	if (marker.isSame(start, 'day'))
+		return `${start.format("h:mm A")} - ${end.format("M/D [at] h:mm A")}`;
 	
 	// ending same day
-	if (moment.utc(entry.dt).isSame(moment.utc(incident.resolved_at), 'day'))
-		return `${moment.utc(incident.observed_at).format("M/D [at] h:mm A")} - ${moment.utc(incident.resolved_at).format("h:mm A")}`;
+	if (marker.isSame(end, 'day'))
+		return `${start.format("M/D [at] h:mm A")} - ${end.format("h:mm A")}`;
 	
 	// spanning days
-	return `${moment.utc(incident.observed_at).format("M/D [at] h:mm A")} - ${moment.utc(incident.resolved_at).format("M/D [at] h:mm A")}`;
+	return `${start.format("M/D [at] h:mm A")} - ${end.format("M/D [at] h:mm A")}`;
 }
 
-const blockTooltip = (entry: z.infer<typeof IncidentHistoryEntry>) => (
+const blockTooltip = (entry: z.infer<typeof IncidentHistoryEntry>, airport: AirportWithJoins) => (
 	<div className="flex flex-col space-y-2">
 		<div className="font-bold px-3 py-2 border-b border-zinc-500/80 bg-zinc-800 dark:bg-zinc-200 rounded-t-lg">
 			{moment.utc(entry.dt).format('MMMM Do, YYYY')}
@@ -148,8 +154,8 @@ const blockTooltip = (entry: z.infer<typeof IncidentHistoryEntry>) => (
 								<div className="flex flex-row justify-between space-x-3 pl-2">
 									<div className="text-sm">
 										{incident.resolved_at
-											? resolutionTimer(entry, incident)
-											: ongoingTimer(entry, incident)}
+											? resolutionTimer(entry, incident, airport)
+											: ongoingTimer(entry, incident, airport)}
 									</div>
 									<div className="text-sm">{incidentDuration(incident)}</div>
 								</div>
@@ -224,7 +230,7 @@ export const HistoricalStatus: React.FC<HistoricalInterruptionsProps> = ({ airpo
 	
 	const blocks = data.map(day => ({
 		color: blockColor(day),
-		tooltip: blockTooltip(day),
+		tooltip: blockTooltip(day, airport),
 		tooltipClassname: "p-0",
 	}))
 	

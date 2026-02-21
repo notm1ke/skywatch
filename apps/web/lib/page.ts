@@ -1,9 +1,10 @@
 import { create } from "zustand";
 
 export type TabType =
-	| "airspace"
+	| "airspaces"
 	| "airplanes"
 	| "airports"
+	| "routing"
 	| "statistics"
 	| "tfrs"
 	| "waypoints";
@@ -14,6 +15,6 @@ type PageControlState = {
 }
 
 export const usePageControls = create<PageControlState>((set) => ({
-	activeTab: "airspace",
+	activeTab: "airspaces",
 	setActiveTab: (tab) => set({ activeTab: tab })
 }));

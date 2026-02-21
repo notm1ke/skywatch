@@ -11,9 +11,10 @@ import { HeaderEnvBadge } from "./header-env-badge";
 import { AnimatedTabs, AnimatedTabItem } from "./ui/animated-tabs";
 
 const NavLinks: AnimatedTabItem[] = [
-	{ content: "Airspace", tabType: "airspace", href: "/" },
+	{ content: "Airspaces", tabType: "airspaces", href: "/" },
 	{ content: "Airports", tabType: "airports", href: "/airports" },
 	{ content: "Planes", tabType: "airplanes", href: "/planes" },
+	// { content: "Routing", tabType: "routing", href: "/routing" },
 	{ content: "TFRs", tabType: "tfrs", href: "/tfrs" },
 	{ content: "Waypoints", tabType: "waypoints", href: "/waypoints" },
 	{ content: "Statistics", tabType: "statistics", href: "/statistics" },
@@ -25,7 +26,7 @@ export const Header = () => {
 	return (
 		<header className="border-b dark:border-zinc-800 bg-background">
 			<div className="flex h-16 items-center px-5 justify-between">
-				<Link prefetch href="/" onClick={() => setActiveTab("airspace")}>
+				<Link prefetch href="/" onClick={() => setActiveTab("airspaces")}>
 					<div className="flex items-center gap-2 cursor-pointer">
 						<TowerControl className="size-7" />
 						<span className="text-2xl font-serif font-normal tracking-tight">Skywatch</span>
