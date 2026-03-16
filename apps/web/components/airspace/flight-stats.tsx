@@ -106,13 +106,14 @@ export const FlightStatuses: React.FC = () => {
 	);
 	
 	// widths
-	const cancelledWidth = Math.floor((data.stats.cancelled / data.stats.normal) * 100);
-	const delayedWidth = Math.floor((data.stats.delayed / data.stats.normal) * 100);
+	const total = data.stats.normal + data.stats.cancelled + data.stats.delayed;
+	const cancelledWidth = Math.floor((data.stats.cancelled / total) * 100);
+	const delayedWidth = Math.floor((data.stats.delayed / total) * 100);
 	const activeWidth = 100 - cancelledWidth - delayedWidth;
 	
 	// pcts
-	const cancelledPct = (data.stats.cancelled / data.stats.total) * 100;
-	const delayedPct = (data.stats.delayed / data.stats.total) * 100;
+	const cancelledPct = (data.stats.cancelled / total) * 100;
+	const delayedPct = (data.stats.delayed / total) * 100;
 	const activePct = 100 - cancelledPct - delayedPct;
 	
 	return (
