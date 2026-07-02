@@ -1,18 +1,23 @@
 import moment from "moment-timezone";
 
-import { z } from "zod/v4";
-import { base } from "@/utils";
 import { prisma } from "@/services/prisma";
+import { airspaceInput, base } from "@/utils";
 import { ChartConfig, TrafficFlow } from "@/schemas";
 import { injectDataMarker } from "@/middleware/traffic-marker";
+import { AirportTrafficFlowWhereInput } from "@/prisma/generated/models";
 
 export const arrivalCapacity = base
-	.input(z.void())
+	.input(airspaceInput)
 	.use(injectDataMarker)
-	.handler(async ({ context: { marker } }) => {
+	.handler(async ({ context: { marker }, input: { airspace } }) => {
+		const where: AirportTrafficFlowWhereInput = marker;
+		if (airspace) {
+			where.airport = {};
+			where.airport.artcc = { equals: airspace };
+		}
+		
 		const airports = await prisma.airportTrafficFlow.findMany({
-			where: marker,
-			select: { arrival_rates: true }
+			where, select: { arrival_rates: true }
 		});
 
 		const duration = moment.duration(1.5, 'hours');

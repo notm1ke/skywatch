@@ -1,3 +1,4 @@
 prisma/generated
 *.test.ts
 .output
+opensky-oauth.json

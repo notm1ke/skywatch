@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 
 export const GoogleMapsIcon: React.FC<{ className?: string }> = ({
 	className,

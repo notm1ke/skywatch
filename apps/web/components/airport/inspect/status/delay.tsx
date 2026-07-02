@@ -1,3 +1,4 @@
+import { cn } from "cnfast";
 import { Button } from "~/components/ui/button";
 import { AirportAdvisory } from "~/lib/schemas";
 import { AirportWithJoins } from "@skywatch/gateway/schemas";
@@ -5,7 +6,6 @@ import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 
 import {
 	capitalizeFirst,
-	cn,
 	delayReason,
 	getLatestTimeValue,
 	parseDelayTime,

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { ComponentProps } from "react";
 import type { Direction } from "./types";
 import { DataGridSearch } from "./search";

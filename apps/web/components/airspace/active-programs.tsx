@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { cn } from "cnfast";
 import { motion } from "motion/react";
 import { Button } from "../ui/button";
 import { useAirspace } from "./provider";
@@ -10,7 +11,7 @@ import { AirportAdvisory } from "~/lib/schemas";
 import { useAirports } from "../airport-provider";
 import { useAirspaceInteractivity } from "./store";
 import { DeicingProgram } from "./programs/deicing";
-import { cn, shortenAirportName } from "~/lib/utils";
+import { shortenAirportName } from "~/lib/utils";
 import { GroundStopProgram } from "./programs/ground-stop";
 import { GroundDelayProgram } from "./programs/ground-delay";
 import { Skeleton, SkeletonWithDelay } from "../ui/skeleton";
@@ -55,7 +56,8 @@ export enum AdvisoryType {
 	AirportClosure
 }
 
-export const advisoryPriority = (advisory: AirportAdvisory) => {
+export const advisoryPriority = (advisory?: AirportAdvisory) => {
+	if (!advisory) return AdvisoryType.Normal;
 	if (advisory.airportClosure) return AdvisoryType.AirportClosure;
 	if (advisory.groundStop) return AdvisoryType.GroundStop;
 	if (advisory.groundDelay) return AdvisoryType.GroundDelay;

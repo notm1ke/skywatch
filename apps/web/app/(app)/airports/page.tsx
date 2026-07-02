@@ -1,5 +1,11 @@
-"use client";
+import { Metadata } from "next";
+import { AirportsTab } from "~/components/airports";
 
-export default function AirportExplorePage() {
-	return <></>;
-} 
+export const metadata: Metadata = {
+	title: "Airports",
+	description: "Browse US airports, airline hubs, and live operational status.",
+};
+
+export default function AirportsPage() {
+	return <AirportsTab />;
+}

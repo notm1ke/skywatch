@@ -31,7 +31,7 @@ const airportStatus = defineTask({
 		console.log("Triggering airport status retrieval..");
 		
 		const statuses = await interruptions
-			.active()
+			.active({})
 			.then(results => results.map(result => {
 				const incidentType = toIncidentType(result);
 				if (!incidentType) return null;

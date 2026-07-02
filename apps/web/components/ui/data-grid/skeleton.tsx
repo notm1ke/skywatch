@@ -1,6 +1,6 @@
 import type * as React from "react";
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Skeleton, SkeletonWithDelay } from "~/components/ui/skeleton";
 import { Megaphone, Earth, TowerControl, List, Calendar, Baseline, type LucideIcon } from "lucide-react";
 

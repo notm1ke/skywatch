@@ -1,5 +1,6 @@
+import { cn } from "cnfast";
 import { Skeleton } from "../ui/skeleton";
-import { cn, shortenAirportName } from "~/lib/utils";
+import { shortenAirportName } from "~/lib/utils";
 import { useIsMounted } from "~/hooks/use-is-mounted";
 import { HeaderStats } from "@skywatch/gateway/schemas";
 
@@ -89,7 +90,7 @@ export const TopAirportsSkeleton = () => {
 			</ul>
 		</div>
 	)
-	
+
 	return (
 		<div className="space-y-2">
 			<h2 className="my-0 font-mono font-medium text-sm tracking-tight mb-0.5 uppercase text-zinc-900 dark:text-zinc-100">
@@ -110,7 +111,7 @@ export const TopAirportsSkeleton = () => {
 			</ul>
 		</div>
 	);
-} 
+}
 
 const AirportIataBadge: React.FC<{ iata_code: string, color: string }> = ({ iata_code, color }) => (
 	<span className={cn("text-sm font-bold font-mono px-2 rounded-sm", color)}>{iata_code}</span>

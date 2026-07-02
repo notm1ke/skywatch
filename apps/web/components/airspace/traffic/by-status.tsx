@@ -1,6 +1,7 @@
+import { cn } from "cnfast";
 import { unrollDatum } from ".";
 import { FlowStatusMetricKeys, TrafficFlow } from "@skywatch/gateway/schemas";
-import { cn, flowStatusColors, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
+import { flowStatusColors, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "~/components/ui/chart";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, ResponsiveContainer, XAxis, YAxis } from "recharts";
 

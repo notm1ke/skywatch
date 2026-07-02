@@ -1,13 +1,14 @@
 "use client";
 
+import { cn } from "cnfast";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useMobile } from "../mobile-provider";
+import { AnimatePresence } from "motion/react";
 import { Button } from "~/components/ui/button";
 import { useAirports } from "../airport-provider";
-import { cn, hasOpenBackdrop } from "~/lib/utils";
+import { hasOpenBackdrop } from "~/lib/utils";
 import { CircleX, SearchIcon } from "lucide-react";
-import { useDebounce } from "~/hooks/use-debounce";
 import { Kbd, KbdGroup } from "~/components/ui/kbd";
 import { TabType, usePageControls } from "~/lib/page";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -42,7 +43,6 @@ export const Searchbar: React.FC = () => {
 	const [selected, setSelected] = useState<number | null>(0);
 	const [results, setResults] = useState<SearchResult<any>[]>([]);
 
-	const debouncedQuery = useDebounce(searchQuery, 300);
 	const triggerRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -60,18 +60,28 @@ export const Searchbar: React.FC = () => {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isOpen]);
 
-	const airportItems = useMemo(() => airportResults(airports), [airports]);;
+	const airportItems = useMemo(() => airportResults(airports), [airports]);
 	const allItems = [...airportItems];
-	
+
+	const defaultResults = useMemo(() =>
+		["SFO", "LAX", "JFK", "EWR", "ORD", "DFW", "ATL", "IAD", "DEN"]
+			.map(iata => airportItems.find(item => item.metadata.iata_code === iata))
+			.filter(Boolean) as SearchResult<any>[],
+		[airportItems]
+	);
+
 	useEffect(() => {
-		if (!debouncedQuery.length) return setResults([]);
+		if (!searchQuery.length) return setResults([]);
 		const filtered = allItems.filter(item => {
-			if (item.type === "airport") return airportPredicates.some(predicate => predicate(debouncedQuery, item));
+			if (item.type === "airport") return airportPredicates.some(predicate => predicate(searchQuery, item));
 			// todo: other types
 		});
-		
+
 		setResults(filtered);
-	}, [debouncedQuery]);
+	}, [searchQuery]);
+
+	const isDefault = !searchQuery.length;
+	const displayedItems = isDefault ? defaultResults : results;
 
 	useEffect(() => {
 		setSelected(0);
@@ -87,19 +97,19 @@ export const Searchbar: React.FC = () => {
 	}, [isOpen]);
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (results.length === 0) return;
+		if (displayedItems.length === 0) return;
 		if (e.key === "ArrowDown") {
 			e.preventDefault();
-			setSelected((prev) => ((prev ?? 0) + 1) % results.length);
+			setSelected((prev) => ((prev ?? 0) + 1) % displayedItems.length);
 			return;
 		}
-		
+
 		if (e.key === "ArrowUp") {
 			e.preventDefault();
-			setSelected((prev) => ((prev ?? 0) - 1 + results.length) % results.length);
+			setSelected((prev) => ((prev ?? 0) - 1 + displayedItems.length) % displayedItems.length);
 			return;
 		}
-		
+
 		if (e.key === "Enter") {
 			e.preventDefault();
 			handleItemClick();
@@ -107,8 +117,9 @@ export const Searchbar: React.FC = () => {
 	};
 
 	useEffect(() => {
-		if ((selected || selected === 0) && itemRefs.current[selected]) {
-			router.prefetch(results[selected].href);
+		const href = displayedItems[selected ?? 0]?.href;
+		if ((selected || selected === 0) && itemRefs.current[selected] && href) {
+			router.prefetch(href);
 			itemRefs.current[selected]?.scrollIntoView({
 				block: "nearest",
 				behavior: "smooth",
@@ -117,7 +128,7 @@ export const Searchbar: React.FC = () => {
 	}, [selected]);
 
 	const handleItemClick = () => {
-		const item = selected !== null ? results[selected] : null;
+		const item = selected !== null ? displayedItems[selected] : null;
 		if (item) {
 			setActiveTab(item.tabTarget);
 			setIsOpen(false);
@@ -135,9 +146,16 @@ export const Searchbar: React.FC = () => {
 			open={isOpen}
 			onOpenChange={setIsOpen}
 			transition={{
-				type: "spring",
-				bounce: 0.05,
-				duration: 0.5,
+				ease: [0.22, 1, 0.36, 1],
+				duration: 0.3,
+			}}
+			variants={{
+				initial: { clipPath: "inset(0 100% 0 0)" },
+				animate: { clipPath: "inset(0 0% 0 0)" },
+				exit: {
+					clipPath: "inset(0 100% 0 0)",
+					transition: { duration: 0.15, ease: "easeIn" },
+				},
 			}}
 		>
 			<SearchTrigger suppressHydrationWarning asChild={mobile} triggerRef={triggerRef}>
@@ -185,7 +203,7 @@ export const Searchbar: React.FC = () => {
 					</motion.div>
 				)}
 			</SearchTrigger>
-			<SearchContent asMobile={mobile} className="rounded-xl border border-border bg-background! w-[400px] p-0">
+			<SearchContent asMobile={mobile} className={cn("rounded-xl border border-border bg-background! p-0", !mobile && "w-[400px]")}>
 				<motion.div
 					layoutId="find"
 					className="flex items-center gap-2 px-2 py-4 border-b border-border"
@@ -217,60 +235,76 @@ export const Searchbar: React.FC = () => {
 				</motion.div>
 
 				<motion.div
-					initial={{ opacity: 0, filter: "blur(5px)" }}
-					animate={{ opacity: 1, filter: "blur(0px)", transition: { duration: 1 } }}
-					exit={{ opacity: 0, transition: { duration: 0.5 } }}
+					initial={{ opacity: 0, filter: "blur(4px)" }}
+					animate={{ opacity: 1, filter: "blur(0px)", transition: { duration: 0.25 } }}
+					exit={{ opacity: 0, transition: { duration: 0.2 } }}
 				>
-					{debouncedQuery.length > 0 && (
-						<ScrollArea maskHeight={10} className="h-72 px-1 py-1">
-							<AnimatedBackground
-								defaultValue={0}
-								value={selected}
-								setActiveValue={setSelected}
-								className="rounded-md bg-zinc-100 dark:bg-zinc-800"
-								enableHover
-								transition={{
-									type: "spring",
-									bounce: 0.2,
-									duration: 0.2
-								}}
+					<AnimatePresence initial={false}>
+						{(isDefault || searchQuery.length > 0) && (
+							<motion.div
+								key="results"
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1, transition: { duration: 0.15 } }}
+								exit={{ opacity: 0, transition: { duration: 0.1 } }}
 							>
-								{results.slice(0, 100).map((item, index) => (
-									<motion.button
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										exit={{ opacity: 0, transition: { duration: 0.5 } }}
-										key={item.id}
-										// @ts-expect-error ref is nullable
-										ref={(el) => (itemRefs.current[index] = el)}
-										onMouseEnter={() => setSelected(index)}
-										onClick={handleItemClick}
-										data-id={index}
-										className={cn(
-											"flex [&>div]:flex [&>div]:flex-row w-full [&>div]:items-center [&>div]:gap-3",
-											"rounded-md px-4 py-2 text-left text-sm [&>div]:focus-visible:outline-none"
-										)}
+								<ScrollArea maskHeight={10} className="h-72 px-1 py-1">
+									<AnimatedBackground
+										defaultValue={0}
+										value={selected}
+										setActiveValue={setSelected}
+										className="rounded-md bg-zinc-100 dark:bg-zinc-800"
+										enableHover
+										transition={{
+											type: "spring",
+											bounce: 0.2,
+											duration: 0.2
+										}}
 									>
-										<div className="text-muted-foreground">{item.icon}</div>
-										<div className="flex flex-col min-w-0 flex-1">
-											<span className="font-medium truncate">
-												{item.title}
-											</span>
-											<span className="text-xs text-muted-foreground truncate">
-												{item.subtitle}
-											</span>
+											{displayedItems.slice(0, 100).map((item, index) => (
+											<motion.button
+												layout
+												layoutId={`result-${item.id}`}
+												initial={{ opacity: 0, y: 4 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{
+													layout: { type: "spring", bounce: 0.15, duration: 0.25 },
+													opacity: { duration: 0.15 },
+												}}
+												key={item.id}
+												// @ts-expect-error ref is nullable
+												ref={(el) => (itemRefs.current[index] = el)}
+												onMouseEnter={() => setSelected(index)}
+												onClick={handleItemClick}
+												data-id={index}
+												className={cn(
+													"flex [&>div]:flex [&>div]:flex-row w-full [&>div]:w-full [&>div]:items-stretch [&>div]:justify-between",
+													"rounded-md px-4 py-2 text-left text-sm [&>div]:focus-visible:outline-none"
+												)}
+											>
+												<div className="flex flex-col min-w-0 flex-1 justify-center">
+													<span className="font-medium truncate">
+														{item.title}
+													</span>
+													<span className="text-xs text-muted-foreground truncate">
+														{item.subtitle}
+													</span>
+												</div>
+												<div className="flex items-center shrink-0 pl-3 text-muted-foreground">
+													{item.icon}
+												</div>
+											</motion.button>
+										))}
+									</AnimatedBackground>
+
+									{!isDefault && results.length === 0 && (
+										<div className="py-8 text-center text-sm text-muted-foreground">
+											No results found
 										</div>
-									</motion.button>
-								))}
-							</AnimatedBackground>
-	
-							{results.length === 0 && (
-								<div className="py-8 text-center text-sm text-muted-foreground">
-									No results found
-								</div>
-							)}
-						</ScrollArea>
-					)}
+									)}
+								</ScrollArea>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</motion.div>
 			</SearchContent>
 		</Search>

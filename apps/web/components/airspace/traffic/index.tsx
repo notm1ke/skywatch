@@ -1,3 +1,4 @@
+import { cn } from "cnfast";
 import { orpc } from "~/lib/gateway";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -10,7 +11,7 @@ import { ErrorSection } from "~/components/error-section";
 import { ArrivalCapacityChart } from "./arrival-capacity";
 import { TrafficTreemapSkeleton } from "./skeletons/treemap";
 import { DataPoint, TrafficFlow } from "@skywatch/gateway/schemas";
-import { cn, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
+import { formatFaaTime, shortNumberFormatter } from "~/lib/utils";
 
 import {
 	DropdownMenu,
@@ -28,6 +29,7 @@ import {
 	TicketsPlane,
 	TowerControl
 } from "lucide-react";
+import { useAirspaceInteractivity } from "../store";
 
 type CallerType = 
 	| "traffic_by_status"
@@ -99,9 +101,14 @@ const LegendDisabled: Array<CallerType> = [
 ];
 
 export const TrafficFlowChart = () => {
+	const { active } = useAirspaceInteractivity();
 	const [mode, setMode] = useState<CallerType>('traffic_by_status');
 	// @ts-ignore phantom error when building - this is safe
-	const { data: chart, isLoading, error, refetch } = useQuery(rpc(mode).queryOptions());
+	const { data: chart, isLoading, error, refetch } = useQuery(rpc(mode).queryOptions({
+		input: {
+			airspace: active === "any" ? undefined : active
+		}
+	}));
 	
 	const errored = error || !chart;
 	const title = localizeCallerType(mode);

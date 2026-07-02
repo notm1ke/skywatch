@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Button } from "./button";
 import { Separator } from "./separator";
 import { ButtonGroup } from "./button-group";
@@ -134,7 +134,7 @@ const MapAttributions: React.FC = () => (
 				<div className="mt-2">
 					<a
 						className="font-mono tracking-tighter text-blue-300 text-sm flex flex-row gap-1 items-center"
-						href="https://apps.mapbox.com/feedback/?owner=mapbox&id=dark-v11&access_token=pk.eyJ1Ijoibm90bTFrZSIsImEiOiJjbWoyNm55ZGwwc2J6M2ZxMDcyOGM5eXFzIn0.x3JMQ0M-BJaeLwEEpjYqVQ#/-97.5/37/3.25"
+						href={`https://apps.mapbox.com/feedback/?owner=mapbox&id=dark-v11&access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}#/-97.5/37/3.25`}
 					>
 						Feedback
 						<ArrowUpRight className="size-4" />

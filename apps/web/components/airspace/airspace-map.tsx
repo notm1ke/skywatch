@@ -1,20 +1,22 @@
+import mapboxgl from "mapbox-gl";
 import Map from "react-map-gl/mapbox";
 import Boundaries from "~/geojson/airspaces.json";
 
 import { z } from "zod/v4";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
+import { bbox } from "@turf/turf";
 import { GeoJson } from "~/lib/geo";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { useAirspace } from "./provider";
-import { Marker } from "react-map-gl/mapbox";
 import { useMobile } from "../mobile-provider";
 import { AirportAdvisory } from "~/lib/schemas";
-import { useMemo, useRef, useState } from "react";
 import { useAirports } from "../airport-provider";
-import { Layer, Source } from "react-map-gl/mapbox";
+import { useAirspaceInteractivity } from "./store";
 import { AirspaceMapHoverCard } from "./airspace-map-hover";
 import { MapControls, MapLayers } from "../ui/map-controls";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Layer, MapRef, Marker, Source } from "react-map-gl/mapbox";
 import { AirportStatus, AirportWithJoins, Airspaces } from "@skywatch/gateway/schemas";
 
 type AirportStatus = z.infer<typeof AirportStatus>;
@@ -77,8 +79,19 @@ const colorForAirportStatus = (status: AirportStatus) => {
 	}
 }
 
-const AirportMarker: React.FC<{ advisory: AirportAdvisory, airport: AirportWithJoins }> = ({ advisory, airport }) => {
+const bboxFeature = (geo: GeoJson<AirspaceProps>, airspace: string): mapboxgl.LngLatBounds | null => {  
+	const feature = geo.features.find(f => f.properties.IDENT.toLowerCase() === airspace.toLowerCase());  
+	if (!feature) return null;  
+	const bboxArray = bbox(feature);  
+	return new mapboxgl.LngLatBounds(  
+		[bboxArray[0], bboxArray[1]],  
+		[bboxArray[2], bboxArray[3]]  
+	);  
+};
+
+const AirportMarker: React.FC<{ advisory?: AirportAdvisory, airport: AirportWithJoins }> = ({ advisory, airport }) => {
 	const status: AirportStatus = useMemo(() => {
+		if (!advisory) return "normal";
 		if (advisory.airportClosure) return "airport_closure";
 		if (advisory.groundStop) return "ground_stop";
 		if (advisory.groundDelay) return "ground_delay";
@@ -116,8 +129,10 @@ export const AirspaceMap: React.FC = () => {
 	const { advisories } = useAirspace();
 	const { mobile, pending } = useMobile();
 	const { resolvedTheme: theme } = useTheme();
+	const { active } = useAirspaceInteractivity();
 	
 	const boundaries = Boundaries as unknown as GeoJson<AirspaceProps>;
+	const mapRef = useRef<MapRef>(null);
 	const mapContainerRef = useRef<HTMLDivElement>(null);
 	const layers: MapLayers = [
 		{
@@ -148,21 +163,33 @@ export const AirspaceMap: React.FC = () => {
 	);
 	
 	const airportMarkers = useMemo(
-		() => advisories
-			.map(advisory => {
-				const airport = airports.find(a => a.iata_code === advisory.airportId);
-				if (!airport) return null;
-				
-				return (
-					<AirportMarker
-						key={advisory.airportId}
-						advisory={advisory}
-						airport={airport}
-					/>
-				);
-			})
-			.filter(Boolean),
-		[advisories, airports]
+		() => {
+			const statusMarkers = advisories
+				.map(advisory => {
+					const airport = airports.find(a => a.iata_code === advisory.airportId);
+					if (!airport) return null;
+					
+					return (
+						<AirportMarker
+							key={advisory.airportId}
+							advisory={advisory}
+							airport={airport}
+						/>
+					);
+				})
+				.filter(Boolean);
+
+			if (active === "any") return statusMarkers;
+			const artccAirports = airports.filter(airport => airport.artcc === active);
+			return [...statusMarkers, ...artccAirports.map(airport => (
+				<AirportMarker
+					key={airport.iata_code}
+					advisory={null}
+					airport={airport}
+				/>
+			))]
+		},
+		[advisories, airports, active]
 	);
 	
 	const layerStyle = useMemo(() => {
@@ -179,6 +206,36 @@ export const AirspaceMap: React.FC = () => {
 		
 		return colors[theme as keyof typeof colors] ?? colors.dark;
 	}, [theme]);
+
+	const initialView = {
+		mobile: {
+			latitude: 37.833333,
+			longitude: -97.583333,
+			zoom: 2.15
+		},
+		desktop: {
+			latitude: 37,
+			longitude: -97.5,
+			zoom: 3.25
+		}
+	}
+
+	useEffect(() => {
+		if (active === "any") {
+			mapRef.current?.flyTo({
+				center: [initialView.desktop.longitude, initialView.desktop.latitude],
+				zoom: initialView.desktop.zoom
+			});
+			return;
+		}
+
+		const bounding = bboxFeature(centers, active);
+		if (!bounding) return;
+		
+		mapRef.current?.fitBounds(bounding, {
+			padding: { top: 15, bottom: 15, left: 15, right: 15 }
+		});
+	}, [active]);
 	
 	if (pending) return (
 		<div className="w-full min-h-[300px] sm:min-h-[600px] h-full relative overflow-hidden">
@@ -194,12 +251,9 @@ export const AirspaceMap: React.FC = () => {
 		>
 			<div className="absolute inset-0">
 				<Map
+					ref={mapRef}
 					mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-					initialViewState={{
-						latitude: 37.833333,
-						longitude: -97.583333,
-						zoom: 2.15
-					}}
+					initialViewState={initialView.mobile}
 					projection="mercator"
 					attributionControl={false}
 					interactiveLayerIds={['airspace']}
@@ -265,12 +319,6 @@ export const AirspaceMap: React.FC = () => {
 		</div>
 	);
 	
-	const initialView = {
-		latitude: 37,
-		longitude: -97.5,
-		zoom: 3.25
-	};
-	
 	return (
 		<div
 			ref={mapContainerRef}
@@ -279,6 +327,7 @@ export const AirspaceMap: React.FC = () => {
 		>
 			<div className="absolute inset-0">
 				<Map
+					ref={mapRef}
 					mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
 					initialViewState={{
 						latitude: 37,
@@ -298,7 +347,7 @@ export const AirspaceMap: React.FC = () => {
 					<MapControls
 						ref={mapContainerRef}
 						position="top-right"
-						initialView={initialView}
+						initialView={initialView.desktop}
 						layers={layers}
 						layerState={enabledLayers}
 						syncLayers={setEnabledLayers}

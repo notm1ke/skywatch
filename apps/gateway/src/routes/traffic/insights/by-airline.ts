@@ -1,14 +1,13 @@
-import { z } from "zod/v4";
-import { base } from "@/utils";
 import { TrafficFlow } from "@/schemas";
 import { prisma } from "@/services/prisma";
+import { airspaceInput, base } from "@/utils";
 import { Prisma } from "@/prisma/generated/client";
 import { injectDataMarker } from "@/middleware/traffic-marker";
 
 export type CommonAirlineType = typeof CommonAirlines[number];
 
 const CommonAirlines = [
-	"AAL", "SWA", "DAL", "UAL", "FDX", "ASA", "JBU", "UPS", "NKS",
+	"AAL", "SWA", "DAL", "UAL", "FDX", "ASA", "JBU", "UPS",
 	"FFT", "AAY", "HAL", "BAW", "DLH", "UAE", "QTR", "ACA", "AFR",
 	"KLM", "ANA", "THY", "CPA", "SIA", "EVA", "ETH"
 ] as const;
@@ -18,13 +17,18 @@ type QueryResponse = {
 	flights: number;
 }
 
-export const aircraft = base
 export const airline = base
-	.input(z.void())
+	.input(airspaceInput)
 	.use(injectDataMarker)
-	.handler(async ({ context: { marker } }) => {
+	.handler(async ({ context: { marker }, input: { airspace } }) => {
+		const airspaceFilter = airspace
+			? Prisma.sql`AND airport_traffic_record.iata_code IN (
+				SELECT iata_code FROM airports WHERE artcc = ${airspace}
+			)`
+			: Prisma.empty;
+
 		const records = await prisma.$queryRaw<QueryResponse[]>`
-			SELECT 
+			SELECT
 				(flight->>'majorAirline') AS airline,
 				COUNT(*)::int AS flights
 			FROM airport_traffic_record,
@@ -34,7 +38,8 @@ export const airline = base
 				AND day = ${marker.day}
 				AND month = ${marker.month}
 				AND year = ${marker.year}
-			GROUP BY airline 
+				${airspaceFilter}
+			GROUP BY airline
 			ORDER BY flights DESC
 		`;
 

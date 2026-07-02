@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Check, X } from "lucide-react";
 import { DataGridCellProps } from "../types";
 import { Badge } from "~/components/ui/badge";

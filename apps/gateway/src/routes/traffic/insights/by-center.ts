@@ -1,6 +1,6 @@
-import { z } from "zod/v4";
-import { base } from "@/utils";
+import { airspaceInput, base } from "@/utils";
 import { prisma } from "@/services/prisma";
+import { Prisma } from "@/prisma/generated/client";
 import { injectDataMarker } from "@/middleware/traffic-marker";
 
 import {
@@ -107,9 +107,15 @@ const forAllCenters = (records: TrafficFlowAggregation[] | undefined) => {
 };
 
 export const centers = base
-	.input(z.void())
+	.input(airspaceInput)
 	.use(injectDataMarker)
-	.handler(async ({ context: { marker } }) => {
+	.handler(async ({ context: { marker }, input: { airspace } }) => {
+		const airspaceFilter = airspace
+			? Prisma.sql`AND airport_traffic_record.iata_code IN (
+				SELECT iata_code FROM airports WHERE artcc = ${airspace}
+			)`
+			: Prisma.empty;
+
 		const agg = await prisma.$queryRaw<TrafficFlowAggregation[]>`
 			WITH aggregated AS (
 				SELECT
@@ -124,6 +130,7 @@ export const centers = base
 					AND month = ${marker.month}
 					AND day = ${marker.day}
 					AND elem->>'type' = 'CENTER'
+					${airspaceFilter}
 				GROUP BY type, time, name
 			)
 			SELECT

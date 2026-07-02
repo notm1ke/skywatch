@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 
 export const ClearIcon: React.FC<{ className?: string }> = ({ className }) => (
 	<svg x="0px" y="0px" viewBox="0 0 59.1 56" className={cn(className)}>

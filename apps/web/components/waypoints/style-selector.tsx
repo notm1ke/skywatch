@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Fragment } from "react";
 import { useWaypointControls } from "./store";
 import { DropdownMenuItem, DropdownMenuSeparator } from "../ui/dropdown-menu";

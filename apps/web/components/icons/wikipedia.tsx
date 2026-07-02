@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 
 export const WikipediaIcon: React.FC<{ className?: string }> = ({ className }) => (
 	<svg

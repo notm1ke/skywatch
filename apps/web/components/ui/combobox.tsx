@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "~/lib/utils"
+import { cn } from "cnfast"
 import { motion, AnimatePresence } from "motion/react";
 
 import {

@@ -1,6 +1,9 @@
-import { base } from "@/utils";
+import { z } from "zod/v4";
+import { AirspaceType } from "@/schemas";
 import { ORPCError } from "@orpc/server";
 import { prisma } from "@/services/prisma";
+import { airspaceInput, base } from "@/utils";
+import { AirportTrafficFlowWhereInput } from "@/prisma/generated/models";
 
 type TrafficDataMarker = {
 	year: number;
@@ -10,11 +13,15 @@ type TrafficDataMarker = {
 
 export const injectDataMarker = base.middleware<
 	{ marker: TrafficDataMarker },
-	unknown, unknown
->(async ({ next }) => {
+	z.infer<typeof airspaceInput>, unknown
+>(async ({ next }, input) => {
+	const where: AirportTrafficFlowWhereInput = {};
+	if (input.airspace) where.airport = { artcc: input.airspace };
+	
 	const marker = await prisma
 		.airportTrafficFlow
 		.findFirst({
+			where,
 			orderBy: [
 				{ year: 'desc' },
 				{ month: 'desc' },
@@ -24,7 +31,7 @@ export const injectDataMarker = base.middleware<
 				year: true,
 				month: true,
 				day: true
-			}
+			},
 		})
 		.then(marker => {
 			if (!marker || !marker.month || !marker.day) {

@@ -1,7 +1,6 @@
-import { z } from "zod/v4";
-import { base } from "@/utils";
 import { TrafficFlow } from "@/schemas";
 import { prisma } from "@/services/prisma";
+import { airspaceInput, base } from "@/utils";
 import { Prisma } from "@/prisma/generated/client";
 import { injectDataMarker } from "@/middleware/traffic-marker";
 
@@ -11,7 +10,7 @@ const CommonPaxAircraft = [
 	// airbus
 	"A319", "A320", "A321", "A333", "A338", "A339", "A359", "A35K", "A388", "BCS1", "BCS2",
 	// boeing
-	"B37M","B38M","B39M","B712","B737","B738","B739","B744","B748","B752","B753","B762","B763","B764","B772","B773","B77L","B77W","B788","B789","B78X",
+	"B37M", "B38M", "B39M", "B712", "B737", "B738", "B739", "B744", "B748", "B752", "B753", "B762", "B763", "B764", "B772", "B773", "B77L", "B77W", "B788", "B789", "B78X",
 	// bombardier
 	"CRJ1", "CRJ2", "CRJ7", "CRJ9", "E135",
 	// embraer
@@ -24,11 +23,17 @@ type QueryResponse = {
 }
 
 export const aircraft = base
-	.input(z.void())
+	.input(airspaceInput)
 	.use(injectDataMarker)
-	.handler(async ({ context: { marker } }) => {
+	.handler(async ({ context: { marker }, input: { airspace } }) => {
+		const airspaceFilter = airspace
+			? Prisma.sql`AND airport_traffic_record.iata_code IN (
+				SELECT iata_code FROM airports WHERE artcc = ${airspace}
+			)`
+			: Prisma.empty;
+
 		const records = await prisma.$queryRaw<QueryResponse[]>`
-			SELECT 
+			SELECT
 				(flight->>'type') AS plane,
 				COUNT(*)::int AS flights
 			FROM airport_traffic_record,
@@ -38,6 +43,7 @@ export const aircraft = base
 				AND day = ${marker.day}
 				AND month = ${marker.month}
 				AND year = ${marker.year}
+				${airspaceFilter}
 			GROUP BY plane
 			ORDER BY flights DESC
 		`;

@@ -6,6 +6,13 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { ErrorSection } from "~/components/error-section";
 import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { SkeletonWithDelay } from "~/components/ui/skeleton";
+import { AirspaceAdvisoryDetails } from "~/components/airspace/advisory-details";
+
+import {
+	MorphingDialog,
+	MorphingDialogContainer,
+	MorphingDialogTrigger
+} from "~/components/ui/morphing-dialog";
 
 import {
 	Empty,
@@ -110,26 +117,32 @@ export const AirportAdvisories: React.FC<AirportAdvisoriesProps> = ({ airport })
 				{data.length > 0 && (
 					<ScrollArea className="h-[288px]">
 						<div className="flex flex-col divide-y">
-							
 							{data.sort((a, b) => a.advisoryNumber - b.advisoryNumber).map((advisory, i) => (
-								<motion.div
-									key={`airport-advisory-${advisory.advisoryNumber}`}
-									className="group flex flex-row justify-between px-3 py-2.5 hover:bg-muted/30 transition-colors duration-300 ease-out"
-									initial={{ opacity: 0, y: -20 }}
-									animate={{ opacity: 1, y: 0 }}
-									exit={{ opacity: 0, y: -20 }}
-									transition={{ delay: i * (50 / 1000) }}
-								>
-									<div className="flex items-center gap-0.5">
-										<span className="text-zinc-500 font-mono tracking-tighter text-sm ligatures align-text-top">
-											#{advisory.advisoryNumber}
-										</span>
-										<span className="text-sm font-mono px-2 pointer-events-none">{advisory.facilities.join(", ")}</span>
-									</div>
-									<div className="text-sm max-w-[40ch] truncate">
-										{advisory.brief.replaceAll("_", " ")}
-									</div>
-								</motion.div>
+								<MorphingDialog key={`advisory-${advisory.advisoryNumber}`}>
+									<MorphingDialogTrigger>
+										<motion.div
+											key={`airport-advisory-${advisory.advisoryNumber}`}
+											className="group flex flex-row justify-between px-3 py-2.5 hover:bg-muted/30 transition-colors duration-300 ease-out"
+											initial={{ opacity: 0, y: -20 }}
+											animate={{ opacity: 1, y: 0 }}
+											exit={{ opacity: 0, y: -20 }}
+											transition={{ delay: i * (50 / 1000) }}
+										>
+											<div className="flex items-center gap-0.5">
+												<span className="text-zinc-500 font-mono tracking-tighter text-sm ligatures align-text-top">
+													#{advisory.advisoryNumber}
+												</span>
+												<span className="text-sm font-mono px-2 pointer-events-none">{advisory.facilities.join(", ")}</span>
+											</div>
+											<div className="text-sm max-w-[40ch] truncate">
+												{advisory.brief.replaceAll("_", " ")}
+											</div>
+										</motion.div>
+									</MorphingDialogTrigger>
+									<MorphingDialogContainer>
+										<AirspaceAdvisoryDetails advisory={advisory} />
+									</MorphingDialogContainer>
+								</MorphingDialog>
 							))}
 						</div>
 					</ScrollArea>

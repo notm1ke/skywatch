@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { ReactNode } from "react";
 import { Button } from "./ui/button";
 import { AlertTriangle, LucideIcon } from "lucide-react";

@@ -7,6 +7,33 @@ import { ErrorSection } from "~/components/error-section";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { treemap, hierarchy, treemapSquarify } from "d3-hierarchy";
 
+const CommonAirlineLocalizations = {
+	"AAL": "American",
+	"SWA": "Southwest",
+	"DAL": "Delta",
+	"UAL": "United",
+	"FDX": "FedEx",
+	"ASA": "Alaska",
+	"JBU": "JetBlue",
+	"UPS": "UPS",
+	"FFT": "Frontier Airlines",
+	"AAY": "Allegiant",
+	"HAL": "Hawaiian",
+	"BAW": "British Airways",
+	"DLH": "Lufthansa",
+	"UAE": "Emirates",
+	"QTR": "Qatar Airways",
+	"ACA": "Air Canada",
+	"AFR": "Air France",
+	"KLM": "KLM",
+	"ANA": "ANA",
+	"THY": "Turkish",
+	"CPA": "Cathay Pacific",
+	"SIA": "Singapore Airlines",
+	"EVA": "EVA Air",
+	"ETH": "Ethiopian Airlines",
+}
+
 type Cell = {
 	id: string;
 	value: number;
@@ -129,7 +156,10 @@ export const TrafficByAirlineChart: React.FC<{ chart: TrafficFlow }> = ({ chart 
 	const tooltipContent = (cell: Cell | null) => {
 		if (!cell) return null;
 		const airline = airlineInfo[cell.id];
-		
+		const displayName = CommonAirlineLocalizations[cell.id as keyof typeof CommonAirlineLocalizations]
+			?? airline?.airline_name
+			?? cell.id;
+
 		return (
 			<div
 				className="fixed z-50 pointer-events-none bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 shadow-xl"
@@ -140,18 +170,14 @@ export const TrafficByAirlineChart: React.FC<{ chart: TrafficFlow }> = ({ chart 
 			>
 				<div className="flex flex-col">
 					<div className="flex flex-row items-center gap-2 text-white font-mono font-bold text-sm mb-1">
-						{airline?.airline_name ?? cell.id}
+						{displayName}
 					</div>
-					
-					{airline && (
-						<div className="text-gray-300 text-sm">
-							ICAO Code:{" "}
-							<span className="font-semibold text-white">
-								{airline.icao_code}
-							</span>
-						</div>
-					)}
-					
+					<div className="text-gray-300 text-sm">
+						IATA Code:{" "}
+						<span className="font-semibold text-white">
+							{cell.id}
+						</span>
+					</div>
 					<div className="text-gray-300 text-sm">
 						Flights:{" "}
 						<span className="font-semibold text-white">
@@ -178,7 +204,7 @@ export const TrafficByAirlineChart: React.FC<{ chart: TrafficFlow }> = ({ chart 
 	);
 	
 	return (
-		<div ref={containerRef} className="min-h-[250px] h-[250px] w-full">
+		<div ref={containerRef} className="min-h-[250px] h-[250px] w-full relative">
 			<svg viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full" preserveAspectRatio="none">
 				{processed.map((cell) => (
 					<g key={cell.id}>
@@ -211,6 +237,7 @@ export const TrafficByAirlineChart: React.FC<{ chart: TrafficFlow }> = ({ chart 
 					</g>
 				))}
 			</svg>
+		{tooltipContent(hoveredCell)}
 		</div>
 	);
 }

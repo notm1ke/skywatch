@@ -1,13 +1,15 @@
 import Link from "next/link";
 
+import { cn } from "cnfast";
 import { orpc } from "~/lib/gateway";
 import { motion } from "motion/react";
 import { Squircle } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { ErrorSection } from "../error-section";
 import { useQuery } from "@tanstack/react-query";
+import { shortNumberFormatter } from "~/lib/utils";
+import { useAirspaceInteractivity } from "./store";
 import { AnimatedNumber } from "../ui/animated-number";
-import { cn, shortNumberFormatter } from "~/lib/utils";
 
 const busiestAirportMedal = (rank: number) => {
 	if (rank === 1) return "bg-yellow-400 text-yellow-900 dark:bg-yellow-500 dark:text-yellow-950";
@@ -24,7 +26,16 @@ const mostCancellationsMedal = (rank: number) => {
 }
 
 export const FlightStatuses: React.FC = () => {
-	const { data, isLoading, error, refetch } = useQuery(orpc.traffic.flightStats.queryOptions());
+	const { active } = useAirspaceInteractivity();
+	const { data, isLoading, error, refetch } = useQuery(orpc.traffic.flightStats.queryOptions({
+		input: {
+			airspace: active === "any"
+				? undefined
+				: active,
+		},
+	}));
+
+	const shouldShowDelays = active === "any";
 	
 	if (isLoading) return (
 		<div>
@@ -133,9 +144,13 @@ export const FlightStatuses: React.FC = () => {
 						<div className="flex bg-green-500 items-center justify-center" style={{ width: activeWidth + "%" }}>
 							{activeWidth > 15 && <span className="text-white text-xs font-mono tracking-tight text-shadow-md">{activePct.toFixed(1)}%</span>}
 						</div>
-						<div className="flex bg-amber-500 items-center justify-center" style={{ width: delayedWidth + "%" }}>
-							{delayedWidth > 15 && <span className="text-white text-xs font-mono tracking-tight text-shadow-md">{delayedPct.toFixed(1)}%</span>}
-						</div>
+						
+						{shouldShowDelays && (
+							<div className="flex bg-amber-500 items-center justify-center" style={{ width: delayedWidth + "%" }}>
+								{delayedWidth > 15 && <span className="text-white text-xs font-mono tracking-tight text-shadow-md">{delayedPct.toFixed(1)}%</span>}
+							</div>
+						)}
+						
 						<div className="flex bg-red-500 items-center justify-center" style={{ width: cancelledWidth + "%" }}>
 							{cancelledWidth > 15 && <span className="text-white text-xs font-mono tracking-tight text-shadow-md">{cancelledPct.toFixed(1)}%</span>}
 						</div>
@@ -147,12 +162,16 @@ export const FlightStatuses: React.FC = () => {
 								Normal: <AnimatedNumber value={data.stats.normal} className="font-mono tracking-tighter" />
 							</span>
 						</div>
-						<div className="flex flex-row items-center space-x-1">
-							<Squircle className="size-3 text-amber-400 fill-amber-500" />
-							<span>
-								Delayed: <AnimatedNumber value={data.stats.delayed} className="font-mono tracking-tighter" />
-							</span>
-						</div>
+						
+						{shouldShowDelays && (
+							<div className="flex flex-row items-center space-x-1">
+								<Squircle className="size-3 text-amber-400 fill-amber-500" />
+								<span>
+									Delayed: <AnimatedNumber value={data.stats.delayed} className="font-mono tracking-tighter" />
+								</span>
+							</div>
+						)}
+						
 						<div className="flex flex-row items-center space-x-1">
 							<Squircle className="size-3 text-red-400 fill-red-500" />
 							<span>

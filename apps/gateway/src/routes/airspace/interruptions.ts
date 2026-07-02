@@ -1,11 +1,12 @@
 import axios from "axios";
 
 import { z } from "zod/v4";
-import { base } from "@/utils";
 import { ORPCError } from "@orpc/server";
 import { cache } from "@/middleware/cache";
 import { prisma } from "@/services/prisma";
+import { airspaceInput, base } from "@/utils";
 import { capitalizeFirst, formatFaaTime } from "@/utils";
+import { AirportWhereInput } from "@/prisma/generated/models";
 
 import {
 	AirportAdvisory,
@@ -16,21 +17,24 @@ import {
 const AirspaceInterruptions = z.array(AirportAdvisory);
 
 const active = base
-	.input(z.void())
+	.input(airspaceInput)
 	.use(cache(
 		"__airspace:status",
 		"1 minutes",
 		AirspaceInterruptions,
 	))
-	.handler(async () => axios
+	.handler(async ({ input: { airspace } }) => axios
 		.get('https://nasstatus.faa.gov/api/airport-events')
 		.then(res => res.data)
 		.then(AirspaceInterruptions.safeParse)
 		.then(async result => {
 			if (!result.success) throw new ORPCError("UPSTREAM_ERROR");
+
+			const where: AirportWhereInput = {};
+			if (airspace) where.artcc = { equals: airspace };
 			const tracked = await prisma
 				.airport
-				.findMany({ select: { iata_code: true }, distinct: ["iata_code"] })
+				.findMany({ select: { iata_code: true, artcc: true }, where })
 				.then(results => new Set(...[results.map(result => result.iata_code)]));
 		
 			return result.data.filter(entry => tracked.has(entry.airportId));
@@ -47,13 +51,13 @@ const OpsPlanResponse = z.object({
 });
 
 const planned = base
-	.input(z.void())
+	.input(airspaceInput)
 	.use(cache(
 		"__airspace:planned",
 		"5 minutes",
 		PlannedAdvisories
 	))
-	.handler(async () => axios
+	.handler(async ({ input: { airspace } }) => axios
 		.get('https://nasstatus.faa.gov/api/operations-plan')
 		.then(res => res.data)
 		.then(OpsPlanResponse.safeParse)
@@ -93,11 +97,11 @@ const planned = base
 	.callable();
 
 const all = base
-	.input(z.void())
-	.handler(async () => {
+	.input(airspaceInput)
+	.handler(async ({ input: { airspace } }) => {
 		const [current, plannedEvents] = await Promise.all([
-			active(),
-			planned()
+			active({ airspace }),
+			planned({ airspace })
 		]);
 
 		return { active: current, planned: plannedEvents };

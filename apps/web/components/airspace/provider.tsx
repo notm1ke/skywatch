@@ -4,6 +4,7 @@ import React from "react";
 
 import { orpc } from "~/lib/gateway";
 import { useQuery } from "@tanstack/react-query";
+import { useAirspaceInteractivity } from "./store";
 import { AirportAdvisory, PlannedAirportEvent } from "~/lib/schemas";
 
 import {
@@ -25,7 +26,15 @@ const AirspaceContext = createContext<AirspaceContextType | undefined>(undefined
 export const AirspaceProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
-	const { data, isLoading: loading, error, refetch: refresh } = useQuery(orpc.airspace.interruptions.all.queryOptions());
+	const { active } = useAirspaceInteractivity();
+	const { data, isLoading: loading, error, refetch: refresh } = useQuery(orpc.airspace.interruptions.all.queryOptions({
+		input: {
+			airspace: active === "any"
+				? undefined
+				: active
+		}
+	}));
+	
 	const value = useMemo(
 		() => ({
 			advisories: data?.active ?? [],

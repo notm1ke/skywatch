@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { FilterRow } from "./filter-row";
 import { DataGrid } from "../ui/data-grid";
 import { PlaneTypes } from "./plane-types";
+import { useRouter } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { RegistrationStatuses } from "./statuses";
 import { useDataGrid } from "../ui/data-grid/hook";
@@ -133,6 +134,7 @@ const columns: ColumnDef<PlaneRegistration>[] = [
 ];
 
 export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ loading, registrations, count }) => {
+	const router = useRouter();
 	const { registration, filter } = usePlaneFilteringControls();
 	const { table, ...dataGridProps } = useDataGrid<PlaneRegistration>({
 		columns,
@@ -160,6 +162,9 @@ export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ 
 					border={false}
 					height={900}
 					stretchColumns
+					onRowHoverChange={row => router.prefetch(
+						`/planes/N${row.original.n_number}`
+					)}
 					onRowClicked={row => {
 						const stale = table.getSelectedRowModel().flatRows.map(r => r.original.n_number);
 						const updated = {
@@ -167,8 +172,8 @@ export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ 
 							...stale.reduce((acc, id) => ({ ...acc, [id]: false }), {})
 						};
 						
-						// clickRow(row.original)
 						table.setRowSelection(updated);
+						router.push(`/planes/N${row.original.n_number}`);
 					}}
 					{...dataGridProps}
 				/>

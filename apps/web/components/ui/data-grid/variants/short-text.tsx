@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { DataGridCellProps } from "../types";
 import { DataGridCellWrapper } from "../cell-wrapper";
 import { ReactNode, useCallback, useRef, useState } from "react";

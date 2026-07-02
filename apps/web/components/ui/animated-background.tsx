@@ -3,7 +3,7 @@
 // Modified to have controlled state
 // https://motion-primitives.com/docs/animated-background
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { AnimatePresence, Transition, motion } from "motion/react";
 import {
 	Children,

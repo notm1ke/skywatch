@@ -1,7 +1,8 @@
+import { cn } from "cnfast";
+import { ExternalLink } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { AirportAdvisory } from "~/lib/schemas";
-import { capitalizeFirst, cn, getUrlDomain } from "~/lib/utils";
-import { ExternalLink, Tally1, Tally2, Tally3 } from "lucide-react";
+import { capitalizeFirst, getUrlDomain } from "~/lib/utils";
 
 const CenterBadge: React.FC<{ center: string }> = ({ center }) => (
 	<Badge variant="secondary" className="font-mono text-xs mr-0.5">
@@ -11,12 +12,11 @@ const CenterBadge: React.FC<{ center: string }> = ({ center }) => (
 
 const ExtensionIndicator: React.FC<{ extensionProbability: string }> = ({ extensionProbability }) => {
 	if (!extensionProbability) return null;
-
-	const TrendIcon = extensionProbability === 'HIGH'
-		? Tally3
+	const iconAmount = extensionProbability === 'HIGH'
+		? 3
 		: extensionProbability === 'MEDIUM'
-			? Tally2
-			: Tally1;
+			? 2
+			: 1;
 	
 	const color = extensionProbability === 'HIGH'
 		? 'text-red-500'
@@ -25,8 +25,20 @@ const ExtensionIndicator: React.FC<{ extensionProbability: string }> = ({ extens
 			: 'text-green-500';
 	
 	return (
-		<div className={cn("flex flex-row gap-0.5 items-center", color)}>
-			{TrendIcon && <TrendIcon className="h-4 w-4" />}
+		<div className={cn("flex flex-row gap-1.5 items-center", color)}>
+			<div className="flex flex-row gap-0">
+				{iconAmount > 0 && (
+					<span className={cn(color, "font-sans font-semibold tracking-wide")}>
+						{"|".repeat(iconAmount)}
+					</span>
+				)}
+				
+				{iconAmount !== 3 && (
+					<span className="font-sans font-semibold text-secondary-foreground/40 tracking-wide">
+						{"|".repeat(3 - iconAmount)}
+					</span>
+				)}
+			</div>
 			{capitalizeFirst(extensionProbability.toLowerCase())}
 		</div>
 	);

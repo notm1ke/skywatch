@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { DataGridCell } from "./cell";
 import { useComposedRefs } from "~/lib/compose-refs";
 import type { VirtualItem } from "@tanstack/react-virtual";

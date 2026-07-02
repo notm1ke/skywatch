@@ -95,11 +95,13 @@ export type AirspaceType = typeof Airspaces[number];
 export const Airspaces = [
 	"ZAB",
 	"ZAN",
+	"ZAP",
 	"ZAU",
 	"ZBW",
 	"ZDC",
 	"ZDV",
 	"ZFW",
+	"ZHN",
 	"ZHU",
 	"ZID",
 	"ZJX",
@@ -113,13 +115,16 @@ export const Airspaces = [
 	"ZOA",
 	"ZOB",
 	"ZSE",
-	"ZTL"
+	"ZTL",
+	"ZVR",
+	"ZYZ",
 ] as const;
 
 export const AirspaceLocalizations: Record<string, string> = {
 	"ZAB": "Albuquerque",
 	"ZAK": "Oakland Oceanic",
 	"ZAN": "Anchorage",
+	"ZAP": "Anchorage Oceanic",
 	"ZAU": "Chicago",
 	"ZBW": "Boston",
 	"ZDC": "Washington DC",
@@ -129,6 +134,7 @@ export const AirspaceLocalizations: Record<string, string> = {
 	"ZID": "Indianapolis",
 	"ZJX": "Jacksonville",
 	"ZKC": "Kansas City",
+	"ZHN": "Honolulu",
 	"ZLA": "Los Angeles",
 	"ZLC": "Salt Lake City",
 	"ZMA": "Miami",
@@ -138,5 +144,7 @@ export const AirspaceLocalizations: Record<string, string> = {
 	"ZOA": "Oakland",
 	"ZOB": "Cleveland",
 	"ZSE": "Seattle",
-	"ZTL": "Atlanta"
+	"ZTL": "Atlanta",
+	"ZVR": "Vancouver",
+	"ZYZ": "Toronto",
 }

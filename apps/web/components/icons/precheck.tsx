@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 
 export const PrecheckIcon: React.FC<{ className?: string }> = ({ className }) => (
 	<svg width="120" height="59" viewBox="0 0 120 59" className={cn(className)}>

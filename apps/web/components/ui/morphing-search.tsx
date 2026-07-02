@@ -5,7 +5,7 @@
 
 import type React from "react";
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { createPortal } from "react-dom";
 import { useClickOutside } from "~/hooks/use-click-outside";
 
@@ -23,6 +23,7 @@ import {
 	useId,
 	useRef,
 	useEffect,
+	useLayoutEffect,
 	createContext,
 	useContext,
 	isValidElement,
@@ -41,6 +42,7 @@ type SearchContextValue = {
 	close: () => void;
 	uniqueId: string;
 	variants?: Variants;
+	transition?: Transition;
 	triggerRect: DOMRect | null;
 	setTriggerRect: (rect: DOMRect | null) => void;
 };
@@ -102,7 +104,7 @@ function Search({
 	const popoverLogic = usePopoverLogic({ defaultOpen, open, onOpenChange });
 
 	return (
-		<SearchContext.Provider value={{ ...popoverLogic, variants }}>
+		<SearchContext.Provider value={{ ...popoverLogic, variants, transition }}>
 			<MotionConfig transition={transition}>
 				<div
 					className={cn(
@@ -235,7 +237,7 @@ function SearchContent({
 		return () => document.removeEventListener("keydown", handleKeyDown);
 	}, [context.isOpen, context.close]);
 	
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (context.isOpen && ref.current && (!contentDimensions?.height || !contentDimensions?.width)) {
 			const contentRect = ref.current.getBoundingClientRect();
 			setContentDimensions({
@@ -259,17 +261,16 @@ function SearchContent({
 			if (asMobile) return {
 				position: "fixed",
 				top: constrainedTop,
-				left: 0,
-				transformOrigin: "center",
+				left: 8,
+				right: 8,
 			};
-			
+
 			const centerX = trigger.left + trigger.width / 2 - content.width / 2;
-			
+
 			return {
 				position: "fixed",
 				top: constrainedTop,
 				left: centerX,
-				transformOrigin: "center",
 			};
 		})()
 		: {};
@@ -277,42 +278,45 @@ function SearchContent({
 	return (
 		<AnimatePresence>
 			{context.isOpen && (
-				<>
-					{typeof document !== "undefined" &&
-						createPortal(
-							<motion.div
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0 }}
-								transition={{ duration: 0.2 }}
-								onClick={context.close}
-								className="fixed inset-0 z-[15] bg-black/50 backdrop-blur-xs"
-								data-backdrop="true"
-								aria-hidden="true"
-							/>,
-							document.body,
-						)}
-					<motion.div
-						{...props}
-						ref={ref}
-						layoutId={`popover-trigger-${context.uniqueId}`}
-						key={context.uniqueId}
-						id={`popover-content-${context.uniqueId}`}
-						role="dialog"
-						aria-modal="true"
-						style={style}
-						className={cn(
-							"absolute z-[20] overflow-hidden rounded-md border border-zinc-950/10 bg-white p-2 text-zinc-950 shadow-md dark:border-zinc-50/10 dark:bg-zinc-700 dark:text-zinc-50",							
-							className,
-						)}
-						initial="initial"
-						animate="animate"
-						exit="exit"
-						variants={context.variants}
-					>
-						{children}
-					</motion.div>
-				</>
+				<MotionConfig transition={context.transition}>
+					<>
+						{typeof document !== "undefined" &&
+							createPortal(
+								<motion.div
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0, pointerEvents: "none" }}
+									transition={{ duration: 0.2 }}
+									onClick={context.close}
+									className="fixed inset-0 z-[15] bg-black/50 backdrop-blur-xs"
+									data-backdrop="true"
+									aria-hidden="true"
+								/>,
+								document.body,
+							)}
+						<motion.div
+							{...props}
+							ref={ref}
+							layoutId={`popover-trigger-${context.uniqueId}`}
+							layout
+							key={context.uniqueId}
+							id={`popover-content-${context.uniqueId}`}
+							role="dialog"
+							aria-modal="true"
+							style={style}
+							className={cn(
+								"absolute z-[20] overflow-hidden rounded-md border border-zinc-950/10 bg-white p-2 text-zinc-950 shadow-md dark:border-zinc-50/10 dark:bg-zinc-700 dark:text-zinc-50",
+								className,
+							)}
+							initial="initial"
+							animate="animate"
+							exit="exit"
+							variants={context.variants}
+						>
+							{children}
+						</motion.div>
+					</>
+				</MotionConfig>
 			)}
 		</AnimatePresence>
 	);

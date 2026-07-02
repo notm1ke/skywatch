@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Snowflake } from "lucide-react";
 import { PropsWithChildren } from "react";
 import { AirportAdvisory } from "~/lib/schemas";
@@ -6,9 +8,8 @@ import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { AdvisoryType, advisoryPriority } from "./active-programs";
 import { formatAirportLocation, shortenAirportName } from "~/lib/utils";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
-import Link from "next/link";
 
-const indicator = (advisory: AirportAdvisory, priority: AdvisoryType) => {
+const indicator = (advisory: AirportAdvisory | undefined, priority: AdvisoryType) => {
 	switch (priority) {
 		case AdvisoryType.AirportClosure: return (
 			<div className="flex gap-2 items-center text-sm">
@@ -31,6 +32,7 @@ const indicator = (advisory: AirportAdvisory, priority: AdvisoryType) => {
 		case AdvisoryType.DualDelay:
 		case AdvisoryType.ArrivalDelay:
 		case AdvisoryType.DepartureDelay: {
+			if (!advisory) return null; // should never hit
 			const type = (advisory.arrivalDelay && advisory.departureDelay)
 				? "Arr + Dept"
 				: advisory.arrivalDelay
@@ -59,48 +61,49 @@ const indicator = (advisory: AirportAdvisory, priority: AdvisoryType) => {
 		default: return (
 			<div className="flex gap-2 items-center text-sm">
 				<div className="size-3 bg-green-400 rounded-[30%]" />
-				Normal
+				Normal Operations
 			</div>
 		)
 	}
 }
 
-export const AirspaceMapHoverCard: React.FC<PropsWithChildren<{ advisory: AirportAdvisory, airport: AirportWithJoins }>> = ({ advisory, airport, children }) => {
+export const AirspaceMapHoverCard: React.FC<PropsWithChildren<{ advisory?: AirportAdvisory, airport: AirportWithJoins }>> = ({ advisory, airport, children }) => {
 	const { hover, hovered } = useAirspaceInteractivity();
 	const priority = advisoryPriority(advisory);
 	
 	return (
-			<HoverCard
-				openDelay={50}
-				onOpenChange={open => {
-					if (!open) hover(null);
-					if (advisory.airportId === hovered?.airportId) return;
+		<HoverCard
+			openDelay={50}
+			onOpenChange={open => {
+				if (!advisory) return;
+				if (!open) hover(null);
+				if (advisory.airportId === hovered?.airportId) return;
 					else hover(advisory);
-				}}
-			>
-				<HoverCardTrigger>{children}</HoverCardTrigger>
-				<HoverCardContent className="w-64">
-					<Link
-						href={`/airports/${airport.iata_code}`}
-						onClick={() => hover(null)}
-					>
-						<div className="flex flex-row items-start gap-4">
-							<div>
-								<span className="text-zinc-800 dark:text-zinc-400 font-mono font-bold text-sm">
-									{airport.iata_code}
-								</span>
-							</div>
-		
-							<div className="space-y-1">
-								<h4 className="text-sm font-semibold">{shortenAirportName(airport.name)}</h4>
-								<p className="text-sm">{formatAirportLocation(airport)}</p>
-								<div className="text-muted-foreground text-xs">
-									{indicator(advisory, priority)}
-								</div>
+			}}
+		>
+			<HoverCardTrigger>{children}</HoverCardTrigger>
+			<HoverCardContent className="w-64">
+				<Link
+					href={`/airports/${airport.iata_code}`}
+					onClick={() => hover(null)}
+				>
+					<div className="flex flex-row items-start gap-4">
+						<div>
+							<span className="text-zinc-800 dark:text-zinc-400 font-mono font-bold text-sm">
+								{airport.iata_code}
+							</span>
+						</div>
+						
+						<div className="space-y-1">
+							<h4 className="text-sm font-semibold">{shortenAirportName(airport.name)}</h4>
+							<p className="text-sm">{formatAirportLocation(airport)}</p>
+							<div className="text-muted-foreground text-xs">
+								{indicator(advisory, priority)}
 							</div>
 						</div>
-					</Link>
-				</HoverCardContent>
-			</HoverCard>
+					</div>
+				</Link>
+			</HoverCardContent>
+		</HoverCard>
 	);
 } 

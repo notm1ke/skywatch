@@ -4,48 +4,54 @@ import moment from "moment-timezone";
 import { z } from "zod/v4";
 import { load } from "cheerio";
 import { ORPCError } from "@orpc/client";
-import { base, iataInput } from "@/utils";
 import { cache } from "@/middleware/cache";
-import { AirspaceAdvisory } from "@/schemas";
+import { base, iataInput, airspaceInput } from "@/utils";
+import { AirspaceAdvisory, Airspaces } from "@/schemas";
 import { injectAirportByIata } from "@/middleware/airport-by-iata";
 
 const AirspaceAdvisories = z.array(AirspaceAdvisory);
 const advisoryTableSelector = ".mainArea > table > tbody > tr > td > table > tbody > tr";
 
 const all = base
-	.input(z.void())
+	.input(airspaceInput)
 	.use(cache(
 		"__airspace:advisories",
 		"5 minutes",
 		AirspaceAdvisories,
 	))
-	.handler(async () => await axios
-		.get(createAdvisoriesUrl())
-		.then(res => res.data)
-		.then(load)
-		.then($ => ({ $, rows: $(advisoryTableSelector).slice(2, -2) }))
-		.then(({ $, rows }) => rows
-			.map((_i, element) => {
-				const $row = $(element);
-				const $cells = $row.find('td');
-				const row = {
-					advisoryUrl: "https://www.fly.faa.gov" + $cells.eq(0).find("a").attr("href"),
-					advisoryNumber: parseInt($cells.eq(0).text().trim()),
-					facilities: $cells.eq(1).text().trim().split("/"),
-					date: $cells.eq(2).text().trim(),
-					brief: $cells.eq(3).text().trim(),
-					createdAt: moment($cells.eq(4).text().trim(), "MM/DD/YYYY hh:mm").format("MMM Do, YYYY [at] h:mm A")
-				};
-				
-				const parsed = AirspaceAdvisory.safeParse(row);
-				return parsed.success ? parsed.data : null;
-			})
-			.filter(Boolean)
-			.toArray() as z.infer<typeof AirspaceAdvisories>
-		).catch(() => {
-			throw new ORPCError("UPSTREAM_ERROR");
-		}))
+	.handler(async ({ input: { airspace } }) => {
+		const fresh = await fetchAdvisories();
+		if (!airspace) return fresh;
+		return fresh.filter(adv => adv.facilities.includes(airspace));
+	})
 	.callable();
+
+const fetchAdvisories = async () => await axios
+	.get(createAdvisoriesUrl())
+	.then(res => res.data)
+	.then(load)
+	.then($ => ({ $, rows: $(advisoryTableSelector).slice(2, -2) }))
+	.then(({ $, rows }) => rows
+		.map((_i, element) => {
+			const $row = $(element);
+			const $cells = $row.find('td');
+			const row = {
+				advisoryUrl: "https://www.fly.faa.gov" + $cells.eq(0).find("a").attr("href"),
+				advisoryNumber: parseInt($cells.eq(0).text().trim()),
+				facilities: $cells.eq(1).text().trim().split("/"),
+				date: $cells.eq(2).text().trim(),
+				brief: $cells.eq(3).text().trim(),
+				createdAt: moment($cells.eq(4).text().trim(), "MM/DD/YYYY hh:mm").format("MMM Do, YYYY [at] h:mm A")
+			};
+				
+			const parsed = AirspaceAdvisory.safeParse(row);
+			return parsed.success ? parsed.data : null;
+		})
+		.filter(Boolean)
+		.toArray() as z.infer<typeof AirspaceAdvisories>
+	).catch(() => {
+		throw new ORPCError("UPSTREAM_ERROR");
+	});
 
 const createAdvisoriesUrl = () => {
 	const date = moment().format('yyyy-MM-DD');
@@ -105,7 +111,8 @@ const airportRelated = base
 	.input(iataInput)
 	.use(injectAirportByIata())
 	.handler(async ({ context: { airport } }) => {
-		const advisories = await all();
+		const advisories = await all({});
+		if (!advisories) return [];
 		return advisories.filter(advisory => advisory.facilities.includes(airport.iata_code) || advisory.facilities.includes(airport.artcc));
 	})
 

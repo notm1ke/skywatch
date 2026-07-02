@@ -2,7 +2,7 @@
 
 import mapCoords from "~/geojson/dotted-map.json";
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { motion } from "motion/react";
 import { useMemo, memo } from "react";
 import { Diamond } from "lucide-react";

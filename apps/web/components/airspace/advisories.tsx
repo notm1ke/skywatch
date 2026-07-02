@@ -4,6 +4,7 @@ import { ClipboardCheck } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { ErrorSection } from "../error-section";
 import { useQuery } from "@tanstack/react-query";
+import { useAirspaceInteractivity } from "./store";
 import { AirspaceAdvisoryDetails } from "./advisory-details";
 import { Skeleton, SkeletonWithDelay } from "../ui/skeleton";
 
@@ -22,7 +23,14 @@ import {
 } from "../ui/empty";
 
 export const ActiveAdvisories = () => {
-	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.advisories.all.queryOptions());
+	const { active } = useAirspaceInteractivity();
+	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.advisories.all.queryOptions({
+		input: {
+			airspace: active === "any"
+				? undefined
+				: active
+		}
+	}));
 	
 	if (isLoading) return (
 		<div className="border-t">

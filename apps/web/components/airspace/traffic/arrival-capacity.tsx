@@ -1,6 +1,7 @@
+import { cn } from "cnfast";
 import { unrollDatum } from ".";
 import { TrafficFlow } from "@skywatch/gateway/schemas";
-import { cn, formatFaaTime, shortNumberFormatter } from "~/lib/utils";
+import { formatFaaTime, shortNumberFormatter } from "~/lib/utils";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "~/components/ui/chart";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
@@ -13,7 +14,10 @@ export const ArrivalCapacityChart: React.FC<{ chart: TrafficFlow }> = ({ chart }
 					width={30}
 					axisLine={false}
 					tickLine={false}
-					domain={['dataMin - 200', 'dataMax + 50']}
+					domain={[
+						(dataMin: number) => Math.max(0, dataMin - 200),
+						'dataMax + 50'
+					]}
 					tickFormatter={tick => shortNumberFormatter.format(tick)}
 				/>
 

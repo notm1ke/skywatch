@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import { gateway } from "~/lib/gateway";
+import { capitalizeFirst } from "~/lib/utils";
+import { PlaneDetailsTab } from "~/components/planes/details";
 
 type Params = {
 	params: Promise<{
@@ -21,12 +23,12 @@ export async function generateMetadata(
 	};
 	
 	return {
-		title: `N${plane.n_number}`,
+		title: `${capitalizeFirst(plane.aircraft.manufacturer.toLowerCase())} ${plane.aircraft.model.split('-')[0]}`,
 		description: `N${plane.n_number} is a ${plane.aircraft.manufacturer} ${plane.aircraft.model}.`
 	}
 }
 
 export default async function PlaneInspectorPage({ params }: Params) {
 	const { registration } = await params;
-	return <>page</>
+	return <PlaneDetailsTab registration={registration} />;
 }

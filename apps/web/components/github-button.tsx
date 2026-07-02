@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Button } from "./ui/button";
 
 const REPO_LINK = "https://github.com/notm1ke/skywatch";

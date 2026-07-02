@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { useState, useEffect } from "react";
 import { Button, buttonVariants } from "./button";
 import { motion, AnimatePresence } from "motion/react";

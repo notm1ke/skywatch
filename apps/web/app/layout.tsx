@@ -1,4 +1,4 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type { Metadata } from "next";
 import { Toaster } from "~/components/ui/sonner";
 import { Geist, Geist_Mono } from "next/font/google";

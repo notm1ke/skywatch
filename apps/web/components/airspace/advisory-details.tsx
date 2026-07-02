@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { useState } from "react";
 import { orpc } from "~/lib/gateway";
 import { motion } from "motion/react";

@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { cn } from "cnfast";
 import { useMemo } from "react";
 import { AirportAdvisory } from "~/lib/schemas";
 import { DelayAdvisory } from "@skywatch/gateway/schemas";
@@ -6,7 +7,6 @@ import { ArrowDownRightIcon, ArrowUpRightIcon } from "lucide-react";
 
 import {
 	capitalizeFirst,
-	cn,
 	delayReason,
 	getLatestTimeValue,
 	parseDelayTime

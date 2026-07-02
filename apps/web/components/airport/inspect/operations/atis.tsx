@@ -1,11 +1,12 @@
 import { z } from "zod/v4";
+import { cn } from "cnfast";
 import { orpc } from "~/lib/gateway";
 import { Maximize } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "~/components/ui/skeleton";
 import { ErrorSection } from "~/components/error-section";
-import { capitalizeFirst, cn, formatFaaTime } from "~/lib/utils";
+import { capitalizeFirst, formatFaaTime } from "~/lib/utils";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { AnnotatedAtisSegment, parseAtisText } from "~/lib/aviation/atis";

@@ -1,10 +1,15 @@
+import axios from "axios";
+
 import { z } from "zod/v4";
-import { base } from "@/utils";
-import { ORPCError } from "@orpc/server";
+import { base, sleep } from "@/utils";
 import { cache } from "@/middleware/cache";
 import { prisma } from "@/services/prisma";
+import { RateLimiter } from "@/services/limiter";
+import { eventIterator, ORPCError } from "@orpc/server";
 
 import {
+	JetApiResponse,
+	PlaneAdsbResponse,
 	PlaneFilter,
 	PlaneFilterType,
 	PlaneRegistration
@@ -203,8 +208,15 @@ const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistration
 	};
 }
 
+const stripRegistration = (registration: string) => {
+	if (!registration.toLowerCase().startsWith("n")) return registration;
+	return registration.slice(1);
+}
+
+const registrationInput = z.object({ registration: z.string() });
+
 const findByRegistration = base
-	.input(z.object({ registration: z.string() }))
+	.input(registrationInput)
 	.handler(async ({ input: { registration } }) => prisma
 		.planeRegistration
 		.findFirst({
@@ -214,7 +226,7 @@ const findByRegistration = base
 			},
 			where: {
 				n_number: {
-					equals: registration,
+					equals: stripRegistration(registration),
 					mode: "insensitive"
 				}
 			},
@@ -226,8 +238,122 @@ const findByRegistration = base
 			
 			return result;
 		})
-	);
+)
+	.callable();
 
+const adsbQueue = new RateLimiter("1 second");
+const adsb = base
+	.input(registrationInput)
+	.output(eventIterator(PlaneAdsbResponse))
+	.use(cache<
+		z.infer<typeof registrationInput>,
+		z.infer<typeof PlaneAdsbResponse>
+	>(
+		({ registration }) => `__planes:adsb:${registration.toLowerCase()}`,
+		"5 seconds",
+		PlaneAdsbResponse
+	))
+	.handler(async function* ({ input: { registration } }) {
+		const plane = await findByRegistration({ registration });
+		if (!plane.mode_s_hex) throw new ORPCError("BAD_REQUEST", {
+			message: "Plane registration does not have a transponder code to track"
+		});
+		
+		while (true) {
+			yield await adsbQueue.submit(
+				() => axios
+					.get(`https://api.adsb.lol/v2/hex/${plane.mode_s_hex}`)
+					.then(res => res.data)
+					.then(PlaneAdsbResponse.safeParse)
+					.then(result => {
+						console.log("result:", result);
+						if (!result.success) throw new ORPCError("UPSTREAM_ERROR");
+						return result.data;
+					})
+					.catch(err => {
+						console.log("error:", err.data ?? err.message);
+						throw err;
+					})
+			);
+			
+			await sleep(1500);
+		}
+	})
+
+const JetPhotosResponse = JetApiResponse
+	.pick({ JetPhotos: true })
+	.transform(shape => shape.JetPhotos);
+
+const jetphotos = base
+	.input(registrationInput)
+	.use(cache<
+		z.infer<typeof registrationInput>,
+		z.infer<typeof JetPhotosResponse>
+	>(
+		({ registration }) => `__planes:jetphotos:${registration.toLowerCase()}`,
+		"5 minutes",
+		JetPhotosResponse
+	))
+	.handler(async ({ input: { registration } }) => {
+		const plane = await findByRegistration({ registration });
+		if (!plane.n_number) throw new ORPCError("NOT_FOUND", {
+			message: "No matching plane registrations"
+		});
+		
+		const params = {
+			reg: "N" + plane.n_number,
+			photos: 20,
+			only_jp: true
+		}
+		
+		return await axios
+			.get<z.infer<typeof JetPhotosResponse>>("https://www.jetapi.dev/api", { params })
+			.then(res => res.data)
+			.catch(() => ({
+				Reg: "N" + plane.n_number,
+				Images: [] as z.infer<typeof JetPhotosResponse>["Images"]
+			}))
+	});
+
+const FlightHistoryResponse = JetApiResponse
+	.pick({ FlightRadar: true })
+	.transform(shape => shape.FlightRadar);
+
+const flightHistory = base
+	.input(registrationInput)
+	.use(cache<
+		z.infer<typeof registrationInput>,
+		z.infer<typeof FlightHistoryResponse>
+	>(
+		({ registration }) => `__planes:flights:${registration.toLowerCase()}`,
+		"5 minutes",
+		FlightHistoryResponse	
+	))
+	.handler(async ({ input: { registration } }) => {
+		const plane = await findByRegistration({ registration });
+		if (!plane.n_number) throw new ORPCError("NOT_FOUND", {
+			message: "No matching plane registrations"
+		});
+		
+		const params = {
+			reg: "N" + plane.n_number,
+			only_fr: true
+		}
+		
+		return await axios
+			.get<z.infer<typeof FlightHistoryResponse>>("https://www.jetapi.dev/api", { params })
+			.then(res => res.data)
+			.catch(() => ({
+				Aircraft: `${plane.aircraft.manufacturer} ${plane.aircraft.model}`,
+				Airline: "",
+				Operator: "",
+				TypeCode: "",
+				AirlineCode: "",
+				OperatorCode: "",
+				ModeS: plane.mode_s_hex,
+				Flights: Array<z.infer<typeof FlightHistoryResponse>["Flights"][number]>()
+			}))
+	});
 
 const filterOptionsInput = z.object({
 	type: PlaneFilterType,
@@ -295,5 +421,8 @@ const generateFieldQuery = (field: z.infer<typeof PlaneFilterType>, input: unkno
 }
 
 export const planesRouter = {
-	planes: { search, findByRegistration, filterOptions }
+	planes: {
+		adsb, search, findByRegistration, filterOptions,
+		jetphotos, flightHistory
+	}
 }

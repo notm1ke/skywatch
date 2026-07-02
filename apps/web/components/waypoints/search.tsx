@@ -1,8 +1,9 @@
+import { cn } from "cnfast";
 import { orpc } from "~/lib/gateway";
 import { useRef, useState } from "react";
+import { immediately } from "~/lib/utils";
 import { Kbd, KbdGroup } from "../ui/kbd";
 import { useMap } from "react-map-gl/mapbox";
-import { cn, immediately } from "~/lib/utils";
 import { useWaypointControls } from "./store";
 import { useMobile } from "../mobile-provider";
 import { ScrollArea } from "../ui/scroll-area";

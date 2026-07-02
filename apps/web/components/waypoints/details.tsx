@@ -1,6 +1,6 @@
 import moment from "moment-timezone";
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Badge } from "../ui/badge";
 import { orpc } from "~/lib/gateway";
 import { Button } from "../ui/button";

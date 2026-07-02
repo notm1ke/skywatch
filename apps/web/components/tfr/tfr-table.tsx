@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Tfr } from "~/lib/schemas";
 import { TfrInfoPanel } from "./info-panel";
 import { useTfrInteractivity } from "./store";

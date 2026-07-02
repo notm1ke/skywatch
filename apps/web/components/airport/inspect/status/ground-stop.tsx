@@ -1,5 +1,6 @@
 import moment from "moment-timezone";
 
+import { cn } from "cnfast";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { AirportAdvisory } from "~/lib/schemas";
@@ -9,7 +10,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 import {
 	capitalizeFirst,
-	cn,
 	getLatestTimeValue,
 	getUrlDomain,
 	shortenAirportName

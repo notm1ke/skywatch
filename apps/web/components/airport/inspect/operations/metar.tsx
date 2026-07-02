@@ -6,6 +6,7 @@ import { PropsWithChildren } from "react";
 import { Button } from "~/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "~/components/ui/skeleton";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { ErrorSection } from "~/components/error-section";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
@@ -424,143 +425,145 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 				</FullReport>
 			</div>
 
-			<div className="p-3 border-t">
-				<div className="grid grid-cols-3 gap-3">
-					{/* temp, wind, viz */}
-					<div className="flex items-start gap-2">
-						<ThermometerSun className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Temp / Dew Point</div>
-							<div className="font-mono text-sm text-black/80 dark:text-white/90">
-								{cToF(metar.temp)}°F / {cToF(metar.dewp)}°F
-							</div>
-							<div className="text-xs text-black/40 dark:text-white/40 mt-0.5">
-								{metar.temp}°C / {metar.dewp}°C
-							</div>
-						</div>
-					</div>
-
-					<div className="flex items-start gap-2">
-						<Wind className="h-4 w-4 text-cyan-600 dark:text-cyan-400 mt-0.5 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Wind</div>
-							<div className="font-mono text-sm text-black/80 dark:text-white/90">
-								{metar.wdir != null
-									? `${metar.wspd} kts ${metar.wdir === "VRB" ? "variable" : "at " + metar.wdir.toString().padStart(3, "0") + "°"}`
-									: `${metar.wspd} kt`}
-							</div>
-							<div className="font-mono text-sm text-black/80 dark:text-white/90">
-								{metar.wgst && `${metar.wgst}kt gust`}
-							</div>
-						</div>
-					</div>
-
-					<div className="flex items-start gap-2">
-						<Droplets className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Visibility</div>
-							<div className="font-mono text-sm text-black/80 dark:text-white/90">
-								{formatVisibility(metar.visib)}
-							</div>
-						</div>
-					</div>
-
-					{/* pressure, clouds, flight conditions */}
-					<div className="flex items-start gap-2">
-						<Gauge className="h-4 w-4 text-purple-600 dark:text-purple-400 mt-0.5 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Altimeter</div>
-							<div className="font-mono text-sm text-black/80 dark:text-white/90">{(metar.altim / 33.8639).toFixed(2)} inHg</div>
-							{metar.slp && (
-								<div className="text-xs text-black/40 dark:text-white/40 mt-0.5">
-									Sea Level: {(metar.slp / 33.8639).toFixed(2)} inHg
+			<ScrollArea className="h-[288.5px]">
+				<div className="p-3 border-t">
+					<div className="grid grid-cols-3 gap-3">
+						{/* temp, wind, viz */}
+						<div className="flex items-start gap-2">
+							<ThermometerSun className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Temp / Dew Point</div>
+								<div className="font-mono text-sm text-black/80 dark:text-white/90">
+									{cToF(metar.temp)}°F / {cToF(metar.dewp)}°F
 								</div>
-							)}
+								<div className="text-xs text-black/40 dark:text-white/40 mt-0.5">
+									{metar.temp}°C / {metar.dewp}°C
+								</div>
+							</div>
 						</div>
-					</div>
-
-					<div className="flex items-start gap-2">
-						<CloudRain className="h-4 w-4 text-slate-600 dark:text-slate-400 mt-0.5 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-1">
-								Clouds{" "}
-								{metar.clouds.length > 2 && (
-									<Tooltip>
-										<TooltipTrigger asChild>
-											<span className="text-muted-foreground/80">(+{metar.clouds.length - 2})</span>
-										</TooltipTrigger>
-										<TooltipContent>
-											View all cloud layers in full report
-										</TooltipContent>
-									</Tooltip>
+	
+						<div className="flex items-start gap-2">
+							<Wind className="h-4 w-4 text-cyan-600 dark:text-cyan-400 mt-0.5 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Wind</div>
+								<div className="font-mono text-sm text-black/80 dark:text-white/90">
+									{metar.wdir != null
+										? `${metar.wspd} kts ${metar.wdir === "VRB" ? "variable" : "at " + metar.wdir.toString().padStart(3, "0") + "°"}`
+										: `${metar.wspd} kt`}
+								</div>
+								<div className="font-mono text-sm text-black/80 dark:text-white/90">
+									{metar.wgst && `${metar.wgst}kt gust`}
+								</div>
+							</div>
+						</div>
+	
+						<div className="flex items-start gap-2">
+							<Droplets className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Visibility</div>
+								<div className="font-mono text-sm text-black/80 dark:text-white/90">
+									{formatVisibility(metar.visib)}
+								</div>
+							</div>
+						</div>
+	
+						{/* pressure, clouds, flight conditions */}
+						<div className="flex items-start gap-2">
+							<Gauge className="h-4 w-4 text-purple-600 dark:text-purple-400 mt-0.5 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Altimeter</div>
+								<div className="font-mono text-sm text-black/80 dark:text-white/90">{(metar.altim / 33.8639).toFixed(2)} inHg</div>
+								{metar.slp && (
+									<div className="text-xs text-black/40 dark:text-white/40 mt-0.5">
+										Sea Level: {(metar.slp / 33.8639).toFixed(2)} inHg
+									</div>
 								)}
 							</div>
-
-							{metar.clouds.length === 0 && (
-								<div className="text-sm text-black/80 dark:text-white/90">No reports</div>
-							)}
-
-							{metar.clouds.length > 0 && (
-								<div className="space-y-0.5">
-									{metar.clouds.slice(0, 2).map((cloud, idx) => (
-										<div key={idx} className="flex flex-row space-x-2 text-xs text-black/80 dark:text-white/90 font-mono">
-											<div className="px-2 bg-blue-300 dark:bg-blue-500 rounded-md">{formatAltToFL(cloud.base)}</div>
-											<span>{getCloudCoverLabel(cloud.cover)}</span>
-										</div>
-									))}
+						</div>
+	
+						<div className="flex items-start gap-2">
+							<CloudRain className="h-4 w-4 text-slate-600 dark:text-slate-400 mt-0.5 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-1">
+									Clouds{" "}
+									{metar.clouds.length > 2 && (
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<span className="text-muted-foreground/80">(+{metar.clouds.length - 2})</span>
+											</TooltipTrigger>
+											<TooltipContent>
+												View all cloud layers in full report
+											</TooltipContent>
+										</Tooltip>
+									)}
 								</div>
-							)}
-						</div>
-					</div>
-
-					<div className="flex items-start gap-2">
-						<Plane className="h-4 w-4 mt-0.5 text-amber-600 dark:text-amber-400 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Flight Category</div>
-							<div className="text-sm text-black/80 dark:text-white/90">{getFlightRulesLabel(metar.fltCat)}</div>
-						</div>
-					</div>
-					
-					{/* station info */}
-					<div className="flex items-start gap-2">
-						<RadioTower className="size-4 mt-0.5 text-green-600 dark:text-green-400 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Weather Station</div>
-							<div className="text-sm text-black/80 dark:text-white/90">{metar.name}</div>
-						</div>
-					</div>
-					
-					<div className="flex items-start gap-2">
-						<Navigation className="size-4 mt-0.5 text-green-600 dark:text-green-400 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Station Location</div>
-							<div className="text-sm text-black/80 dark:text-white/90">
-								{metar.lat}, {metar.lon}
-							</div>
-							<div className="text-xs text-black/40 dark:text-white/40 mt-0.5">
-								Elevation: {metar.elev} ft
+	
+								{metar.clouds.length === 0 && (
+									<div className="text-sm text-black/80 dark:text-white/90">No reports</div>
+								)}
+	
+								{metar.clouds.length > 0 && (
+									<div className="space-y-0.5">
+										{metar.clouds.slice(0, 2).map((cloud, idx) => (
+											<div key={idx} className="flex flex-row space-x-2 text-xs text-black/80 dark:text-white/90 font-mono">
+												<div className="px-2 bg-blue-300 dark:bg-blue-500 rounded-md">{formatAltToFL(cloud.base)}</div>
+												<span>{getCloudCoverLabel(cloud.cover)}</span>
+											</div>
+										))}
+									</div>
+								)}
 							</div>
 						</div>
-					</div>
-					
-					<div className="flex items-start gap-2">
-						<ClockArrowUp className="size-4 mt-0.5 text-green-600 dark:text-green-400 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Observation Time</div>
-							<div className="text-sm text-black/80 dark:text-white/90">{moment(metar.obsTime).format('h:mm A')}</div>
+	
+						<div className="flex items-start gap-2">
+							<Plane className="h-4 w-4 mt-0.5 text-amber-600 dark:text-amber-400 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Flight Category</div>
+								<div className="text-sm text-black/80 dark:text-white/90">{getFlightRulesLabel(metar.fltCat)}</div>
+							</div>
 						</div>
-					</div>
-					
-					{/* raw report */}
-					<div className="flex items-start gap-2 col-span-full">
-						<ALargeSmall className="size-4 mt-0.5 text-green-600 dark:text-green-400 shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Observation String</div>
-							<div className="text-sm text-black/80 dark:text-white/90">{metar.rawOb}</div>
+						
+						{/* station info */}
+						<div className="flex items-start gap-2">
+							<RadioTower className="size-4 mt-0.5 text-green-600 dark:text-green-400 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Weather Station</div>
+								<div className="text-sm text-black/80 dark:text-white/90">{metar.name}</div>
+							</div>
+						</div>
+						
+						<div className="flex items-start gap-2">
+							<Navigation className="size-4 mt-0.5 text-green-600 dark:text-green-400 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Station Location</div>
+								<div className="text-sm text-black/80 dark:text-white/90">
+									{metar.lat}, {metar.lon}
+								</div>
+								<div className="text-xs text-black/40 dark:text-white/40 mt-0.5">
+									Elevation: {metar.elev} ft
+								</div>
+							</div>
+						</div>
+						
+						<div className="flex items-start gap-2">
+							<ClockArrowUp className="size-4 mt-0.5 text-green-600 dark:text-green-400 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Observation Time</div>
+								<div className="text-sm text-black/80 dark:text-white/90">{moment(metar.obsTime).format('h:mm A')}</div>
+							</div>
+						</div>
+						
+						{/* raw report */}
+						<div className="flex items-start gap-2 col-span-full">
+							<ALargeSmall className="size-4 mt-0.5 text-green-600 dark:text-green-400 shrink-0" />
+							<div className="flex-1 min-w-0">
+								<div className="text-xs text-black/60 dark:text-white/80 mb-0.5">Observation String</div>
+								<div className="text-sm text-black/80 dark:text-white/90">{metar.rawOb}</div>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
+			</ScrollArea>
 		</div>
 	);
 }

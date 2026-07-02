@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { os } from "@orpc/server";
-import { AirportAdvisory } from "./schemas";
+import { AirportAdvisory, Airspaces } from "./schemas";
 import { AirportInterruptionType } from "@/prisma/generated/enums";
 
 export const base = os.errors({
@@ -8,8 +8,14 @@ export const base = os.errors({
 	NO_DATA_ERROR: {}
 });
 
+export const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const iataInput = z.object({
 	iata_code: z.string().min(3).max(3).toUpperCase()
+});
+
+export const airspaceInput = z.object({
+	airspace: z.enum(Airspaces).optional()
 });
 
 export const corsOrigin = (origin: string | undefined) => {
@@ -47,6 +53,14 @@ export const padZero = (input: string) => {
 	if (int < 10) return `0${int}`;
 
 	return int.toString();
+}
+
+export const safeJsonParse = <T>(input: string): T | null => {
+	try {
+		return JSON.parse(input) as T;
+	} catch {
+		return null;
+	}
 }
 
 export const toAirportIncidentType = (advisory: z.infer<typeof AirportAdvisory>): AirportInterruptionType | null => {
