@@ -184,7 +184,6 @@ export const AirspaceMap: React.FC = () => {
 			return [...statusMarkers, ...artccAirports.map(airport => (
 				<AirportMarker
 					key={airport.iata_code}
-					advisory={null}
 					airport={airport}
 				/>
 			))]

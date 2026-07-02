@@ -14,6 +14,7 @@
 		"seed:planes": "bun --smol run ./prisma/seed-planes.ts"
 	},
 	"dependencies": {
+		"@vercel/nft": "0.30.3",
 		"@orpc/client": "^1.13.0",
 		"@orpc/server": "^1.13.0",
 		"@orpc/tanstack-query": "^1.13.0",
