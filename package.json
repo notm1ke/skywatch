@@ -16,5 +16,8 @@
 	"workspaces": [
 		"apps/*",
 		"packages/*"
-	]
+	],
+	"overrides": {
+		"@vercel/nft": "0.30.3"
+	}
 }

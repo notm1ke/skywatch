@@ -5,7 +5,7 @@
 			"dependsOn": ["^build"],
 			"outputs": [".next/**", "!.next/cache/**", ".output/**"]
 		},
-		"skywatch@web#build": {
+		"@skywatch/web#build": {
 			"dependsOn": [],
 			"outputs": [".next/**"]
 		},
