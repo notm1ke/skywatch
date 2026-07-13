@@ -136,11 +136,10 @@ const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistration
 				if (!regInput) break;
 				if (regInput.toLowerCase().startsWith("n"))
 					regInput = regInput.slice(1);
-				
+
 				native.push({
 					n_number: {
-						startsWith: regInput,
-						mode: "insensitive"
+						startsWith: regInput.toUpperCase()
 					}
 				});
 				break;
@@ -148,24 +147,21 @@ const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistration
 			case "status":
 				native.push({
 					status: {
-						in: filter.input,
-						mode: "insensitive"
+						in: filter.input.map(value => value.toUpperCase())
 					}
 				});
 				break;
 			case "aircraft_type":
 				native.push({
 					aircraft_type: {
-						in: filter.input,
-						mode: "insensitive"
+						in: filter.input.map(value => value.toUpperCase())
 					}
 				});
 				break;
 			case "engine_type":
 				native.push({
 					engine_type: {
-						in: filter.input,
-						mode: "insensitive"
+						in: filter.input.map(value => value.toUpperCase())
 					}
 				});
 				break;
@@ -173,8 +169,7 @@ const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistration
 				native.push({
 					aircraft: {
 						manufacturer: {
-							in: filter.input,
-							mode: "insensitive"
+							in: filter.input.map(value => value.toUpperCase())
 						}
 					}
 				});
@@ -183,8 +178,7 @@ const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistration
 				native.push({
 					aircraft: {
 						model: {
-							in: filter.input,
-							mode: "insensitive"
+							in: filter.input.map(value => value.toUpperCase())
 						}
 					}
 				});
@@ -192,8 +186,7 @@ const applyFilters = (filters: z.infer<typeof PlaneFilter>[]): PlaneRegistration
 			case "owner_name":
 				native.push({
 					owner_name: {
-						in: filter.input,
-						mode: "insensitive"
+						in: filter.input.map(value => value.toUpperCase())
 					}
 				});
 				break;
@@ -226,8 +219,7 @@ const findByRegistration = base
 			},
 			where: {
 				n_number: {
-					equals: stripRegistration(registration),
-					mode: "insensitive"
+					equals: stripRegistration(registration).toUpperCase()
 				}
 			},
 		})
@@ -414,7 +406,7 @@ const filterOptions = base
 const generateFieldQuery = (field: z.infer<typeof PlaneFilterType>, input: unknown): StringFilter | BoolFilter => {
 	const opts = FilterInputType[field];
 	switch (opts.type.def.type) {
-		case "string": return { startsWith: input as string, mode: "insensitive" } as StringFilter;
+		case "string": return { startsWith: (input as string).toUpperCase() } as StringFilter;
 		case "boolean": return { equals: input as boolean } as BoolFilter;
 		default: throw new Error("Unsupported");
 	}

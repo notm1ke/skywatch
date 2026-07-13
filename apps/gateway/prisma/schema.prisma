@@ -62,6 +62,7 @@ model Airport {
    airline_hubs   AirportAirlineHub[]
    status_history AirportStatusHistory[]
 
+   @@index([artcc])
    @@map("airports")
 }
 
@@ -166,6 +167,7 @@ model AirportTrafficFlowRecord {
    flights Json
 
    @@unique([iata_code, year, month, day, time])
+   @@index([year, month, day])
    @@map("airport_traffic_record")
 }
 
@@ -225,6 +227,7 @@ model Waypoint {
    catch_flag        Boolean
    special_use_flag  Boolean
 
+   @@index([waypoint_id(ops: raw("text_pattern_ops"))])
    @@map("waypoints")
 }
 
@@ -244,7 +247,8 @@ model Aircraft {
 
    registrations PlaneRegistration[]
 
-   @@index([manufacturer, model, engines, engine_type, seats])
+   @@index([manufacturer(ops: raw("text_pattern_ops"))])
+   @@index([model(ops: raw("text_pattern_ops"))])
    @@map("aircraft")
 }
 
@@ -306,6 +310,8 @@ model PlaneRegistration {
    kit_manufacturer String?
    kit_model        String?
 
-   @@index([aircraft_type, engine_type, owner_name, status])
+   @@index([aircraft_type, engine_type, status])
+   @@index([owner_name(ops: raw("text_pattern_ops"))])
+   @@index([n_number(ops: raw("text_pattern_ops"))])
    @@map("plane_registrations")
 }

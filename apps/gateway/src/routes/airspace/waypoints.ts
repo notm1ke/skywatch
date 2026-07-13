@@ -97,8 +97,7 @@ export const search = base
 		.findMany({
 			where: {
 				waypoint_id: {
-					startsWith: query,
-					mode: "insensitive"
+					startsWith: query.toUpperCase()
 				}
 			},
 			take: 100
