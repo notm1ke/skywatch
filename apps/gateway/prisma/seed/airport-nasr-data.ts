@@ -237,7 +237,7 @@ export const seedAirportNasrData = async () => {
 		.get(base)
 		.then(res => res.data)
 		.then(load)
-		.then($ => $('#content > ul:nth-child(4) > li > a').attr("href"))
+		.then($ => $('#content > ul:nth-child(5) > li > a').attr("href"))
 		.then(segment => base + segment)
 		.catch(error => console.error("[nasr] Error retrieving NASR subscription page", error.message));
 	
