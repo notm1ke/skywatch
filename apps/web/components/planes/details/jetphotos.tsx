@@ -96,7 +96,7 @@ export const JetPhotosRenderer: React.FC<{ registration: PlaneRegistration }> = 
 	return (
 		<>
 			<div
-				className={cn("flex flex-row gap-0.5 h-[260px] [&::-webkit-scrollbar]:hidden overflow-x-scroll")}
+				className={cn("flex flex-row gap-1.5 sm:gap-0.5 p-2 h-[200px] sm:h-[260px] [&::-webkit-scrollbar]:hidden overflow-x-scroll")}
 				style={{ scrollbarWidth: "none" }}
 			>
 				{isLoading && (

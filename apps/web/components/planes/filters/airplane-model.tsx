@@ -5,18 +5,19 @@ import { Loader } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "~/hooks/use-debounce";
 import { usePlaneFilteringControls } from "../store";
+import { FilterSearchList } from "./option-list";
 import { ComboboxButton } from "~/components/ui/combobox";
 
-export const AirplaneModelFilter = () => {
+export const AirplaneModelFilter = ({ mode = "button" }: { mode?: "button" | "list" }) => {
 	const [query, setQuery] = useState("");
 	const debouncedQuery = useDebounce(query.trim(), 250);
-	
+
 	const { model, filter } = usePlaneFilteringControls();
 	const { data, isLoading } = useQuery(orpc.planes.filterOptions.queryOptions({
 		input: { type: "model", input: debouncedQuery },
 		enabled: debouncedQuery.length >= 3
 	}));
-	
+
 	const items = Array<SelectOption>();
 	if (data) {
 		const opts = data
@@ -27,10 +28,33 @@ export const AirplaneModelFilter = () => {
 				varColor: "var(--color-zinc-300)"
 			}))
 			.sort((a, b) => a!.label.localeCompare(b!.label)) as SelectOption[];
-		
+
 		items.push(...opts);
 	}
-	
+
+	const emptyMessage = query.length < 3
+		? "Enter atleast 3 characters"
+		: isLoading
+			? (
+				<div className="flex items-center justify-center">
+					<Loader className="size-4 animate-spin duration-200" />
+				</div>
+			)
+			: "No aircraft found";
+
+	if (mode === "list") return (
+		<FilterSearchList
+			multiple
+			query={query}
+			items={items}
+			value={model}
+			onQueryChange={setQuery}
+			onValueChange={value => filter({ model: value })}
+			placeholder="Filter aircraft.."
+			emptyMessage={emptyMessage}
+		/>
+	);
+
 	return (
 		<ComboboxButton
 			multiple
@@ -42,17 +66,7 @@ export const AirplaneModelFilter = () => {
 			onQueryChange={setQuery}
 			onValueChange={value => filter({ model: value })}
 			width={250}
-			emptyMessage={
-				query.length < 3
-					? "Enter atleast 3 characters"
-					: isLoading
-						? (
-							<div className="flex items-center justify-center">
-								<Loader className="size-4 animate-spin duration-200" />
-							</div>
-						)
-						: "No aircraft found"
-			}
+			emptyMessage={emptyMessage}
 		/>
 	)
 }

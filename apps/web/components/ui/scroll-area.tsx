@@ -100,7 +100,7 @@ const ScrollArea = React.forwardRef<
           role="group"
           data-slot="scroll-area"
           aria-roledescription="scroll area"
-          className={cn("relative overflow-hidden", className)}
+          className={cn("relative min-h-0 overflow-hidden", className)}
           {...props}
         >
           <div
@@ -121,7 +121,7 @@ const ScrollArea = React.forwardRef<
           ref={ref}
           data-slot="scroll-area"
           scrollHideDelay={scrollHideDelay}
-          className={cn("relative overflow-hidden", className)}
+          className={cn("relative min-h-0 overflow-hidden", className)}
           {...props}
         >
           <ScrollAreaPrimitive.Viewport

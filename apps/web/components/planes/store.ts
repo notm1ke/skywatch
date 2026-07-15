@@ -12,10 +12,11 @@ type PlaneFilters = {
 };
 
 export type PlaneFilteringControls = Partial<PlaneFilters> & {
-	filter: (filters: Partial<Omit<PlaneFilteringControls, "filter">>) => void;
+	filter: (filters: Partial<Omit<PlaneFilteringControls, "filter" | "reset">>) => void;
+	reset: () => void;
 };
 
-export const usePlaneFilteringControls = create<PlaneFilteringControls>((set) => ({
+const defaults: Partial<PlaneFilters> = {
 	registration: undefined,
 	status: undefined,
 	manufacturer: undefined,
@@ -24,5 +25,10 @@ export const usePlaneFilteringControls = create<PlaneFilteringControls>((set) =>
 	engine_type: undefined,
 	owner_name: undefined,
 	fractionally_owned: undefined,
+};
+
+export const usePlaneFilteringControls = create<PlaneFilteringControls>((set) => ({
+	...defaults,
 	filter: (filters) => set(filters),
+	reset: () => set(defaults),
 }));

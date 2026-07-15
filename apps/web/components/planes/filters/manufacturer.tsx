@@ -5,18 +5,19 @@ import { Loader } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "~/hooks/use-debounce";
 import { usePlaneFilteringControls } from "../store";
+import { FilterSearchList } from "./option-list";
 import { ComboboxButton } from "~/components/ui/combobox";
 
-export const ManufacturerFilter = () => {
+export const ManufacturerFilter = ({ mode = "button" }: { mode?: "button" | "list" }) => {
 	const [query, setQuery] = useState("");
 	const debouncedQuery = useDebounce(query.trim(), 250);
-	
+
 	const { manufacturer, filter } = usePlaneFilteringControls();
 	const { data, isLoading } = useQuery(orpc.planes.filterOptions.queryOptions({
 		input: { type: "manufacturer", input: debouncedQuery },
 		enabled: debouncedQuery.length >= 3
 	}));
-	
+
 	const items = Array<SelectOption>();
 	if (data) {
 		const opts = data
@@ -27,10 +28,33 @@ export const ManufacturerFilter = () => {
 				varColor: "var(--color-zinc-300)"
 			}))
 			.sort((a, b) => a!.label.localeCompare(b!.label)) as SelectOption[];
-		
+
 		items.push(...opts);
 	}
-	
+
+	const emptyMessage = query.length < 3
+		? "Enter atleast 3 characters"
+		: isLoading
+			? (
+				<div className="flex items-center justify-center">
+					<Loader className="size-4 animate-spin duration-200" />
+				</div>
+			)
+			: "No manufacturers found";
+
+	if (mode === "list") return (
+		<FilterSearchList
+			multiple
+			query={query}
+			items={items}
+			value={manufacturer}
+			onQueryChange={setQuery}
+			onValueChange={value => filter({ manufacturer: value })}
+			placeholder="Filter manufacturer.."
+			emptyMessage={emptyMessage}
+		/>
+	);
+
 	return (
 		<ComboboxButton
 			multiple
@@ -42,17 +66,7 @@ export const ManufacturerFilter = () => {
 			onQueryChange={setQuery}
 			onValueChange={value => filter({ manufacturer: value })}
 			width={250}
-			emptyMessage={
-				query.length < 3
-					? "Enter atleast 3 characters"
-					: isLoading
-						? (
-							<div className="flex items-center justify-center">
-								<Loader className="size-4 animate-spin duration-200" />
-							</div>
-						)
-						: "No manufacturers found"
-			}
+			emptyMessage={emptyMessage}
 		/>
 	)
 }

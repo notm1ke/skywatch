@@ -55,7 +55,7 @@ function Section({
 		<div className="border-b">
 			<Disclosure open={open} onOpenChange={setOpen} transition={{ duration: 0.15, ease: "easeInOut" }}>
 				<DisclosureTrigger>
-					<button className="flex w-full items-center justify-between pl-5 pr-3 py-3 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+					<button className="flex w-full items-center justify-between pl-4 sm:pl-5 pr-4 sm:pr-3 py-3 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
 						<span>{title}</span>
 						<ChevronDown className={cn("size-3.5 transition-transform", open && "rotate-180")} />
 					</button>
@@ -68,7 +68,7 @@ function Section({
 	);
 }
 
-function FilterCheck({
+export function FilterCheck({
 	label,
 	value,
 	active,
@@ -82,7 +82,7 @@ function FilterCheck({
 	onToggle: (value: string) => void;
 }) {
 	return (
-		<label className="flex cursor-pointer items-center gap-2 pl-5 pr-3.5 py-1 text-xs hover:bg-accent/50 transition-colors">
+		<label className="flex cursor-pointer items-center gap-2 pl-4 sm:pl-5 pr-4 sm:pr-3.5 py-1 text-xs hover:bg-accent/50 transition-colors">
 			<Checkbox
 				checked={active}
 				onCheckedChange={() => onToggle(value)}
@@ -102,7 +102,7 @@ function toggle(arr: string[], value: string): string[] {
 	return arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
 }
 
-export const FilterSidebar = ({
+export const FilterSidebarContent = ({
 	airports,
 	advisoryMap,
 }: {
@@ -162,7 +162,7 @@ export const FilterSidebar = ({
 	);
 
 	return (
-		<aside className="flex w-64 shrink-0 flex-col border-r">
+		<>
 			<div className="h-[41px] shrink-0">
 				<AirportSearch />
 			</div>
@@ -220,7 +220,7 @@ export const FilterSidebar = ({
 				</Section>
 				
 				<Section title="Runways" defaultOpen={false}>
-					<div className="px-5 pb-2 pt-1">
+					<div className="px-4 sm:px-5 pb-2 pt-1">
 						<div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
 							<span>{currentRange[0]}</span>
 							<span>{currentRange[1]}</span>
@@ -238,7 +238,7 @@ export const FilterSidebar = ({
 				</Section>
 
 				<Section title="Elevation" defaultOpen={false}>
-					<div className="px-5 pb-2 pt-1">
+					<div className="px-4 sm:px-5 pb-2 pt-1">
 						<div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
 							<span>{currentElevRange[0].toLocaleString()}ft</span>
 							<span>{currentElevRange[1].toLocaleString()}ft</span>
@@ -294,6 +294,18 @@ export const FilterSidebar = ({
 					))}
 				</Section>
 			</ScrollArea>
-		</aside>
+		</>
 	);
 };
+
+export const FilterSidebar = ({
+	airports,
+	advisoryMap,
+}: {
+	airports: AirportWithJoins[];
+	advisoryMap: Map<string, AirportAdvisory>;
+}) => (
+	<aside className="hidden sm:flex w-64 shrink-0 flex-col border-r">
+		<FilterSidebarContent airports={airports} advisoryMap={advisoryMap} />
+	</aside>
+);

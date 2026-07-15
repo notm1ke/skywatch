@@ -91,22 +91,19 @@ const TooltipButton = ({ children, tooltip, onClick }: { children: React.ReactNo
 	);
 };
 
-export const PlaneModel: React.FC<{ registration: PlaneRegistration }> = ({ registration }) => {
+const CardHeader = ({ title }: { title: string }) => (
+	<div className="flex flex-row px-3 py-2 justify-between">
+		<div className="flex flex-row space-x-2 items-center">
+			<span className="text-md font-semibold pointer-events-none">
+				{title}
+			</span>
+		</div>
+	</div>
+);
+
+export const PlanePhotosCard: React.FC<{ registration: PlaneRegistration }> = ({ registration }) => {
 	const [mode, setMode] = useState<"3d" | "jetphotos">("jetphotos");
-	
 	const src = modelSourceByRegistration(registration);
-	const title = (s: string) => capitalizeFirst(s.toLowerCase());
-
-	const aircraftType = PlaneTypes.find(t => t.value === registration.aircraft_type)?.label ?? "—";
-	const propulsionType = PropulsionTypes.find(t => t.value === registration.engine_type)?.label ?? "—";
-
-	const enginesLabel = registration.engine
-		? `${registration.aircraft.engines}× ${title(registration.engine.manufacturer)} ${registration.engine.model}`
-		: `${registration.aircraft.engines}×`;
-
-	const airworthyDate = registration.airworthy_date
-		? new Date(registration.airworthy_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-		: null;
 
 	return (
 		<div>
@@ -150,8 +147,28 @@ export const PlaneModel: React.FC<{ registration: PlaneRegistration }> = ({ regi
 					</TooltipButton>
 				</ButtonGroup>
 			</div>*/}
-			
-			<div className="mt-4 grid grid-cols-3 gap-x-4 gap-y-3">
+		</div>
+	);
+};
+
+export const PlaneDetailsCard: React.FC<{ registration: PlaneRegistration }> = ({ registration }) => {
+	const title = (s: string) => capitalizeFirst(s.toLowerCase());
+
+	const aircraftType = PlaneTypes.find(t => t.value === registration.aircraft_type)?.label ?? "—";
+	const propulsionType = PropulsionTypes.find(t => t.value === registration.engine_type)?.label ?? "—";
+
+	const enginesLabel = registration.engine
+		? `${registration.aircraft.engines}× ${title(registration.engine.manufacturer)} ${registration.engine.model}`
+		: `${registration.aircraft.engines}×`;
+
+	const airworthyDate = registration.airworthy_date
+		? new Date(registration.airworthy_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+		: null;
+
+	return (
+		<div>
+			<CardHeader title="Plane Details" />
+			<div className="border-t p-3 grid grid-cols-3 gap-x-4 gap-y-3">
 				<InfoRow
 					label="Aircraft"
 					value={`${title(registration.aircraft.manufacturer)} ${registration.aircraft.model}`}
@@ -166,5 +183,12 @@ export const PlaneModel: React.FC<{ registration: PlaneRegistration }> = ({ regi
 				<InfoRow label="Seats" value={registration.aircraft.seats} />
 			</div>
 		</div>
-	)
-}
+	);
+};
+
+export const PlaneModel: React.FC<{ registration: PlaneRegistration }> = ({ registration }) => (
+	<div className="divide-y">
+		<PlanePhotosCard registration={registration} />
+		<PlaneDetailsCard registration={registration} />
+	</div>
+);

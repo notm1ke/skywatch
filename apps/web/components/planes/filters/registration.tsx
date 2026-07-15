@@ -1,4 +1,5 @@
-import { Loader } from "lucide-react";
+import { cn } from "cnfast";
+import { Loader, Search } from "lucide-react";
 import { motion } from "motion/react";
 import { useRef, useState } from "react";
 import { Kbd } from "~/components/ui/kbd";
@@ -8,12 +9,14 @@ type RegistrationSearchProps = {
 	value: string;
 	onChange: (value: string) => void;
 	loading?: boolean;
+	className?: string;
+	inputClassName?: string;
 };
 
-export const RegistrationSearch: React.FC<RegistrationSearchProps> = ({ value, onChange, loading = false }) => {
+export const RegistrationSearch: React.FC<RegistrationSearchProps> = ({ value, onChange, loading = false, className, inputClassName }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [focused, setFocused] = useState(false);
-	
+
 	useKeyHandler({
 		"Slash": () => {
 			if (!focused) {
@@ -28,7 +31,10 @@ export const RegistrationSearch: React.FC<RegistrationSearchProps> = ({ value, o
 	});
 
 	return (
-		<div className="flex items-center relative font-mono tracking-tight text-sm w-72 h-full grow">
+		<div className={cn("flex items-center relative font-mono tracking-tight text-sm w-72 h-full grow", className)}>
+			<div className="flex sm:hidden absolute left-4 top-0 bottom-0 items-center justify-center pointer-events-none">
+				<Search className="size-3.5 text-muted-foreground" />
+			</div>
 			<input
 				type="text"
 				value={value}
@@ -36,10 +42,10 @@ export const RegistrationSearch: React.FC<RegistrationSearchProps> = ({ value, o
 				onFocus={() => setFocused(true)}
 				onBlur={() => setFocused(false)}
 				placeholder="Search by registration"
-				className="w-full h-full pl-4 pr-10 peer/input"
+				className={cn("w-full h-full pl-10 sm:pl-4 pr-10 peer/input", inputClassName)}
 				ref={inputRef}
 			/>
-			
+
 			{loading && (
 				<motion.div
 					className="absolute right-2 flex items-center justify-center pointer-events-none"
@@ -54,11 +60,11 @@ export const RegistrationSearch: React.FC<RegistrationSearchProps> = ({ value, o
 			
 			{!loading && (
 				<>
-					<div className="absolute right-2 top-0 bottom-0 flex items-center justify-center pointer-events-none peer-focus/input:opacity-0 transition-opacity duration-200">
+					<div className="hidden sm:flex absolute right-2 top-0 bottom-0 items-center justify-center pointer-events-none peer-focus/input:opacity-0 transition-opacity duration-200">
 						<Kbd>/</Kbd>
 					</div>
 					
-					<div className="absolute right-2 top-0 bottom-0 flex items-center justify-center pointer-events-none opacity-0 peer-focus/input:opacity-100 transition-opacity duration-200">
+					<div className="hidden sm:flex absolute right-2 top-0 bottom-0 items-center justify-center pointer-events-none opacity-0 peer-focus/input:opacity-100 transition-opacity duration-200">
 						<Kbd>Esc</Kbd>
 					</div>
 				</>

@@ -50,19 +50,19 @@ const temperature = (input: string) => {
 export const atisGlossary: AtisGlossaryEntry[] = [
 	{
 		patterns: [
-			/RUNWAY\s+(\d{1,2}[LCR]?)/gi,
-			/RWY\s+(\d{1,2}[LCR]?)/gi,
-			/RY\s+(\d{1,2}[LCR]?)/gi,
-			/LANDING\s+RUNWAY\s+(\d{1,2}[LCR]?)/gi,
-			/DEPARTING\s+RUNWAY\s+(\d{1,2}[LCR]?)/gi,
-			/LNDG\s+RWY\s+(\d{1,2}[LCR]?)/gi,
-			/DEPG\s+RWY\s+(\d{1,2}[LCR]?)/gi
+			/RUNWAY(?:\s+)?(\d{1,2}[LCR]?)(\/\d{1,2}[LCR]?)?\b/gi,
+			/RWY(?:\s+)?(\d{1,2}[LCR]?)(\/\d{1,2}[LCR]?)?\b/gi,
+			/RY(?:\s+)?(\d{1,2}[LCR]?)(\/\d{1,2}[LCR]?)?\b/gi,
+			/LANDING\s+RUNWAY\s+(\d{1,2}[LCR]?)(\/\d{1,2}[LCR]?)?\b/gi,
+			/DEPARTING\s+RUNWAY\s+(\d{1,2}[LCR]?)(\/\d{1,2}[LCR]?)?\b/gi,
+			/LNDG\s+RWY(?:\s+)?(\d{1,2}[LCR]?)(\/\d{1,2}[LCR]?)?\b/gi,
+			/DEPG\s+RWY(?:\s+)?(\d{1,2}[LCR]?)(\/\d{1,2}[LCR]?)?\b/gi
 		],
 		color: styling("gray"),
 		tooltip: (match) => ({
 			title: "Runway Designation",
 			description: "Identifies a specific runway by its magnetic heading rounded to the nearest 10 degrees. L/R/C indicate left/right/center parallel runways.",
-			detail: `Runway ${match[1]}`
+			detail: `Runway ${match[1]}${match[2] ? match[2] : ""}`
 		})
 	},
 	{
@@ -188,6 +188,10 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 	createSimpleKeyword(["RNAV"], true, "green", () => ({
 		title: "Area Navigation",
 		description: "Navigation method allowing aircraft to fly any desired path using GPS or other systems."
+	})),
+	createSimpleKeyword(["GPS"], true, "green", () => ({
+		title: "Global Positioning System",
+		description: "Navigation system using satellites to determine position and time."
 	})),
 	{
 		patterns: [/APCH\s+(\d{1,2}[LCR]?)/gi],

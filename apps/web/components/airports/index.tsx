@@ -5,6 +5,7 @@ import { useAirportFilters } from "./store";
 import { AirportList } from "./airport-list";
 import { AirportAdvisory } from "~/lib/schemas";
 import { FilterSidebar } from "./filter-sidebar";
+import { MobileFilterSheet } from "./mobile-filter-sheet";
 import { AirportsPageSkeleton } from "./skeleton";
 import { useAirports } from "~/components/airport-provider";
 import { useAirspace } from "~/components/airspace/provider";
@@ -88,9 +89,10 @@ export const AirportsTab = () => {
 	if (loading) return <AirportsPageSkeleton />;
 
 	return (
-		<div className="flex h-[calc(100svh-4rem)] overflow-hidden">
+		<div className="relative flex h-[calc(100svh-4rem)] overflow-hidden">
 			<FilterSidebar airports={airports} advisoryMap={advisoryMap} />
 			<AirportList airports={filtered} advisoryMap={advisoryMap} total={airports.length} />
+			<MobileFilterSheet airports={airports} advisoryMap={advisoryMap} />
 		</div>
 	);
 };

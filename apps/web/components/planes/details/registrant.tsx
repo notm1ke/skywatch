@@ -43,7 +43,15 @@ export const RegistrantInfo: React.FC<{ registration: PlaneRegistration }> = ({ 
 	const cityStateZip = `${title(registration.owner_city)}, ${registration.owner_state} ${registration.owner_zip_code}`;
 
 	return (
-		<div className="grid grid-cols-3 gap-x-4 gap-y-3">
+		<div>
+			<div className="flex flex-row px-3 py-2 justify-between">
+				<div className="flex flex-row space-x-2 items-center">
+					<span className="text-md font-semibold pointer-events-none">
+						Owner
+					</span>
+				</div>
+			</div>
+			<div className="border-t p-3 grid grid-cols-3 gap-x-4 gap-y-3">
 			{registration.fractionally_owned ? (
 				<div className="col-span-2">
 					<div className="text-xs text-muted-foreground">Owners</div>
@@ -80,14 +88,15 @@ export const RegistrantInfo: React.FC<{ registration: PlaneRegistration }> = ({ 
 				<InfoRow label="Cert Issued" value={formatDate(registration.cert_issue_date)} />
 			)}
 			
-			{registration.kit_manufacturer && (
-				<div className="col-span-2">
-					<InfoRow
-						label="Kit"
-						value={`${title(registration.kit_manufacturer)}${registration.kit_model ? ` ${registration.kit_model}` : ''}`}
-					/>
-				</div>
-			)}
+				{registration.kit_manufacturer && (
+					<div className="col-span-2">
+						<InfoRow
+							label="Kit"
+							value={`${title(registration.kit_manufacturer)}${registration.kit_model ? ` ${registration.kit_model}` : ''}`}
+						/>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

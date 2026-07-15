@@ -6,20 +6,22 @@ import { AirplaneTypeFilter } from "./filters/airplane-type";
 import { AirplaneModelFilter } from "./filters/airplane-model";
 import { FractionalOwnershipFilter } from "./filters/fractionally-owned";
 
-const Filters: React.FC[] = [
-	RegistrationStatusFilter,
-	ManufacturerFilter,
-	AirplaneModelFilter,
-	AirplaneTypeFilter,
-	PropulsionTypeFilter,
-	OwnerFilter,
-	FractionalOwnershipFilter
+type PlaneFilterMode = { mode?: "button" | "list" };
+
+export const PLANE_FILTER_DEFS: { id: string; label: string; Component: React.FC<PlaneFilterMode> }[] = [
+	{ id: "status", label: "Status", Component: RegistrationStatusFilter },
+	{ id: "manufacturer", label: "Manufacturer", Component: ManufacturerFilter },
+	{ id: "model", label: "Aircraft", Component: AirplaneModelFilter },
+	{ id: "aircraft_type", label: "Type", Component: AirplaneTypeFilter },
+	{ id: "engine_type", label: "Propulsion", Component: PropulsionTypeFilter },
+	{ id: "owner_name", label: "Owner", Component: OwnerFilter },
+	{ id: "fractionally_owned", label: "Fractional", Component: FractionalOwnershipFilter },
 ]
 
 export const FilterRow = () => (
 	<div className="hidden sm:flex flex-row space-x-2 items-center px-2">
-		{Object.entries(Filters).map(([type, Component]) => (
-			<Component key={type} />
+		{PLANE_FILTER_DEFS.map(({ id, Component }) => (
+			<Component key={id} />
 		))}
 	</div>
 )
