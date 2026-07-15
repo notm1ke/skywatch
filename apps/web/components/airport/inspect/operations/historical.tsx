@@ -314,8 +314,14 @@ export const HistoricalStatus: React.FC<HistoricalInterruptionsProps> = ({ airpo
 		tooltipClassname: "p-0",
 	}));
 
-	const incidents = data
-		.flatMap(day => day.incidents)
+	const incidents = Array
+		.from(
+			new Map(
+				data
+					.flatMap(day => day.incidents)
+					.map(incident => [incident.event_id, incident])
+			).values()
+		)
 		.sort((a, b) => b.observed_at.getTime() - a.observed_at.getTime());
 
 	return (

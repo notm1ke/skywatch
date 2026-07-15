@@ -67,7 +67,7 @@ export const atisGlossary: AtisGlossaryEntry[] = [
 	},
 	{
 		patterns: [
-			/TAXIWAY\s+([A-Z]\d*)/gi,
+			/TAXIWAY\s+([A-Z]\d*)\b/gi,
 			/\bTWY\s+([A-Z]\d*)\b/gi,
 			/\bTY\s+([A-Z]\d*)\b/gi
 		],
