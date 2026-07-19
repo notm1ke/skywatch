@@ -1,5 +1,4 @@
 import { z } from "zod/v4";
-import { AirspaceType } from "@/schemas";
 import { ORPCError } from "@orpc/server";
 import { prisma } from "@/services/prisma";
 import { airspaceInput, base } from "@/utils";

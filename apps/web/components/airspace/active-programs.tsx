@@ -97,7 +97,7 @@ const programIndicator = (advisory: AirportAdvisory) => {
 		case AdvisoryType.ArrivalDelay:
 		case AdvisoryType.DepartureDelay: {
 			const type = (advisory.arrivalDelay && advisory.departureDelay)
-				? "Arr + Dept"
+				? "Arr + Dep"
 				: advisory.arrivalDelay
 					? "Arrival"
 					: "Departure";

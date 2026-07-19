@@ -146,3 +146,13 @@ export const IncidentHistoryEntry = z.object({
 });
 
 export const IncidentHistory = z.array(IncidentHistoryEntry);
+
+export const InterruptionEvent = z.object({
+	event_id: z.string(),
+	event_type: IncidentType,
+	airport_iata: z.string(),
+	observed_at: z.date(),
+	resolved_at: z.date().nullish()
+});
+
+export const InterruptionHistory = z.array(InterruptionEvent);

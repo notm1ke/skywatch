@@ -205,6 +205,7 @@ model AirportStatusHistory {
    resolved_at  DateTime?
 
    @@unique([airport_iata, event_type, observed_at])
+   @@index([observed_at, resolved_at])
    @@map("airport_status_history")
 }
 

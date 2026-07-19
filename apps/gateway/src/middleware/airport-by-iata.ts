@@ -26,7 +26,7 @@ export const injectAirportByIata = <TAirport extends Airport = Airport>(opts: Op
 	z.infer<typeof Input>,
 	unknown
 >(
-	async ({ next, path }, input) => {
+	async ({ next }, input) => {
 		if (!input.iata_code || input.iata_code.length !== 3) throw new ORPCError("BAD_REQUEST", {
 			message: "Missing IATA code"
 		});
