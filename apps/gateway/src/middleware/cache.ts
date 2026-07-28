@@ -1,6 +1,7 @@
 import { z } from "zod/v4";
 import { os } from "@orpc/server";
 import { Duration } from "effect";
+import { safeJsonParse } from "@/utils";
 import { redis } from "@/services/redis";
 
 type CacheKeyGenerator<TInput> = (input: TInput) => string;
@@ -21,7 +22,7 @@ export const cache = <TInput extends Record<string, any>, TOutput>(
 	const cacheKey = typeof key === "string" ? key : key(input as TInput);
 	const cached = await redis.get(cacheKey);
 	if (cached) {
-		const parsed = schema.safeParse(cached);
+		const parsed = schema.safeParse(safeJsonParse(cached));
 		if (parsed.success) return output(parsed.data as TOutput);
 	}
 

@@ -3,8 +3,8 @@ import moment from "moment-timezone";
 
 import { Effect } from "effect";
 import { defineTask } from "nitro/task";
-import { prisma } from "@/services/prisma";
 import { AirportTrafficFlow, FlowMetricType } from "@/schemas";
+import { prismaTasks as prisma } from "@/services/prisma-tasks";
 
 const DEV_DISABLED = process.env.DEV_DISABLE_SCHEDULED_TASKS;
 
