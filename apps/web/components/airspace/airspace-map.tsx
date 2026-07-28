@@ -164,29 +164,19 @@ export const AirspaceMap: React.FC = () => {
 	
 	const airportMarkers = useMemo(
 		() => {
-			const statusMarkers = advisories
-				.map(advisory => {
-					const airport = airports.find(a => a.iata_code === advisory.airportId);
-					if (!airport) return null;
-					
-					return (
-						<AirportMarker
-							key={advisory.airportId}
-							advisory={advisory}
-							airport={airport}
-						/>
-					);
-				})
-				.filter(Boolean);
+			const relevantAirports = active === "any"
+				? advisories
+					.map(advisory => airports.find(a => a.iata_code === advisory.airportId))
+					.filter((airport): airport is AirportWithJoins => Boolean(airport))
+				: airports.filter(airport => airport.artcc === active);
 
-			if (active === "any") return statusMarkers;
-			const artccAirports = airports.filter(airport => airport.artcc === active);
-			return [...statusMarkers, ...artccAirports.map(airport => (
+			return relevantAirports.map(airport => (
 				<AirportMarker
 					key={airport.iata_code}
+					advisory={advisories.find(a => a.airportId === airport.iata_code)}
 					airport={airport}
 				/>
-			))]
+			));
 		},
 		[advisories, airports, active]
 	);

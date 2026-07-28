@@ -15,7 +15,7 @@ const advisoryTableSelector = ".mainArea > table > tbody > tr > td > table > tbo
 const all = base
 	.input(airspaceInput)
 	.use(cache(
-		"__airspace:advisories",
+		input => `__airspace:advisories:${input.airspace ?? "any"}`,
 		"5 minutes",
 		AirspaceAdvisories,
 	))

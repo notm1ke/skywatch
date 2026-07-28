@@ -19,7 +19,7 @@ const AirspaceInterruptions = z.array(AirportAdvisory);
 const active = base
 	.input(airspaceInput)
 	.use(cache(
-		"__airspace:status",
+		input => `__airspace:status:${input.airspace ?? "any"}`,
 		"1 minutes",
 		AirspaceInterruptions,
 	))
@@ -53,47 +53,61 @@ const OpsPlanResponse = z.object({
 const planned = base
 	.input(airspaceInput)
 	.use(cache(
-		"__airspace:planned",
+		input => `__airspace:planned:${input.airspace ?? "any"}`,
 		"5 minutes",
 		PlannedAdvisories
 	))
-	.handler(async ({ input: { airspace } }) => axios
-		.get('https://nasstatus.faa.gov/api/operations-plan')
-		.then(res => res.data)
-		.then(OpsPlanResponse.safeParse)
-		.then(raw => {
-			if (!raw.success) throw new ORPCError("UPSTREAM_ERROR");
-			return raw.data;
-		})
-		.then(data => data.terminalPlanned.map(entry => {
-			// nas started reporting `time` as ""
-			if (!entry.time.trim()) {
-				const [rawTime, rest] = entry.event.split('\t');
-				const [iataCode, ...eventType] = rest.split(' ');
-				
+	.handler(async ({ input: { airspace } }) => {
+		const where: AirportWhereInput = {};
+		if (airspace) where.artcc = { equals: airspace };
+		const tracked = airspace
+			? await prisma
+				.airport
+				.findMany({ select: { iata_code: true }, where })
+				.then(results => new Set(results.map(result => result.iata_code)))
+			: null;
+
+		return axios
+			.get('https://nasstatus.faa.gov/api/operations-plan')
+			.then(res => res.data)
+			.then(OpsPlanResponse.safeParse)
+			.then(raw => {
+				if (!raw.success) throw new ORPCError("UPSTREAM_ERROR");
+				return raw.data;
+			})
+			.then(data => data.terminalPlanned.map(entry => {
+				// nas started reporting `time` as ""
+				if (!entry.time.trim()) {
+					const [rawTime, rest] = entry.event.split('\t');
+					const [iataCode, ...eventType] = rest.split(' ');
+
+					return {
+						iataCode: iataCode.slice(1).split('/'),
+						time: formatFaaTime(rawTime.split(' ')[1]),
+						forecastType: rawTime.split(' ')[0] === 'AFTER'
+							? 'after'
+							: 'until',
+						eventType: capitalizeFirst(eventType.join(' ').toLowerCase())
+					} as z.infer<typeof PlannedAirportEvent>;
+				}
+
+				const [iataCode, ...eventType] = entry.event.split(' ');
+				const rawTime = entry.time.split(' ')[1];
+
 				return {
-					iataCode: iataCode.slice(1).split('/'),
-					time: formatFaaTime(rawTime.split(' ')[1]),
-					forecastType: rawTime.split(' ')[0] === 'AFTER'
+					iataCode: iataCode.split('/'),
+					time: formatFaaTime(rawTime),
+					forecastType: entry.time.split(' ')[0] === 'AFTER'
 						? 'after'
 						: 'until',
 					eventType: capitalizeFirst(eventType.join(' ').toLowerCase())
 				} as z.infer<typeof PlannedAirportEvent>;
-			}
-			
-			const [iataCode, ...eventType] = entry.event.split(' ');
-			const rawTime = entry.time.split(' ')[1];
-
-			return {
-				iataCode: iataCode.split('/'),
-				time: formatFaaTime(rawTime),
-				forecastType: entry.time.split(' ')[0] === 'AFTER'
-					? 'after'
-					: 'until',
-				eventType: capitalizeFirst(eventType.join(' ').toLowerCase())
-			} as z.infer<typeof PlannedAirportEvent>;
-		}))
-	)
+			}))
+			.then(events => tracked
+				? events.filter(event => event.iataCode.some(code => tracked.has(code)))
+				: events
+			);
+	})
 	.callable();
 
 const all = base
