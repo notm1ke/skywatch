@@ -167,21 +167,23 @@ export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: 
 								</ItemContent>
 							</Item>
 							
-							<Item variant="outline">
-								<ItemHeader>
-									<Avatar>
-										<ExtensionIndicator
-											extensionProbability={advisory.groundStop!.probabilityOfExtension}
-										/>
-									</Avatar>
-								</ItemHeader>
-								<ItemContent>
-									<ItemTitle>Extension Probability</ItemTitle>
-									<ItemDescription className="text-xs">
-										{capitalizeFirst(advisory.groundStop!.probabilityOfExtension.toLowerCase())}
-									</ItemDescription>
-								</ItemContent>
-							</Item>
+							{advisory.groundStop!.probabilityOfExtension && (
+								<Item variant="outline">
+									<ItemHeader>
+										<Avatar>
+											<ExtensionIndicator
+												extensionProbability={advisory.groundStop!.probabilityOfExtension}
+											/>
+										</Avatar>
+									</ItemHeader>
+									<ItemContent>
+										<ItemTitle>Extension Probability</ItemTitle>
+										<ItemDescription className="text-xs">
+											{capitalizeFirst(advisory.groundStop!.probabilityOfExtension.toLowerCase())}
+										</ItemDescription>
+									</ItemContent>
+								</Item>
+							)}
 							
 							<Item variant="outline">
 								<ItemHeader>
@@ -204,30 +206,32 @@ export const GroundStopProgram: React.FC<{ airport: AirportWithJoins, advisory: 
 								</ItemContent>
 							</Item>
 							
-							<Item variant="outline" className="col-span-2">
-								<ItemHeader>
-									<Avatar>
-										<AvatarImage src={`https://www.google.com/s2/favicons?domain=${advisory.groundStop!.advisoryUrl}&sz=128`} />
-										<AvatarFallback className="bg-blue-300 dark:bg-blue-500">
-											<Link2 className="size-5" />
-										</AvatarFallback>
-									</Avatar>
-								</ItemHeader>
-								<ItemContent>
-									<ItemTitle>Advisory URL</ItemTitle>
-									<ItemDescription className="text-xs">
-										<a
-											href={advisory.groundStop!.advisoryUrl}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="flex flex-row space-x-4 items-center text-blue-400 hover:text-blue-300 transition-colors duration-200"
-										>
-											{getUrlDomain(advisory.groundStop!.advisoryUrl)}
-											<ExternalLink className="size-3 ml-1" />
-										</a>
-									</ItemDescription>
-								</ItemContent>
-							</Item>
+							{advisory.groundStop!.advisoryUrl && (
+								<Item variant="outline" className="col-span-2">
+									<ItemHeader>
+										<Avatar>
+											<AvatarImage src={`https://www.google.com/s2/favicons?domain=${advisory.groundStop!.advisoryUrl}&sz=128`} />
+											<AvatarFallback className="bg-blue-300 dark:bg-blue-500">
+												<Link2 className="size-5" />
+											</AvatarFallback>
+										</Avatar>
+									</ItemHeader>
+									<ItemContent>
+										<ItemTitle>Advisory URL</ItemTitle>
+										<ItemDescription className="text-xs">
+											<a
+												href={advisory.groundStop!.advisoryUrl}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="flex flex-row space-x-4 items-center text-blue-400 hover:text-blue-300 transition-colors duration-200"
+											>
+												{getUrlDomain(advisory.groundStop!.advisoryUrl)}
+												<ExternalLink className="size-3 ml-1" />
+											</a>
+										</ItemDescription>
+									</ItemContent>
+								</Item>
+							)}
 						</div>
 						
 						<span className="text-xs text-muted-foreground">

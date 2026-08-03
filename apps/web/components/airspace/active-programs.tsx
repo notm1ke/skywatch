@@ -264,7 +264,7 @@ export const ActivePrograms = () => {
 													<div className="flex items-center">
 														<ChevronRight className="size-4 mr-2 text-zinc-500 transition-transform duration-200 ease-in-out rotate-0 group-aria-expanded:rotate-90" />
 														<span className="text-sm font-bold font-mono px-2 bg-zinc-300 dark:bg-zinc-700 mr-2">{airport.iata_code}</span>
-														<span className="text-sm font-bold max-w-[20ch] truncate sm:max-w-none">{shortenAirportName(airport.name)}</span>
+														<span className="text-sm font-bold max-w-[15ch] truncate sm:max-w-none">{shortenAirportName(airport.name)}</span>
 													</div>
 												</div>
 												<div className="flex items-center">{programIndicator(advisory)}</div>
