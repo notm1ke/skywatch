@@ -10,7 +10,7 @@ const CenterBadge: React.FC<{ center: string }> = ({ center }) => (
 	</Badge>
 )
 
-const ExtensionIndicator: React.FC<{ extensionProbability: string }> = ({ extensionProbability }) => {
+const ExtensionIndicator: React.FC<{ extensionProbability?: string }> = ({ extensionProbability }) => {
 	if (!extensionProbability) return null;
 	const iconAmount = extensionProbability === 'HIGH'
 		? 3
