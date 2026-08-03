@@ -75,10 +75,10 @@ export const GroundStopAdvisory = z.object({
 	startTime: z.string(),
 	endTime: z.string(),
 	center: z.string(),
-	advisoryUrl: z.string(),
+	advisoryUrl: z.string().nullish(),
 	includedFacilities: z.array(z.string()),
-	includedFlights: z.string(),
-	probabilityOfExtension: z.string()
+	includedFlights: z.string().nullish(),
+	probabilityOfExtension: z.string().nullish()
 });
 
 export const FreeFormAdvisory = z.object({

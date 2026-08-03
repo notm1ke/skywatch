@@ -66,22 +66,26 @@ export const GroundStopProgram: React.FC<{ advisory: AirportAdvisory }> = ({ adv
 				</div>
 			</div>
 
-			<div className="flex flex-row justify-between">
-				<div className="text-sm">Extension Probability</div>
-				<div className="text-sm tabular-nums font-mono tracking-tighter">
-					<ExtensionIndicator extensionProbability={advisory.groundStop!.probabilityOfExtension} />
+			{advisory.groundStop!.probabilityOfExtension && (
+				<div className="flex flex-row justify-between">
+					<div className="text-sm">Extension Probability</div>
+					<div className="text-sm tabular-nums font-mono tracking-tighter">
+						<ExtensionIndicator extensionProbability={advisory.groundStop!.probabilityOfExtension} />
+					</div>
 				</div>
-			</div>
-			
-			<div className="flex flex-row justify-between">
-				<div className="text-sm">Advisory URL</div>
-				<div className="flex flex-row gap-2 items-center text-sm font-mono tracking-tighter text-blue-400">
-					<a href={advisory.groundStop!.advisoryUrl} target="_blank" rel="noopener noreferrer">
-						{getUrlDomain(advisory.groundStop!.advisoryUrl)}
-					</a>
-					<ExternalLink className="inline size-3" />
+			)}
+
+			{advisory.groundStop!.advisoryUrl && (
+				<div className="flex flex-row justify-between">
+					<div className="text-sm">Advisory URL</div>
+					<div className="flex flex-row gap-2 items-center text-sm font-mono tracking-tighter text-blue-400">
+						<a href={advisory.groundStop!.advisoryUrl} target="_blank" rel="noopener noreferrer">
+							{getUrlDomain(advisory.groundStop!.advisoryUrl)}
+						</a>
+						<ExternalLink className="inline size-3" />
+					</div>
 				</div>
-			</div>
+			)}
 			
 			{affectedCenters.length && (
 				<div className="flex flex-row justify-between">
