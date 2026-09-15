@@ -8,6 +8,8 @@ import { seedAirportTimezones } from "./seed/airport-tz";
 import { seedAirportHasClear } from "./seed/airport-clear";
 import { seedAirportNasrData } from "./seed/airport-nasr-data";
 import { seedAirportHasPrecheck } from "./seed/airport-precheck";
+import { seedAirportHasGlobalEntry } from "./seed/airport-global-entry";
+import { seedAirportHasMpc } from "./seed/airport-mpc";
 
 const gap = 5 * 60 * 1000;
 const lastSeededTime = await redis.get("db:seed");
@@ -34,6 +36,8 @@ await seedAirlineHubs();
 await seedAirportHasAtis();
 await seedAirportHasClear();
 await seedAirportHasPrecheck();
+await seedAirportHasGlobalEntry();
+await seedAirportHasMpc();
 await seedAirportHasRvrs();
 await seedAirportTimezones();
 

@@ -36,6 +36,8 @@ const ATC_TYPE_LABELS: Record<string, string> = {
 const CAPABILITY_LABELS: Record<string, string> = {
 	atis: "ATIS",
 	cbp: "CBP Port of Entry",
+	globalEntry: "CBP Global Entry",
+	mpc: "CBP Mobile Passport Control",
 	precheck: "TSA PreCheck",
 	clear: "CLEAR+",
 	rvr: "Runway Visual Range",

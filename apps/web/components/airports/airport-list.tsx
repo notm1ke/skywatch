@@ -1,14 +1,14 @@
 "use client";
 
 import { useRef } from "react";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { AirportWithJoins } from "@skywatch/gateway/schemas";
-import { AirportAdvisory } from "~/lib/schemas";
-import { AirportRow } from "./airport-row";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "~/components/ui/empty";
 import { Search } from "lucide-react";
+import { AirportRow } from "./airport-row";
+import { AirportAdvisory } from "~/lib/schemas";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useAirportFilters, AirportSortBy } from "./store";
+import { AirportWithJoins } from "@skywatch/gateway/schemas";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "~/components/ui/empty";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 
 export const AirportList = ({
 	airports,

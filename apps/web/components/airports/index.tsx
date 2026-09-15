@@ -56,6 +56,8 @@ export const AirportsTab = () => {
 				if (!capabilities.length) return true;
 				return capabilities.every((cap) => {
 					if (cap === "precheck") return a.supports_precheck;
+					if (cap === "globalEntry") return a.supports_global_entry;
+					if (cap === "mpc") return a.supports_mpc;
 					if (cap === "clear") return a.supports_clear;
 					if (cap === "cbp") return a.has_cbp;
 					if (cap === "atis") return a.supports_atis;

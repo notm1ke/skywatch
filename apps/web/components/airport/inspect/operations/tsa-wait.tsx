@@ -14,6 +14,8 @@ import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { SlidingNumber } from "~/components/ui/sliding-number";
 import { PropsWithChildren, ReactNode, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
+import { GlobalEntryIcon } from "~/components/icons/global-entry";
+import { MobilePassportControlIcon } from "~/components/icons/mpc";
 
 type TsaWaitTimesProps = {
 	airport: AirportWithJoins;
@@ -57,12 +59,12 @@ export const TsaWaitTimesSkeletonLoader: React.FC<{ airport?: AirportWithJoins }
 			
 			{!airport && (
 				<div className="flex flex-row items-center space-x-1">
-					<Skeleton className="aspect-square w-8 h-6 rounded-sm cursor-pointer border border-zinc-800" />
-					<Skeleton className="aspect-square w-8 h-6 rounded-sm cursor-pointer border border-zinc-800" />
+					<Skeleton className="aspect-square w-8 h-6 rounded-sm cursor-pointer border border-zinc-300 dark:border-zinc-800" />
+					<Skeleton className="aspect-square w-8 h-6 rounded-sm cursor-pointer border border-zinc-300 dark:border-zinc-800" />
 				</div>
 			)}
 			
-			{(airport?.supports_precheck || airport?.supports_clear) && (
+			{(airport?.supports_precheck || airport?.supports_clear || airport?.supports_global_entry || airport?.supports_mpc) && (
 				<div className="flex flex-row items-center space-x-1">
 					{airport?.supports_precheck && (
 						<SecurityIcon
@@ -87,6 +89,32 @@ export const TsaWaitTimesSkeletonLoader: React.FC<{ airport?: AirportWithJoins }
 							)}
 						>
 							<ClearIcon className="fill-[#041A55] dark:fill-white size-4" />
+						</SecurityIcon>
+					)}
+
+					{airport?.supports_global_entry && (
+						<SecurityIcon
+							tooltip={(
+								<>
+									<span className="font-bold">{airport?.iata_code}</span>{" "}
+									has Global Entry® lanes available upon international arrival.
+								</>
+							)}
+						>
+							<GlobalEntryIcon className="size-4" />
+						</SecurityIcon>
+					)}
+
+					{airport?.supports_mpc && (
+						<SecurityIcon
+							tooltip={(
+								<>
+									<span className="font-bold">{airport?.iata_code}</span>{" "}
+									has Mobile Passport Control lanes available upon international arrival.
+								</>
+							)}
+						>
+							<MobilePassportControlIcon className="size-5.5 ml-1" />
 						</SecurityIcon>
 					)}
 				</div>
@@ -184,13 +212,14 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 					</span>
 				</div>
 
-				{(airport.supports_precheck || airport.supports_clear) && (
+				{(airport.supports_precheck || airport.supports_clear || airport.supports_global_entry || airport.supports_mpc) && (
 					<div className="flex flex-row items-center space-x-1">
 						{airport.supports_precheck && (
 							<SecurityIcon
 								tooltip={(
 									<>
-										{airport.iata_code} has TSA PreCheck® lanes at it&apos;s checkpoints.
+										<span className="font-bold">{airport?.iata_code}</span>{" "}
+										has TSA PreCheck® lanes at it&apos;s checkpoints.
 									</>
 								)}
 							>
@@ -202,11 +231,38 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 							<SecurityIcon
 								tooltip={(
 									<>
-										{airport.iata_code} has Clear+ lanes at certain TSA checkpoints, verify using airport signage.
+										<span className="font-bold">{airport?.iata_code}</span>{" "}
+										has Clear+ lanes at certain TSA checkpoints, verify using airport signage.
 									</>
 								)}
 							>
 								<ClearIcon className="fill-[#041A55] dark:fill-white size-4" />
+							</SecurityIcon>
+						)}
+
+						{airport.supports_global_entry && (
+							<SecurityIcon
+								tooltip={(
+									<>
+										<span className="font-bold">{airport?.iata_code}</span>{" "}
+										has Global Entry® lanes available upon international arrival.
+									</>
+								)}
+							>
+								<GlobalEntryIcon className="size-4" />
+							</SecurityIcon>
+						)}
+
+						{airport?.supports_mpc && (
+							<SecurityIcon
+								tooltip={(
+									<>
+										<span className="font-bold">{airport?.iata_code}</span>{" "}
+										has Mobile Passport Control lanes available upon international arrival.
+									</>
+								)}
+							>
+								<MobilePassportControlIcon className="size-5.5 ml-1" />
 							</SecurityIcon>
 						)}
 					</div>
@@ -257,13 +313,14 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 					</span>
 				</div>
 
-				{(airport.supports_precheck || airport.supports_clear) && (
+				{(airport.supports_precheck || airport.supports_clear || airport.supports_global_entry || airport.supports_mpc) && (
 					<div className="flex flex-row items-center space-x-1">
 						{airport.supports_precheck && (
 							<SecurityIcon
 								tooltip={(
 									<>
-										{airport.iata_code} has TSA PreCheck® lanes at it&apos;s checkpoints.
+										<span className="font-bold">{airport?.iata_code}</span>{" "}
+										has TSA PreCheck® lanes at it&apos;s checkpoints.
 									</>
 								)}
 							>
@@ -275,11 +332,38 @@ export const TsaWaitTimes: React.FC<TsaWaitTimesProps> = ({ airport }) => {
 							<SecurityIcon
 								tooltip={(
 									<>
-										{airport.iata_code} has Clear+ lanes at certain TSA checkpoints, verify using airport signage.
+										<span className="font-bold">{airport?.iata_code}</span>{" "}
+										has Clear+ lanes at certain TSA checkpoints, verify using airport signage.
 									</>
 								)}
 							>
 								<ClearIcon className="fill-[#041A55] dark:fill-white size-4" />
+							</SecurityIcon>
+						)}
+						
+						{airport?.supports_global_entry && (
+							<SecurityIcon
+								tooltip={(
+									<>
+										<span className="font-bold">{airport?.iata_code}</span>{" "}
+										has Global Entry® lanes available upon international arrival.
+									</>
+								)}
+							>
+								<GlobalEntryIcon className="size-4 ml-1" />
+							</SecurityIcon>
+						)}
+
+						{airport?.supports_mpc && (
+							<SecurityIcon
+								tooltip={(
+									<>
+										<span className="font-bold">{airport?.iata_code}</span>{" "}
+										has Mobile Passport Control lanes available upon international arrival.
+									</>
+								)}
+							>
+								<MobilePassportControlIcon className="size-5.5 ml-1" />
 							</SecurityIcon>
 						)}
 					</div>

@@ -15,30 +15,33 @@ generator json {
 }
 
 model Airport {
-   id                Int     @id
-   ident             String  @unique
-   type              String
-   name              String
-   icao_code         String  @unique
-   iata_code         String  @unique
-   latitude_deg      Float
-   longitude_deg     Float
-   elevation_ft      Int?
-   continent         String
-   iso_country       String
-   iso_region        String
-   municipality      String
-   scheduled_service String?
-   gps_code          String
-   local_code        String
-   home_link         String  @default("")
-   wikipedia_link    String  @default("")
-   keywords          String  @default("")
-   supports_atis     Boolean @default(false)
-   supports_rvr      Boolean @default(false)
-   supports_precheck Boolean @default(false)
-   supports_clear    Boolean @default(false)
-   timezone          String?
+   id                     Int     @id
+   ident                  String  @unique
+   type                   String
+   name                   String
+   icao_code              String  @unique
+   iata_code              String  @unique
+   latitude_deg           Float
+   longitude_deg          Float
+   elevation_ft           Int?
+   continent              String
+   iso_country            String
+   iso_region             String
+   municipality           String
+   scheduled_service      String?
+   gps_code               String
+   local_code             String
+   home_link              String  @default("")
+   wikipedia_link         String  @default("")
+   keywords               String  @default("")
+   supports_atis          Boolean @default(false)
+   supports_rvr           Boolean @default(false)
+   supports_precheck      Boolean @default(false)
+   supports_global_entry  Boolean @default(false)
+   supports_ge_enrollment Boolean @default(false)
+   supports_mpc           Boolean @default(false)
+   supports_clear         Boolean @default(false)
+   timezone               String?
 
    // nasr
    artcc           String    @default("")
