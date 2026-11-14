@@ -8,6 +8,15 @@ import type { AirportWithJoins } from "@skywatch/gateway/schemas";
 export type SearchResult = Awaited<ReturnType<typeof gateway.airspace.routing.search>>;
 export type RouteResult = SearchResult["routes"][number];
 export type Coverage = Awaited<ReturnType<typeof gateway.airspace.routing.coverage>>;
+export type PairsResult = Awaited<ReturnType<typeof gateway.airspace.routing.pairs>>;
+export type Pair = PairsResult["pairs"][number];
+
+/**
+ * A route's identity: the same fields as its unique key in the database. Unlike the database id it survives a
+ * reseed, so it's safe to put in a URL, and it's what the map's `id` property, hover and selection all use.
+ */
+export const routeKey = (route: Pick<RouteResult, "origin" | "dest" | "type" | "sequence">) =>
+	`${route.origin}.${route.dest}.${route.type}.${route.sequence}`;
 
 type Position = [number, number];
 type Feature<Geometry, Props> = { type: "Feature"; properties: Props; geometry: Geometry };
@@ -54,7 +63,7 @@ export const routeLines = (routes: RouteResult[]): Collection<{ type: "LineStrin
 		.filter(route => route.fixes.length >= 2)
 		.map(route => ({
 			type: "Feature" as const,
-			properties: { id: route.id, type: route.type, complete: route.complete },
+			properties: { id: routeKey(route), type: route.type, complete: route.complete },
 			geometry: {
 				type: "LineString" as const,
 				coordinates: route.fixes.map(fix => [fix.lon, fix.lat] as Position)
@@ -62,12 +71,15 @@ export const routeLines = (routes: RouteResult[]): Collection<{ type: "LineStrin
 		}))
 });
 
-/** Markers for the fixes along one route (the selected one). */
-export const fixPoints = (route: RouteResult | undefined): Collection<{ type: "Point"; coordinates: Position }, { id: string; kind: string }> => ({
+/**
+ * Markers for the fixes along one route (the selected one). Points added by following an airway carry `via`, so the
+ * map can draw them smaller and label them only when zoomed in.
+ */
+export const fixPoints = (route: RouteResult | undefined): Collection<{ type: "Point"; coordinates: Position }, { id: string; kind: string; via: string }> => ({
 	type: "FeatureCollection",
 	features: (route?.fixes ?? []).map(fix => ({
 		type: "Feature" as const,
-		properties: { id: fix.id, kind: fix.kind },
+		properties: { id: fix.id, kind: fix.kind, via: fix.via ?? "" },
 		geometry: { type: "Point" as const, coordinates: [fix.lon, fix.lat] as Position }
 	}))
 });
@@ -82,6 +94,78 @@ export const routeBounds = (routes: RouteResult[]): [Position, Position] | null 
 			east = Math.max(east, fix.lon);
 			south = Math.min(south, fix.lat);
 			north = Math.max(north, fix.lat);
+		}
+	}
+
+	return Number.isFinite(west) ? [[west, south], [east, north]] : null;
+};
+
+// ---------------------------------------------------------------------------------------------
+// Pairs (the overview of a big search: one arc per origin -> destination pair)
+
+/** airport code -> [lon, lat] */
+export type AirportCoords = Map<string, Position>;
+
+export const airportCoords = (airports: AirportWithJoins[]): AirportCoords =>
+	new Map(airports.map(airport => [airport.iata_code, [airport.longitude_deg, airport.latitude_deg] as Position]));
+
+/** Points along the great circle between two positions, so arcs curve the way long flights do on a Mercator map. */
+const greatCircle = (a: Position, b: Position, steps = 32): Position[] => {
+	const rad = Math.PI / 180;
+	const [lon1, lat1, lon2, lat2] = [a[0] * rad, a[1] * rad, b[0] * rad, b[1] * rad];
+	const delta = 2 * Math.asin(Math.sqrt(
+		Math.sin((lat2 - lat1) / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin((lon2 - lon1) / 2) ** 2
+	));
+
+	// effectively the same place: nothing to curve
+	if (delta < 1e-6) return [a, b];
+
+	const points: Position[] = [];
+	for (let i = 0; i <= steps; i++) {
+		const t = i / steps;
+		const k1 = Math.sin((1 - t) * delta) / Math.sin(delta);
+		const k2 = Math.sin(t * delta) / Math.sin(delta);
+		const x = k1 * Math.cos(lat1) * Math.cos(lon1) + k2 * Math.cos(lat2) * Math.cos(lon2);
+		const y = k1 * Math.cos(lat1) * Math.sin(lon1) + k2 * Math.cos(lat2) * Math.sin(lon2);
+		const z = k1 * Math.sin(lat1) + k2 * Math.sin(lat2);
+		points.push([Math.atan2(y, x) / rad, Math.atan2(z, Math.sqrt(x * x + y * y)) / rad]);
+	}
+
+	return points;
+};
+
+type PairProps = { id: string; count: number };
+
+/** One arc per pair, width driven by `count`. Pairs whose airports we have no position for are left out. */
+export const pairArcs = (
+	pairs: Array<Pick<Pair, "id" | "origin" | "dest"> & { count: number }>,
+	coords: AirportCoords
+): Collection<{ type: "LineString"; coordinates: Position[] }, PairProps> => ({
+	type: "FeatureCollection",
+	features: pairs.flatMap(pair => {
+		const origin = coords.get(pair.origin);
+		const dest = coords.get(pair.dest);
+		if (!origin || !dest) return [];
+
+		return [{
+			type: "Feature" as const,
+			properties: { id: pair.id, count: pair.count },
+			geometry: { type: "LineString" as const, coordinates: greatCircle(origin, dest) }
+		}];
+	})
+});
+
+export const pairBounds = (pairs: Array<Pick<Pair, "origin" | "dest">>, coords: AirportCoords): [Position, Position] | null => {
+	let west = Infinity, south = Infinity, east = -Infinity, north = -Infinity;
+
+	for (const pair of pairs) {
+		for (const code of [pair.origin, pair.dest]) {
+			const position = coords.get(code);
+			if (!position) continue;
+			west = Math.min(west, position[0]);
+			east = Math.max(east, position[0]);
+			south = Math.min(south, position[1]);
+			north = Math.max(north, position[1]);
 		}
 	}
 

@@ -2,11 +2,15 @@
 
 import { useMemo } from "react";
 import type { AirportWithJoins } from "@skywatch/gateway/schemas";
-import { typeColor, type Coverage, type RouteResult } from "./geo";
+import { routeKey, typeColor, type Coverage, type RouteResult } from "./geo";
+import { Leg } from "./leg";
+import type { MapPair } from "./routing-map";
 import { useRoutingStore } from "./store";
 
 type Props = {
+	view: "routes" | "pairs";
 	routes: RouteResult[];
+	pairs: Array<MapPair & { types: Record<string, number> }>;
 	coverage: Coverage | undefined;
 	airports: AirportWithJoins[];
 };
@@ -15,7 +19,7 @@ const counts = (entry: { outbound: number; inbound: number } | undefined) =>
 	entry ? `${entry.outbound.toLocaleString()} out · ${entry.inbound.toLocaleString()} in` : null;
 
 /** What a click would do right now. Sits over the top of the map and never takes the pointer. */
-export const HoverHint: React.FC<Props> = ({ routes, coverage, airports }) => {
+export const HoverHint: React.FC<Props> = ({ view, routes, pairs, coverage, airports }) => {
 	const hover = useRoutingStore(state => state.hover);
 	const armed = useRoutingStore(state => state.armed);
 	const selectedId = useRoutingStore(state => state.selectedId);
@@ -34,9 +38,36 @@ export const HoverHint: React.FC<Props> = ({ routes, coverage, airports }) => {
 				<div className="font-mono text-xs text-muted-foreground">{counts(coverage?.airports[hover.airport])}</div>
 			</>
 		);
+	} else if (hover.routes.length && view === "pairs") {
+		const hovered = hover.routes
+			.map(id => pairs.find(pair => pair.id === id))
+			.filter((pair): pair is NonNullable<typeof pair> => Boolean(pair));
+
+		content = (
+			<>
+				{hovered.slice(0, 4).map(pair => (
+					<div key={pair.id} className="grid gap-0.5">
+						<div className="font-mono font-semibold">
+							<Leg from={pair.origin} to={pair.dest} />
+						</div>
+						<div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
+							{pair.count} {pair.count === 1 ? "route" : "routes"}
+							{Object.entries(pair.types).map(([type, count]) => (
+								<span key={type} className="flex items-center gap-1">
+									<span className="size-2 rounded-full" style={{ backgroundColor: typeColor(type) }} />
+									{type} {count}
+								</span>
+							))}
+						</div>
+					</div>
+				))}
+				{hovered.length > 4 && <div className="text-xs text-muted-foreground">and {hovered.length - 4} more</div>}
+				<div className="text-xs text-muted-foreground">Click to see {hovered.length > 1 ? "the first pair's" : "its"} routes</div>
+			</>
+		);
 	} else if (hover.routes.length) {
 		const hovered = hover.routes
-			.map(id => routes.find(route => route.id === id))
+			.map(id => routes.find(route => routeKey(route) === id))
 			.filter((route): route is RouteResult => Boolean(route));
 
 		content = (
@@ -46,9 +77,9 @@ export const HoverHint: React.FC<Props> = ({ routes, coverage, airports }) => {
 					<span className="text-muted-foreground">{hover.routes.length === 1 ? "route" : "routes"} here</span>
 				</div>
 				{hovered.slice(0, 4).map(route => (
-					<div key={route.id} className="flex items-center gap-1.5 font-mono text-xs">
+					<div key={routeKey(route)} className="flex items-center gap-1.5 font-mono text-xs">
 						<span className="size-2 rounded-full" style={{ backgroundColor: typeColor(route.type) }} />
-						{route.origin} → {route.dest}
+						<Leg from={route.origin} to={route.dest} />
 						<span className="text-muted-foreground">{route.type}</span>
 					</div>
 				))}

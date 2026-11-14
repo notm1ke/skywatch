@@ -264,6 +264,20 @@ model PreferredRoute {
 	@@map("preferred_routes")
 }
 
+model Airway {
+   airway_id   String
+   /// C contiguous US, A Alaska, H Hawaii: the same id can exist in more than one
+   location    String
+   /// J, V, RN, AT, ...
+   designation String
+   regulatory  Boolean
+   /// ordered; fix, VOR and NDB identifiers
+   points      String[]
+
+   @@unique([airway_id, location])
+   @@map("airways")
+}
+
 model Aircraft {
    id                    String  @unique
    manufacturer          String

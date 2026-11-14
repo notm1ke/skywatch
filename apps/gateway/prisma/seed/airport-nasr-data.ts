@@ -7,10 +7,22 @@ import { existsSync } from "node:fs";
 import { parse } from "csv-parse/sync";
 import { prisma } from "@/services/prisma";
 import { readFile, writeFile } from "node:fs/promises";
-import { AirportUpdateArgs } from "@/prisma/generated/models";
+import { AirportUpdateArgs, AirwayUpsertArgs } from "@/prisma/generated/models";
 import { cleanupTemp, createTemp, extractArchive } from "./util";
 
 const BATCH_SIZE = 1000;
+const CLEANUP_BATCH_SIZE = 100;
+
+// Airway cleanup refuses to run if it would remove more than this share of the table (a bad file shouldn't wipe it).
+const MAX_STALE_RATIO = 0.5;
+
+type RawAirwayRow = {
+	AWY_DESIGNATION: string;
+	AWY_LOCATION: string;
+	AWY_ID: string;
+	REGULATORY: string;
+	AIRWAY_STRING: string;
+}
 
 type RawAirportRef = {
 	EFF_DATE: string;
@@ -120,6 +132,66 @@ const transformNasrRecord = (row: RawAirportRef): AirportUpdateArgs => ({
 	}
 })
 
+const transformAirway = (row: RawAirwayRow): AirwayUpsertArgs => {
+	const fields = {
+		designation: row.AWY_DESIGNATION,
+		regulatory: row.REGULATORY === "Y",
+		// "OAL ILC MLF SAKES ..." -> ["OAL", "ILC", "MLF", "SAKES", ...]
+		points: row.AIRWAY_STRING.split(/\s+/).filter(Boolean)
+	};
+
+	return {
+		where: { airway_id_location: { airway_id: row.AWY_ID, location: row.AWY_LOCATION } },
+		create: { airway_id: row.AWY_ID, location: row.AWY_LOCATION, ...fields },
+		update: fields
+	};
+};
+
+/** Seeds airways from AWY_BASE.csv in the already extracted NASR bundle, so the bundle is only downloaded once. */
+const seedAirways = async (dir: string) => {
+	const csvPath = path.join(dir, "AWY_BASE.csv");
+	if (!existsSync(csvPath)) {
+		console.warn("[nasr] NASR data did not contain AWY_BASE.csv, skipping airways.");
+		return;
+	}
+
+	const csv = await readFile(csvPath, { encoding: "utf8" }).catch(() => null);
+	if (!csv) {
+		console.error("[nasr] Error reading AWY_BASE.csv.");
+		return;
+	}
+
+	const rows = parse<RawAirwayRow>(csv, { columns: true, skip_empty_lines: true, trim: true, bom: true })
+		.filter(row => row.AWY_ID && row.AWY_LOCATION && row.AIRWAY_STRING);
+
+	const data = rows.map(transformAirway);
+	console.log(`[nasr] Discovered ${data.length} airways - saving to database..`);
+
+	for (let i = 0; i < data.length; i += BATCH_SIZE) {
+		const batch = data.slice(i, i + BATCH_SIZE);
+		await prisma.$transaction(batch.map(
+			payload => prisma.airway.upsert(payload)
+		));
+	}
+
+	// Airways get retired between cycles, and upserts never remove anything.
+	const seen = new Set(rows.map(row => `${row.AWY_ID}|${row.AWY_LOCATION}`));
+	const existing = await prisma.airway.findMany({ select: { airway_id: true, location: true } });
+	const stale = existing.filter(airway => !seen.has(`${airway.airway_id}|${airway.location}`));
+
+	if (stale.length > 0 && stale.length / existing.length > MAX_STALE_RATIO) {
+		console.warn(`[nasr] ${stale.length} of ${existing.length} airways look stale, more than ${MAX_STALE_RATIO * 100}% of the table. Skipping cleanup.`);
+	} else if (stale.length > 0) {
+		for (let i = 0; i < stale.length; i += CLEANUP_BATCH_SIZE) {
+			await prisma.airway.deleteMany({
+				where: { OR: stale.slice(i, i + CLEANUP_BATCH_SIZE).map(airway => ({ airway_id: airway.airway_id, location: airway.location })) }
+			});
+		}
+
+		console.log(`[nasr] Removed ${stale.length} airways that are no longer in the FAA file.`);
+	}
+};
+
 export const seedAirportNasrData = async () => {
 	const start = Date.now();
 	const base = "https://www.faa.gov/air_traffic/flight_info/aeronav/aero_data/NASR_Subscription/";
@@ -193,6 +265,9 @@ export const seedAirportNasrData = async () => {
 		));
 	}
 	
+	// the same bundle also carries the airways; seed them before the extracted files are cleaned up
+	await seedAirways(handle);
+
 	await cleanupTemp(handle);
 	console.log(`[nasr] Done in ${Date.now() - start}ms.`)
 }

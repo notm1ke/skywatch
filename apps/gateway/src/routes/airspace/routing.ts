@@ -20,15 +20,26 @@ const DEFAULT_LIMIT = 500;
 // the biggest real searches (an ARTCC to anywhere) are ~2.7k routes today
 const MAX_LIMIT = 3000;
 
+const endpointFields = {
+	from: Endpoint.optional(),
+	to: Endpoint.optional(),
+	/** Also return the opposite direction (to -> from). Preferred routes are directional, so A -> B and B -> A are different rows. */
+	bidirectional: z.boolean().default(false)
+};
+
+const requireEndpoint = (input: { from?: unknown; to?: unknown }) => Boolean(input.from || input.to);
+const requireEndpointMessage = { message: "Provide a from, a to, or both." };
+
 const SearchInput = z
 	.object({
-		from: Endpoint.optional(),
-		to: Endpoint.optional(),
-		/** Also return the opposite direction (to -> from). Preferred routes are directional, so A -> B and B -> A are different rows. */
-		bidirectional: z.boolean().default(false),
+		...endpointFields,
 		limit: z.number().int().min(1).max(MAX_LIMIT).default(DEFAULT_LIMIT)
 	})
-	.refine(input => input.from || input.to, { message: "Provide a from, a to, or both." });
+	.refine(requireEndpoint, requireEndpointMessage);
+
+const PairsInput = z
+	.object(endpointFields)
+	.refine(requireEndpoint, requireEndpointMessage);
 
 const originFilter = (endpoint?: Endpoint): Prisma.PreferredRouteWhereInput => {
 	if (!endpoint) return {};
@@ -52,12 +63,15 @@ const directional = (from?: Endpoint, to?: Endpoint): Prisma.PreferredRouteWhere
 	AND: [originFilter(from), destFilter(to)]
 });
 
+const matching = (from: Endpoint | undefined, to: Endpoint | undefined, bidirectional: boolean): Prisma.PreferredRouteWhereInput =>
+	bidirectional
+		? { OR: [directional(from, to), directional(to, from)] }
+		: directional(from, to);
+
 export const search = base
 	.input(SearchInput)
 	.handler(async ({ input: { from, to, bidirectional, limit } }) => {
-		const where: Prisma.PreferredRouteWhereInput = bidirectional
-			? { OR: [directional(from, to), directional(to, from)] }
-			: directional(from, to);
+		const where = matching(from, to, bidirectional);
 
 		const [rows, total] = await Promise.all([
 			prisma.preferredRoute.findMany({
@@ -97,6 +111,40 @@ export const search = base
 				direction: row.direction,
 				...resolveRoute(row, gazetteer)
 			}))
+		};
+	});
+
+/**
+ * One entry per origin -> destination pair with how many routes it has, split by route type.
+ * One grouped query, so a huge search (an ARTCC to anywhere is ~2.7k routes) can be shown as an overview
+ * without fetching or resolving a single route.
+ */
+export const pairs = base
+	.input(PairsInput)
+	.handler(async ({ input: { from, to, bidirectional } }) => {
+		const grouped = await prisma.preferredRoute.groupBy({
+			by: ["origin_iata", "dest_iata", "route_type"],
+			where: matching(from, to, bidirectional),
+			_count: { _all: true }
+		});
+
+		const byPair = new Map<string, { id: string; origin: string; dest: string; count: number; types: Record<string, number> }>();
+		for (const row of grouped) {
+			const id = `${row.origin_iata}>${row.dest_iata}`;
+			const pair = byPair.get(id) ?? { id, origin: row.origin_iata, dest: row.dest_iata, count: 0, types: {} };
+			pair.count += row._count._all;
+			pair.types[row.route_type] = row._count._all;
+			byPair.set(id, pair);
+		}
+
+		const list = [...byPair.values()].sort((a, b) =>
+			b.count - a.count || a.origin.localeCompare(b.origin) || a.dest.localeCompare(b.dest)
+		);
+
+		return {
+			/** routes across every pair */
+			total: list.reduce((acc, pair) => acc + pair.count, 0),
+			pairs: list
 		};
 	});
 
@@ -144,4 +192,4 @@ export const coverage = base
 		};
 	});
 
-export const routing = { search, coverage };
+export const routing = { search, pairs, coverage };
