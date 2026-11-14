@@ -11,6 +11,7 @@ import { ThemeProvider } from "~/components/ui/theme-provider";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./globals.css";
 
+// @next-codemod-ignore Cache Components adoption: this segment temporarily allows blocking.
 const geistSans = Geist({
 	variable: "--font-geist-sans",
 	subsets: ["latin"],

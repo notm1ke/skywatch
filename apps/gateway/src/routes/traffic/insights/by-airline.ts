@@ -3,6 +3,7 @@ import { prisma } from "@/services/prisma";
 import { airspaceInput, base } from "@/utils";
 import { Prisma } from "@/prisma/generated/client";
 import { injectDataMarker } from "@/middleware/traffic-marker";
+import { trafficScopeSql } from "@/services/traffic-scope";
 
 export type CommonAirlineType = typeof CommonAirlines[number];
 
@@ -20,12 +21,12 @@ type QueryResponse = {
 export const airline = base
 	.input(airspaceInput)
 	.use(injectDataMarker)
-	.handler(async ({ context: { marker }, input: { airspace } }) => {
-		const airspaceFilter = airspace
-			? Prisma.sql`AND airport_traffic_record.iata_code IN (
-				SELECT iata_code FROM airports WHERE artcc = ${airspace}
-			)`
-			: Prisma.empty;
+	.handler(async ({ context: { marker }, input }) => {
+		const scopeFilter = trafficScopeSql(input);
+		// national views only track the big carriers; a single airport shows everyone
+		const allowlist = input.airport
+			? Prisma.sql`AND (flight->>'majorAirline') <> ''`
+			: Prisma.sql`AND (flight->>'majorAirline') IN (${Prisma.join(CommonAirlines)})`;
 
 		const records = await prisma.$queryRaw<QueryResponse[]>`
 			SELECT
@@ -34,11 +35,11 @@ export const airline = base
 			FROM airport_traffic_record,
 			LATERAL jsonb_array_elements(flights::jsonb) AS flight
 			WHERE 1=1
-				AND (flight->>'majorAirline') IN (${Prisma.join(CommonAirlines)})
+				${allowlist}
 				AND day = ${marker.day}
 				AND month = ${marker.month}
 				AND year = ${marker.year}
-				${airspaceFilter}
+				${scopeFilter}
 			GROUP BY airline
 			ORDER BY flights DESC
 		`;
@@ -47,6 +48,7 @@ export const airline = base
 		const datum = {} as Record<string, number>;
 		let cumulative = 0;
 		
+		// a single airport shows every airline it sees; the national view is already limited to the allowlist
 		for (const { airline, flights } of records) {
 			if (!tracked.has(airline)) tracked.add(airline);
 			datum[airline] = flights;

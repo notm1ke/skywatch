@@ -48,7 +48,7 @@ export const MobileFilterSheet = () => {
 	};
 
 	return (
-		<div className="sm:hidden pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center pb-[env(safe-area-inset-bottom)]">
+		<div className="lg:hidden pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center pb-[env(safe-area-inset-bottom)]">
 			<Sheet onOpenChange={(open) => !open && setActiveFilter(null)}>
 				<SheetTrigger asChild>
 					<Button

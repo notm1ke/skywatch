@@ -227,7 +227,7 @@ export const AirspaceMap: React.FC = () => {
 	}, [active]);
 	
 	if (pending) return (
-		<div className="w-full min-h-[300px] sm:min-h-[600px] h-full relative overflow-hidden">
+		<div className="w-full min-h-(--map-min-height) h-full relative overflow-hidden">
 			<div className="absolute inset-0 bg-muted animate-pulse" />
 		</div>
 	);
@@ -235,7 +235,7 @@ export const AirspaceMap: React.FC = () => {
 	if (mobile) return (
 		<div
 			ref={mapContainerRef}
-			className="w-full relative overflow-hidden data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-[300px]"
+			className="w-full relative overflow-hidden data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-(--map-min-height)"
 			data-fullscreen={false}
 		>
 			<div className="absolute inset-0">
@@ -312,7 +312,7 @@ export const AirspaceMap: React.FC = () => {
 		<div
 			ref={mapContainerRef}
 			data-fullscreen={false}
-			className="w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:min-h-[400px] sm:data-[fullscreen='false']:min-h-[600px] h-full relative overflow-hidden"
+			className="w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:min-h-(--map-min-height) h-full relative overflow-hidden"
 		>
 			<div className="absolute inset-0">
 				<Map

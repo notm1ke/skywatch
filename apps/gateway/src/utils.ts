@@ -15,7 +15,11 @@ export const iataInput = z.object({
 });
 
 export const airspaceInput = z.object({
-	airspace: z.enum(Airspaces).optional()
+	airspace: z.enum(Airspaces).optional(),
+	/** Narrow to a single airport (IATA code). Combines with `airspace` if both are given. */
+	airport: z.string().length(3).toUpperCase().optional(),
+	/** A Zulu day (YYYY-MM-DD). Defaults to the latest day that has data for the scope. */
+	date: z.iso.date().optional()
 });
 
 export const corsOrigin = (origin: string | undefined) => {

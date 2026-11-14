@@ -59,7 +59,7 @@ const DropdownMenuQuickLink = ({ href, children }: { href: string; children: Rea
 const MobileQuickLinksControl: React.FC<{ airport: AirportWithJoins, side: Side }> = ({ airport, side }) => (
 	<DropdownMenu>
 		<DropdownMenuTrigger asChild>
-			<Button variant="outline" size="icon" className="flex sm:hidden">
+			<Button variant="outline" size="icon" className="flex lg:hidden">
 				<LinkIcon />
 			</Button>
 		</DropdownMenuTrigger>
@@ -97,17 +97,17 @@ const MobileQuickLinksControl: React.FC<{ airport: AirportWithJoins, side: Side 
 )
 
 export const AirportMapSkeletonLoader = () => (
-	<div className="relative h-[40vh] overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+	<div className="relative h-(--map-height) overflow-hidden bg-zinc-100 dark:bg-zinc-900">
 		<Skeleton className="h-full w-full" />
 
-		<div className="hidden sm:absolute left-2 top-1.5 min-w-[calc(100%-1.15rem)] sm:min-w-auto sm:max-w-sm rounded-lg border border-border/50 bg-white/65 dark:bg-[#0a0a0a]/65 p-5 backdrop-blur-sm">
+		<div className="hidden lg:absolute left-2 top-1.5 min-w-[calc(100%-1.15rem)] lg:min-w-auto lg:max-w-sm rounded-lg border border-border/50 bg-white/65 dark:bg-[#0a0a0a]/65 p-5 backdrop-blur-sm">
 			<div className="mb-2 flex items-center gap-2">
 				<Skeleton className="h-5 w-16 rounded" />
 				<Skeleton className="h-5 w-16 rounded" />
 				<Skeleton className="h-5 w-24 rounded" />
 			</div>
-			<Skeleton className="h-7 w-48 sm:mb-1" />
-			<div className="items-center gap-2 text-xs hidden sm:flex">
+			<Skeleton className="h-7 w-48 lg:mb-1" />
+			<div className="items-center gap-2 text-xs hidden lg:flex">
 				<div className="flex items-center gap-3 mt-2">
 					<Skeleton className="h-4 w-16" />
 					<Skeleton className="h-4 w-32" />
@@ -151,7 +151,7 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 	);
 	
 	if (pending) return (
-		<div className="w-full h-[40vh] relative overflow-hidden">
+		<div className="w-full h-(--map-height) relative overflow-hidden">
 			<div className="absolute inset-0 bg-muted animate-pulse" />
 		</div>
 	);
@@ -167,7 +167,7 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 	return (
 		<div
 			ref={mapContainerRef}
-			className="relative data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-[40vh] overflow-hidden"
+			className="relative data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-(--map-height) overflow-hidden"
 			data-fullscreen={false}
 		>
 			<Map
@@ -252,8 +252,8 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 				))}
 			</Map>
 			
-			<div className="block sm:hidden absolute left-0 top-0 min-w-full border border-border/50 bg-white/65 dark:bg-[#0a0a0a]/65 backdrop-blur-sm">
-				<div className="items-center gap-2 text-xs hidden sm:flex">
+			<div className="block lg:hidden absolute left-0 top-0 min-w-full border border-border/50 bg-white/65 dark:bg-[#0a0a0a]/65 backdrop-blur-sm">
+				<div className="items-center gap-2 text-xs hidden lg:flex">
 					<div className="flex items-center gap-3 mt-2 text-xs border dark:border-none text-zinc-800 dark:text-white/80">
 						<div className="flex items-center gap-1">
 							<Mountain className="h-3 w-3" />
@@ -270,7 +270,7 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 				</div>
 			</div>
 			
-			<div className="hidden sm:block absolute left-2 top-2 min-w-[calc(100%-1.15rem)] sm:min-w-auto sm:max-w-sm rounded-lg border border-border/50 bg-white/65 dark:bg-[#0a0a0a]/65 p-5 backdrop-blur-sm">
+			<div className="hidden lg:block absolute left-2 top-2 min-w-[calc(100%-1.15rem)] lg:min-w-auto lg:max-w-sm rounded-lg border border-border/50 bg-white/65 dark:bg-[#0a0a0a]/65 p-5 backdrop-blur-sm">
 				<div className="mb-2 flex items-center gap-2">
 					<span className="rounded bg-zinc-300 dark:bg-zinc-800 px-2 py-0.5 font-mono text-xs text-zinc-800 dark:text-zinc-400">
 						<span className="text-zinc-500 dark:text-zinc-300 text-xs align-text-top">IATA</span>{" "}
@@ -284,10 +284,10 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 						{formatAirportLocation(airport)}
 					</span>
 				</div>
-				<h1 className="sm:mb-1 text-xl font-semibold text-zinc-800 dark:text-white">
+				<h1 className="lg:mb-1 text-xl font-semibold text-zinc-800 dark:text-white">
 					{shortenAirportName(airport.name)}
 				</h1>
-				<div className="items-center gap-2 text-xs hidden sm:flex">
+				<div className="items-center gap-2 text-xs hidden lg:flex">
 					<div className="flex items-center gap-3 mt-2 text-xs text-zinc-800 dark:text-white/80">
 						<div className="flex items-center gap-1">
 							<Mountain className="h-3 w-3" />
@@ -304,7 +304,7 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 				</div>
 			</div>
 			
-			<div className="absolute sm:hidden bottom-0 w-full bg-linear-to-t from-zinc-500/80 via-zinc-400/40 dark:from-black/80 dark:via-black/50 to-transparent pt-10 pb-3">
+			<div className="absolute lg:hidden bottom-0 w-full bg-linear-to-t from-zinc-500/80 via-zinc-400/40 dark:from-black/80 dark:via-black/50 to-transparent pt-10 pb-3">
 				<div className="px-4 pt-2 pb-0.5 text-xl font-semibold text-zinc-800 dark:text-white">
 					{shortenAirportName(airport.name)}
 				</div>
@@ -325,7 +325,7 @@ export const AirportMap: React.FC<{ airport: AirportWithJoins }> = ({ airport })
 				</div>
 			</div>
 			
-			<div className="sm:absolute left-2 bottom-2 flex gap-1">
+			<div className="lg:absolute left-2 bottom-2 flex gap-1">
 				{airport.home_link && (
 					<QuickLink href={airport.home_link}>
 						<AirportSiteFavicon url={airport.home_link} />

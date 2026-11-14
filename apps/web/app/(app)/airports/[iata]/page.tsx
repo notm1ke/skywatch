@@ -3,6 +3,7 @@ import { gateway } from "~/lib/gateway";
 import { shortenAirportName } from "~/lib/utils";
 import { AirportInspector } from "~/components/airport/inspect";
 
+// @next-codemod-ignore Cache Components adoption: this segment temporarily allows blocking.
 type Params = {
 	params: Promise<{
 		iata: string;

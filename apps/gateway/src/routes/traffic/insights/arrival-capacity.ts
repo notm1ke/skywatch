@@ -9,12 +9,11 @@ import { AirportTrafficFlowWhereInput } from "@/prisma/generated/models";
 export const arrivalCapacity = base
 	.input(airspaceInput)
 	.use(injectDataMarker)
-	.handler(async ({ context: { marker }, input: { airspace } }) => {
-		const where: AirportTrafficFlowWhereInput = marker;
-		if (airspace) {
-			where.airport = {};
-			where.airport.artcc = { equals: airspace };
-		}
+	.handler(async ({ context: { marker }, input: { airspace, airport } }) => {
+		// copy: `marker` is shared request context and must not be mutated
+		const where: AirportTrafficFlowWhereInput = { ...marker };
+		if (airspace) where.airport = { artcc: { equals: airspace } };
+		if (airport) where.iata_code = airport;
 		
 		const airports = await prisma.airportTrafficFlow.findMany({
 			where, select: { arrival_rates: true }

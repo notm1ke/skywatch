@@ -2,8 +2,8 @@ import { z } from "zod/v4";
 import { prisma } from "@/services/prisma";
 import { cache } from "@/middleware/cache";
 import { airspaceInput, base } from "@/utils";
-import { Prisma } from "@/prisma/generated/client";
 import { injectDataMarker } from "@/middleware/traffic-marker";
+import { trafficScopeKey, trafficScopeSql } from "@/services/traffic-scope";
 import { ChartConfig, TrafficFlowAggregation } from "@/schemas";
 
 const TrafficByStatusOutput = z.object({
@@ -49,17 +49,13 @@ const TrafficByStatusConfig = {
 export const statuses = base
 	.input(airspaceInput)
 	.use(cache(
-		input => `traffic:statuses:${input.airspace ?? "all"}`,
+		input => `traffic:statuses:${trafficScopeKey(input)}`,
 		"1 minutes",
 		TrafficByStatusOutput
 	))
 	.use(injectDataMarker)
-	.handler(async ({ context: { marker }, input: { airspace } }) => {
-		const airspaceFilter = airspace
-			? Prisma.sql`AND airport_traffic_record.iata_code IN (
-				SELECT iata_code FROM airports WHERE artcc = ${airspace}
-			)`
-			: Prisma.empty;
+	.handler(async ({ context: { marker }, input }) => {
+		const scopeFilter = trafficScopeSql(input);
 
 		const agg = await prisma.$queryRaw<TrafficFlowAggregation[]>`
 			WITH aggregated AS (
@@ -75,7 +71,7 @@ export const statuses = base
 					AND month = ${marker.month}
 					AND day = ${marker.day}
 					AND elem->>'type' = 'STATUS'
-					${airspaceFilter}
+					${scopeFilter}
 				GROUP BY type, time, name
 			)
 			SELECT

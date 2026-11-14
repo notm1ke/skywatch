@@ -146,7 +146,7 @@ export const TfrMap: React.FC<{ tfrs?: Tfr[], geo?: TfrGeoJson }> = ({ tfrs, geo
 	}, [active, mobile, convertedGeo]);
 	
 	if (pending) return (
-		<div className="w-full min-h-[40vh] h-full relative overflow-hidden">
+		<div className="w-full min-h-(--map-height) h-full relative overflow-hidden">
 			<div className="absolute inset-0 bg-muted animate-pulse" />
 		</div>
 	);
@@ -155,7 +155,7 @@ export const TfrMap: React.FC<{ tfrs?: Tfr[], geo?: TfrGeoJson }> = ({ tfrs, geo
 		<div
 			ref={mapContainerRef}
 			data-fullscreen={false}
-			className="w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-[40vh] relative overflow-hidden border-x border-t"
+			className="w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-(--map-height) relative overflow-hidden border-x border-t"
 		>
 			<Map
 				ref={mapRef}
@@ -163,7 +163,7 @@ export const TfrMap: React.FC<{ tfrs?: Tfr[], geo?: TfrGeoJson }> = ({ tfrs, geo
 				initialViewState={mobileInitialView}
 				projection="mercator"
 				attributionControl={false}
-				style={{ width: "100%", height: "40vh" }}
+				style={{ width: "100%", height: "var(--map-height)" }}
 				mapStyle={
 					theme === "light"
 						? "mapbox://styles/mapbox/light-v11"
@@ -238,7 +238,7 @@ export const TfrMap: React.FC<{ tfrs?: Tfr[], geo?: TfrGeoJson }> = ({ tfrs, geo
 		<div
 			ref={mapContainerRef}
 			data-fullscreen={false}
-			className="w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-[40vh] relative overflow-hidden border-x border-t"
+			className="w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-(--map-height) relative overflow-hidden border-x border-t"
 		>
 			<Map
 				ref={mapRef}

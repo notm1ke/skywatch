@@ -173,7 +173,7 @@ export const Searchbar: React.FC = () => {
 					<motion.div
 						ref={triggerRef}
 						layoutId="find"
-						className="group relative flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent/60 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-w-[324px] cursor-pointer"
+						className="group relative flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent/60 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-w-(--search-trigger-min-width) cursor-pointer"
 					>
 						<motion.div
 							initial={{ opacity: 0, filter: "blur(4px)" }}
@@ -203,7 +203,7 @@ export const Searchbar: React.FC = () => {
 					</motion.div>
 				)}
 			</SearchTrigger>
-			<SearchContent asMobile={mobile} className={cn("rounded-xl border border-border bg-background! p-0", !mobile && "w-[400px]")}>
+			<SearchContent asMobile={mobile} className={cn("rounded-xl border border-border bg-background! p-0", !mobile && "w-(--search-width)")}>
 				<motion.div
 					layoutId="find"
 					className="flex items-center gap-2 px-2 py-4 border-b border-border"

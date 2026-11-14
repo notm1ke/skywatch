@@ -91,7 +91,7 @@ export const AirportsTab = () => {
 	if (loading) return <AirportsPageSkeleton />;
 
 	return (
-		<div className="relative flex h-[calc(100svh-4rem)] overflow-hidden">
+		<div className="relative flex h-(--page-height) overflow-hidden">
 			<FilterSidebar airports={airports} advisoryMap={advisoryMap} />
 			<AirportList airports={filtered} advisoryMap={advisoryMap} total={airports.length} />
 			<MobileFilterSheet airports={airports} advisoryMap={advisoryMap} />

@@ -1,126 +1,16 @@
 import axios from "axios";
 import path from "node:path";
-import unzipper from "unzipper";
 import moment from "moment-timezone";
 
 import { load } from "cheerio";
-import { tmpdir } from "node:os";
 import { existsSync } from "node:fs";
 import { parse } from "csv-parse/sync";
-import { randomUUID } from "node:crypto";
 import { prisma } from "@/services/prisma";
+import { readFile, writeFile } from "node:fs/promises";
 import { AirportUpdateArgs } from "@/prisma/generated/models";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cleanupTemp, createTemp, extractArchive } from "./util";
 
 const BATCH_SIZE = 1000;
-
-const createTemp = async () => {
-	const dir = path.join(tmpdir(), `skywatch-nasr-${randomUUID()}`);
-	await mkdir(dir);
-	return dir;
-}
-
-const cleanupTemp = async (path: string) => rm(path, { recursive: true });
-
-const extractArchive = async (archive: string, path: string, concurrency = 5) => unzipper
-	.Open
-	.file(archive)
-	.then(handle => handle.extract({ path, concurrency }));
-
-/**
- * {
-    "EFF_DATE": "2025-12-25",
-    "SITE_NO": "02187.",
-    "SITE_TYPE_CODE": "A",
-    "STATE_CODE": "CA",
-    "ARPT_ID": "SFO",
-    "CITY": "SAN FRANCISCO",
-    "COUNTRY_CODE": "US",
-    "REGION_CODE": "AWP",
-    "ADO_CODE": "SFO",
-    "STATE_NAME": "CALIFORNIA",
-    "COUNTY_NAME": "SAN MATEO",
-    "COUNTY_ASSOC_STATE": "CA",
-    "ARPT_NAME": "SAN FRANCISCO INTL",
-    "OWNERSHIP_TYPE_CODE": "PU",
-    "FACILITY_USE_CODE": "PU",
-    "LAT_DEG": 37,
-    "LAT_MIN": 37,
-    "LAT_SEC": 7.7,
-    "LAT_HEMIS": "N",
-    "LAT_DECIMAL": 37.61880555,
-    "LONG_DEG": 122,
-    "LONG_MIN": 22,
-    "LONG_SEC": 31.5,
-    "LONG_HEMIS": "W",
-    "LONG_DECIMAL": -122.37541666,
-    "SURVEY_METHOD_CODE": "E",
-    "ELEV": 13.1,
-    "ELEV_METHOD_CODE": "S",
-    "MAG_VARN": 14,
-    "MAG_HEMIS": "E",
-    "MAG_VARN_YEAR": 2015,
-    "TPA": null,
-    "CHART_NAME": "SAN FRANCISCO",
-    "DIST_CITY_TO_AIRPORT": 8,
-    "DIRECTION_CODE": "SE",
-    "ACREAGE": 5207,
-    "RESP_ARTCC_ID": "ZOA",
-    "COMPUTER_ID": "ZCO",
-    "ARTCC_NAME": "OAKLAND",
-    "FSS_ON_ARPT_FLAG": "N",
-    "FSS_ID": "OAK",
-    "FSS_NAME": "OAKLAND",
-    "PHONE_NO": null,
-    "TOLL_FREE_NO": "1-800-WX-BRIEF",
-    "ALT_FSS_ID": null,
-    "ALT_FSS_NAME": null,
-    "ALT_TOLL_FREE_NO": null,
-    "NOTAM_ID": "SFO",
-    "NOTAM_FLAG": "Y",
-    "ACTIVATION_DATE": "1940/04",
-    "ARPT_STATUS": "O",
-    "FAR_139_TYPE_CODE": "I E",
-    "FAR_139_CARRIER_SER_CODE": "S",
-    "ARFF_CERT_TYPE_DATE": "1973/05",
-    "NASP_CODE": "NGPRY",
-    "ASP_ANLYS_DTRM_CODE": "NO OBJECTION",
-    "CUST_FLAG": "N",
-    "LNDG_RIGHTS_FLAG": "Y",
-    "JOINT_USE_FLAG": "N",
-    "MIL_LNDG_FLAG": "Y",
-    "INSPECT_METHOD_CODE": "F",
-    "INSPECTOR_CODE": "F",
-    "LAST_INSPECTION": "2025-06-23",
-    "LAST_INFO_RESPONSE": null,
-    "FUEL_TYPES": "100LL,A,A++",
-    "AIRFRAME_REPAIR_SER_CODE": "NONE",
-    "PWR_PLANT_REPAIR_SER": "NONE",
-    "BOTTLED_OXY_TYPE": "HIGH/LOW",
-    "BULK_OXY_TYPE": "NONE",
-    "LGT_SKED": null,
-    "BCN_LGT_SKED": "SS-SR",
-    "TWR_TYPE_CODE": "ATCT",
-    "SEG_CIRCLE_MKR_FLAG": "N",
-    "BCN_LENS_COLOR": "WG",
-    "LNDG_FEE_FLAG": "Y",
-    "MEDICAL_USE_FLAG": null,
-    "ARPT_PSN_SOURCE": "3RD PARTY SURVEY",
-    "POSITION_SRC_DATE": "2014-10-22",
-    "ARPT_ELEV_SOURCE": "3RD PARTY SURVEY",
-    "ELEVATION_SRC_DATE": "2014-10-22",
-    "CONTR_FUEL_AVBL": null,
-    "TRNS_STRG_BUOY_FLAG": null,
-    "TRNS_STRG_HGR_FLAG": "Y",
-    "TRNS_STRG_TIE_FLAG": "N",
-    "OTHER_SERVICES": "AFRT,AVNCS,CARGO,CHTR",
-    "WIND_INDCR_FLAG": "Y-L",
-    "ICAO_ID": "KSFO",
-    "MIN_OP_NETWORK": "N",
-    "USER_FEE_FLAG": null,
-    "CTA": null
- }
- */
 
 type RawAirportRef = {
 	EFF_DATE: string;
@@ -237,7 +127,7 @@ export const seedAirportNasrData = async () => {
 		.get(base)
 		.then(res => res.data)
 		.then(load)
-		.then($ => $('#content > ul:nth-child(5) > li > a').attr("href"))
+		.then($ => $('#content > ul:nth-child(4) > li > a').attr("href"))
 		.then(segment => base + segment)
 		.catch(error => console.error("[nasr] Error retrieving NASR subscription page", error.message));
 	
@@ -256,7 +146,7 @@ export const seedAirportNasrData = async () => {
 	const dataUrl = `https://nfdc.faa.gov/webContent/28DaySub/extra/${moment(effectiveDate, "MMMM DD, YYYY").format('DD_MMM_YYYY')}_CSV.zip`;
 	console.log("[nasr] Attempting to retrieve NASR data from FAA:", dataUrl);
 	
-	const handle = await createTemp();
+	const handle = await createTemp('nasr');
 	const downloaded = await axios
 		.get(dataUrl, { responseType: "arraybuffer" })
 		.then(res => res.data)

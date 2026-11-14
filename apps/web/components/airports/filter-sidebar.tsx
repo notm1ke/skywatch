@@ -8,6 +8,7 @@ import { Slider } from "~/components/ui/slider";
 import { AirportAdvisory } from "~/lib/schemas";
 import { AirportSearch } from "./airport-search";
 import { UsStateAbbreviations } from "~/lib/geo";
+import { ATC_TYPE_LABELS, ATC_TYPE_ORDER, CAPABILITY_LABELS } from "~/lib/airport-labels";
 import { AIRLINES, AirlineCode } from "./airlines";
 import { Checkbox } from "~/components/ui/checkbox";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -20,28 +21,6 @@ const TYPE_LABELS: Record<string, string> = {
 	small_airport: "Small",
 };
 
-
-const ATC_TYPE_ORDER = ["UNCONTROLLED", "NON-ATCT", "ATCT", "ATCT-A/C", "ATCT-RAPCON", "ATCT-RATCF", "ATCT-TRACON"];
-
-const ATC_TYPE_LABELS: Record<string, string> = {
-	"UNCONTROLLED": "Uncontrolled",
-	"NON-ATCT":     "No Tower",
-	"ATCT":         "Tower",
-	"ATCT-A/C":     "Tower + Appr Ctrl",
-	"ATCT-RAPCON":  "Tower + Radar Appr Ctrl",
-	"ATCT-RATCF":   "Tower + Radar ATC Facil",
-	"ATCT-TRACON":  "Tower + Term Radar Appr Ctrl",
-};
-
-const CAPABILITY_LABELS: Record<string, string> = {
-	atis: "ATIS",
-	cbp: "CBP Port of Entry",
-	globalEntry: "CBP Global Entry",
-	mpc: "CBP Mobile Passport Control",
-	precheck: "TSA PreCheck",
-	clear: "CLEAR+",
-	rvr: "Runway Visual Range",
-};
 
 function Section({
 	title,
@@ -57,7 +36,7 @@ function Section({
 		<div className="border-b">
 			<Disclosure open={open} onOpenChange={setOpen} transition={{ duration: 0.15, ease: "easeInOut" }}>
 				<DisclosureTrigger>
-					<button className="flex w-full items-center justify-between pl-4 sm:pl-5 pr-4 sm:pr-3 py-3 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+					<button className="flex w-full items-center justify-between pl-4 lg:pl-5 pr-4 lg:pr-3 py-3 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
 						<span>{title}</span>
 						<ChevronDown className={cn("size-3.5 transition-transform", open && "rotate-180")} />
 					</button>
@@ -84,7 +63,7 @@ export function FilterCheck({
 	onToggle: (value: string) => void;
 }) {
 	return (
-		<label className="flex cursor-pointer items-center gap-2 pl-4 sm:pl-5 pr-4 sm:pr-3.5 py-1 text-xs hover:bg-accent/50 transition-colors">
+		<label className="flex cursor-pointer items-center gap-2 pl-4 lg:pl-5 pr-4 lg:pr-3.5 py-1 text-xs hover:bg-accent/50 transition-colors">
 			<Checkbox
 				checked={active}
 				onCheckedChange={() => onToggle(value)}
@@ -222,7 +201,7 @@ export const FilterSidebarContent = ({
 				</Section>
 				
 				<Section title="Runways" defaultOpen={false}>
-					<div className="px-4 sm:px-5 pb-2 pt-1">
+					<div className="px-4 lg:px-5 pb-2 pt-1">
 						<div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
 							<span>{currentRange[0]}</span>
 							<span>{currentRange[1]}</span>
@@ -240,7 +219,7 @@ export const FilterSidebarContent = ({
 				</Section>
 
 				<Section title="Elevation" defaultOpen={false}>
-					<div className="px-4 sm:px-5 pb-2 pt-1">
+					<div className="px-4 lg:px-5 pb-2 pt-1">
 						<div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
 							<span>{currentElevRange[0].toLocaleString()}ft</span>
 							<span>{currentElevRange[1].toLocaleString()}ft</span>
@@ -307,7 +286,7 @@ export const FilterSidebar = ({
 	airports: AirportWithJoins[];
 	advisoryMap: Map<string, AirportAdvisory>;
 }) => (
-	<aside className="hidden sm:flex w-64 shrink-0 flex-col border-r">
+	<aside className="hidden lg:flex w-(--sidebar-width) shrink-0 flex-col border-r">
 		<FilterSidebarContent airports={airports} advisoryMap={advisoryMap} />
 	</aside>
 );

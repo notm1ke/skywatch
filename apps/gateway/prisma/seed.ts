@@ -2,14 +2,16 @@ import { redis } from "@/services/redis";
 import { prisma } from "@/services/prisma";
 import { seedAirports } from "./seed/airport";
 import { seedAirlineHubs } from "./seed/airline-hubs";
+import { seedAirportHasMpc } from "./seed/airport-mpc";
 import { seedAirportHasRvrs } from "./seed/airport-rvr";
 import { seedAirportHasAtis } from "./seed/airport-atis";
 import { seedAirportTimezones } from "./seed/airport-tz";
 import { seedAirportHasClear } from "./seed/airport-clear";
+import { seedPreferredRoutes } from "./seed/preferred-routes";
 import { seedAirportNasrData } from "./seed/airport-nasr-data";
 import { seedAirportHasPrecheck } from "./seed/airport-precheck";
+import { seedAirportCbpPortsOfEntry } from "./seed/airport-cbp-poe";
 import { seedAirportHasGlobalEntry } from "./seed/airport-global-entry";
-import { seedAirportHasMpc } from "./seed/airport-mpc";
 
 const gap = 5 * 60 * 1000;
 const lastSeededTime = await redis.get("db:seed");
@@ -41,8 +43,12 @@ await seedAirportHasMpc();
 await seedAirportHasRvrs();
 await seedAirportTimezones();
 
-// nasr
+// faa 
 await seedAirportNasrData();
+await seedPreferredRoutes();
+
+// cbp
+await seedAirportCbpPortsOfEntry();
 
 console.log(`Finished seeding database in ${(Date.now() - start).toFixed(2)}ms.`);
 await redis.set("db:seed", start);

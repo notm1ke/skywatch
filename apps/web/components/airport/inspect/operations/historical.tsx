@@ -300,7 +300,7 @@ export const HistoricalStatus: React.FC<HistoricalInterruptionsProps> = ({ airpo
 			<div className="border-t">
 				<ErrorSection
 					title="Error loading historical status"
-					className="border-t rounded-none border-solid h-[288px]"
+					className="border-t rounded-none border-solid h-(--panel-height)"
 					error={error?.message}
 					refresh={refetch}
 				/>

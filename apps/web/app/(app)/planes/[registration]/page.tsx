@@ -3,6 +3,7 @@ import { gateway } from "~/lib/gateway";
 import { capitalizeFirst } from "~/lib/utils";
 import { PlaneDetailsTab } from "~/components/planes/details";
 
+// @next-codemod-ignore Cache Components adoption: this segment temporarily allows blocking.
 type Params = {
 	params: Promise<{
 		registration: string;

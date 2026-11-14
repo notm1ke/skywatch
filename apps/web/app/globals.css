@@ -84,6 +84,43 @@
   --chart-5: oklch(0.769 0.188 70.08);
 }
 
+/*
+ * Layout sizing tokens. Use in markup as e.g. `h-(--map-height)`, `w-(--sidebar-width)`.
+ * Responsive values live here so components don't repeat `min-h-[300px] sm:min-h-[600px]` pairs.
+ */
+:root {
+  /* App chrome */
+  --header-height: 4rem;
+  /* Header + tab bar. Header measures itself and overrides this on <html> (see components/header.tsx); the value here is the first-paint fallback. */
+  --app-chrome-height: 7.125rem;
+  /* Viewport height left over below the chrome. svh so iPad/mobile Safari toolbars don't push content off-screen. */
+  --page-height: calc(100svh - var(--app-chrome-height));
+
+  /* Page content width */
+  --content-max-width: 1600px;
+  /* Statistics' own inner container; its artwork is tuned to this width, so it's separate from the site wrapper below */
+  --content-max-width-ultra: 2200px;
+  /* The site wrapper from xl up: 92% of the screen (some margin, not edge to edge), capped for ultrawides */
+  --content-max-width-wide: min(100svw * 0.92, 2800px);
+
+  /* Maps */
+  --map-height: 40vh;
+  --map-height-tall: 85svh;
+  --map-min-height: 300px;
+  @variant sm {
+    --map-min-height: 600px;
+  }
+
+  /* Side panels / popovers */
+  --sidebar-width: 16rem;
+  --detail-panel-width: min(365px, 50%);
+  --search-width: min(400px, calc(100vw - 2rem));
+  --search-trigger-min-width: 324px;
+
+  /* Equal-height cards in the airport operations grid */
+  --panel-height: 288px;
+}
+
 .dark {
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);

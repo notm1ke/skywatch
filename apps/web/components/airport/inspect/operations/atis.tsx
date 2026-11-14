@@ -166,7 +166,7 @@ export const AtisBroadcast: React.FC<{ airport: AirportWithJoins }> = ({ airport
 			<div className="border-t">
 				<ErrorSection
 					title="Error loading ATIS information"
-					className="border-t rounded-none border-solid h-[288px]"
+					className="border-t rounded-none border-solid h-(--panel-height)"
 					error={error?.message}
 					refresh={refetch}
 				/>

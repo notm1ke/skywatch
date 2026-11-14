@@ -312,4 +312,14 @@ export const WaypointGeoJson = z.object({
 export const WaypointWithDynamic = z.object({
 	...WaypointFeatureMetadata,
 	airports: z.array(z.string())
-})
+});
+
+export const PreferredRouteType: Record<string, string> = {
+	L: "Low Altitude",
+	H: "High Altitude",
+	LSD: "Low Altitude Single Direction",
+	HSD: "High Altitude Single Direction",
+	SLD: "Special Low Altitude Directional",
+	SHD: "Special High Altitude Directional",
+	TEC: "Tower Enroute Control"
+};

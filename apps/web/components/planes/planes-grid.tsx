@@ -181,7 +181,7 @@ export const PlaneRegistrationsGrid: React.FC<PlanesRegistrationGridProps> = ({ 
 					/>
 				</motion.div>
 
-				<div className="hidden sm:flex flex-row justify-between h-10 items-center divide-x">
+				<div className="hidden lg:flex flex-row justify-between h-10 items-center divide-x">
 					<div className="flex flex-row h-full text-sm divide-x">
 						<div className="flex flex-row gap-2 items-center px-4 font-mono tracking-tight text-sm h-full">
 							<div className="w-32 flex flex-row gap-2 justify-center">

@@ -16,6 +16,11 @@ export const injectDataMarker = base.middleware<
 >(async ({ next }, input) => {
 	const where: AirportTrafficFlowWhereInput = {};
 	if (input.airspace) where.airport = { artcc: input.airspace };
+	if (input.airport) where.iata_code = input.airport;
+	if (input.date) {
+		const [year, month, day] = input.date.split("-").map(Number);
+		Object.assign(where, { year, month, day });
+	}
 	
 	const marker = await prisma
 		.airportTrafficFlow
@@ -42,7 +47,9 @@ export const injectDataMarker = base.middleware<
 		.catch(() => null);
 
 	if (!marker) throw new ORPCError("NO_DATA_ERROR", {
-		message: "There isn't any traffic data yet"
+		message: input.date
+			? "There isn't any traffic data for that day"
+			: "There isn't any traffic data yet"
 	});
 	
 	return next({ context: { marker } })

@@ -470,7 +470,7 @@ export const RunwayConditions: React.FC<RunwayConditionsProps> = ({ airport }) =
 			<div className="border-t">
 				<ErrorSection
 					title="Error loading runway conditions"
-					className="border-t rounded-none border-solid h-[288px]"
+					className="border-t rounded-none border-solid h-(--panel-height)"
 					error={error?.message}
 					refresh={refetch}
 				/>

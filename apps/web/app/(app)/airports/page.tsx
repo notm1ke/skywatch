@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { AirportsTab } from "~/components/airports";
 
+// @next-codemod-ignore Cache Components adoption: this segment temporarily allows blocking.
 export const metadata: Metadata = {
 	title: "Airports",
 	description: "Browse US airports, airline hubs, and live operational status.",

@@ -269,13 +269,22 @@ const upsertAirportNavs = async (
 	const start = Date.now();
 	const BATCH_SIZE = 200;
 
-	const usIcaoCodes = new Set([...usAirports
-		.filter(row => !ignored.has(row.icao_code))
-		.map(row => row.icao_code)
-	]);
+	// `associated_airport` is a foreign key to Airport.ident, so it can only point at airports that were actually
+	// seeded (`ignored` holds the idents of the ones that weren't).
+	const seededIdents = new Set(usAirports
+		.filter(row => !ignored.has(row.ident))
+		.map(row => row.ident)
+	);
 
-	const usData = data.filter(row => usIcaoCodes.has(row.associated_airport));
-	console.log(`Processing ${usData.length} airport navaid${usData.length === 1 ? '' : 's'}...`);
+	// Keep every US navaid that has a position, not only the ones tied to an airport we track: preferred routes run
+	// over en-route VORs and NDBs (SLI, MLF, ...) that belong to no airport. Those get a null `associated_airport`.
+	const usData = data.filter(row =>
+		(row.iso_country === 'US' || seededIdents.has(row.associated_airport))
+		&& row.latitude_deg
+		&& row.longitude_deg
+	);
+
+	console.log(`Processing ${usData.length} navaid${usData.length === 1 ? '' : 's'}...`);
 
 	let ignoreCount = 0;
 	for (let i = 0; i < usData.length; i += BATCH_SIZE) {
@@ -283,7 +292,8 @@ const upsertAirportNavs = async (
 		await Promise.all(
 			batch.map(async (row) => {
 				try {
-					if (!row.associated_airport) return ignoreCount++;
+					// null when the navaid isn't tied to an airport we seeded (the foreign key would reject it)
+					const associated_airport = seededIdents.has(row.associated_airport) ? row.associated_airport : null;
 
 					await prisma.airportNav.upsert({
 						where: { id: parseInt(row.id) },
@@ -306,7 +316,7 @@ const upsertAirportNavs = async (
 							magnetic_variation_deg: parseFloat(row.magnetic_variation_deg) || null,
 							usageType: row.usageType,
 							power: row.power,
-							associated_airport: row.associated_airport
+							associated_airport
 						},
 						create: {
 							id: parseInt(row.id),
@@ -328,7 +338,7 @@ const upsertAirportNavs = async (
 							magnetic_variation_deg: parseFloat(row.magnetic_variation_deg) || null,
 							usageType: row.usageType,
 							power: row.power,
-							associated_airport: row.associated_airport
+							associated_airport
 						}
 					}).catch(() => ignoreCount++);
 				} catch (error) {
@@ -338,7 +348,7 @@ const upsertAirportNavs = async (
 		);
 	}
 
-	console.log(`Finished processing ${usData.length - ignoreCount} airport navaid${(usData.length - ignoreCount) === 1 ? '' : 's'} in ${(Date.now() - start).toFixed(2)}ms.`);
+	console.log(`Finished processing ${usData.length - ignoreCount} navaid${(usData.length - ignoreCount) === 1 ? '' : 's'} in ${(Date.now() - start).toFixed(2)}ms.`);
 }
 
 export const seedAirports = async () => {

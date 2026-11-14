@@ -1,7 +1,7 @@
 import { airspaceInput, base } from "@/utils";
 import { prisma } from "@/services/prisma";
-import { Prisma } from "@/prisma/generated/client";
 import { injectDataMarker } from "@/middleware/traffic-marker";
+import { trafficScopeKey, trafficScopeSql } from "@/services/traffic-scope";
 
 import {
 	Airspaces,
@@ -109,12 +109,8 @@ const forAllCenters = (records: TrafficFlowAggregation[] | undefined) => {
 export const centers = base
 	.input(airspaceInput)
 	.use(injectDataMarker)
-	.handler(async ({ context: { marker }, input: { airspace } }) => {
-		const airspaceFilter = airspace
-			? Prisma.sql`AND airport_traffic_record.iata_code IN (
-				SELECT iata_code FROM airports WHERE artcc = ${airspace}
-			)`
-			: Prisma.empty;
+	.handler(async ({ context: { marker }, input }) => {
+		const scopeFilter = trafficScopeSql(input);
 
 		const agg = await prisma.$queryRaw<TrafficFlowAggregation[]>`
 			WITH aggregated AS (
@@ -130,7 +126,7 @@ export const centers = base
 					AND month = ${marker.month}
 					AND day = ${marker.day}
 					AND elem->>'type' = 'CENTER'
-					${airspaceFilter}
+					${scopeFilter}
 				GROUP BY type, time, name
 			)
 			SELECT

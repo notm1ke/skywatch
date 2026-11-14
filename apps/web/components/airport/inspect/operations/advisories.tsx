@@ -37,7 +37,7 @@ export const AirportAdvisoriesSkeletonLoader = () => (
 		</div>
 		
 		<div className="border-t">
-			<ScrollArea className="min-h-auto h-[288px]">
+			<ScrollArea className="min-h-auto h-(--panel-height)">
 				<div className="flex flex-col divide-y">
 					{Array(7).fill(null).map((_, i) => (
 						<div
@@ -79,7 +79,7 @@ export const AirportAdvisories: React.FC<AirportAdvisoriesProps> = ({ airport })
 			<div className="border-t">
 				<ErrorSection
 					title="Error loading related airspace advisories"
-					className="border-t rounded-none border-solid h-[288px]"
+					className="border-t rounded-none border-solid h-(--panel-height)"
 					error={error?.message}
 					refresh={refetch}
 				/>
@@ -99,7 +99,7 @@ export const AirportAdvisories: React.FC<AirportAdvisoriesProps> = ({ airport })
 
 			<div className="border-t">
 				{!data.length && (
-					<Empty className="h-[288px]">
+					<Empty className="h-(--panel-height)">
 						<EmptyHeader>
 							<EmptyMedia>
 								<div className="bg-green-200 dark:bg-green-700 p-2 rounded-lg">
@@ -115,7 +115,7 @@ export const AirportAdvisories: React.FC<AirportAdvisoriesProps> = ({ airport })
 				)}
 				
 				{data.length > 0 && (
-					<ScrollArea className="h-[288px]">
+					<ScrollArea className="h-(--panel-height)">
 						<div className="flex flex-col divide-y">
 							{data.sort((a, b) => a.advisoryNumber - b.advisoryNumber).map((advisory, i) => (
 								<MorphingDialog key={`advisory-${advisory.advisoryNumber}`}>

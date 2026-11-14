@@ -169,6 +169,10 @@ model AirportTrafficFlowRecord {
    /// [TrafficFlowFlights]
    flights Json
 
+   /// Airport arrival rate (flights/hour) the FAA published for this bucket when it was ingested.
+   /// Null for rows ingested before this column existed.
+   aar Int?
+
    @@unique([iata_code, year, month, day, time])
    @@index([year, month, day])
    @@map("airport_traffic_record")
@@ -209,6 +213,7 @@ model AirportStatusHistory {
 
    @@unique([airport_iata, event_type, observed_at])
    @@index([observed_at, resolved_at])
+   @@index([airport_iata, observed_at])
    @@map("airport_status_history")
 }
 
@@ -233,6 +238,30 @@ model Waypoint {
 
    @@index([waypoint_id(ops: raw("text_pattern_ops"))])
    @@map("waypoints")
+}
+
+model PreferredRoute {
+	route_id     String @unique @default(nanoid())
+	route_type   String
+	route_string String
+	sequence     Int
+	origin_iata  String
+	origin_artcc String
+	dest_iata    String
+	dest_artcc   String
+	hour_1       String?
+	hour_2       String?
+	hour_3       String?
+	area         String?
+	aircraft     String?
+	altitude     String?
+	direction    String?
+
+	@@unique([origin_iata, dest_iata, route_type, sequence])
+	@@index([dest_iata])
+	@@index([origin_artcc, dest_artcc])
+	@@index([dest_artcc])
+	@@map("preferred_routes")
 }
 
 model Aircraft {

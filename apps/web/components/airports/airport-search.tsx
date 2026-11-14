@@ -27,7 +27,7 @@ export const AirportSearch = ({ loading = false }: { loading?: boolean }) => {
 
 	return (
 		<div className="flex items-center relative font-mono tracking-tight text-sm w-full h-full grow border-b">
-			<div className="flex sm:hidden absolute left-4 top-0 bottom-0 items-center justify-center pointer-events-none">
+			<div className="flex lg:hidden absolute left-4 top-0 bottom-0 items-center justify-center pointer-events-none">
 				<Search className="size-3.5 text-muted-foreground" />
 			</div>
 			<input
@@ -37,7 +37,7 @@ export const AirportSearch = ({ loading = false }: { loading?: boolean }) => {
 				onFocus={() => setFocused(true)}
 				onBlur={() => setFocused(false)}
 				placeholder="Search airports..."
-				className="w-full h-full pl-10 sm:pl-5 pr-10 peer/input bg-transparent outline-none text-xs placeholder:text-muted-foreground"
+				className="w-full h-full pl-10 lg:pl-5 pr-10 peer/input bg-transparent outline-none text-xs placeholder:text-muted-foreground"
 				ref={inputRef}
 			/>
 
@@ -55,10 +55,10 @@ export const AirportSearch = ({ loading = false }: { loading?: boolean }) => {
 
 			{!loading && (
 				<>
-					<div className="hidden sm:flex absolute right-2.5 top-0 bottom-0 items-center justify-center pointer-events-none peer-focus/input:opacity-0 transition-opacity duration-200">
+					<div className="hidden lg:flex absolute right-2.5 top-0 bottom-0 items-center justify-center pointer-events-none peer-focus/input:opacity-0 transition-opacity duration-200">
 						<Kbd>/</Kbd>
 					</div>
-					<div className="hidden sm:flex absolute right-2 top-0 bottom-0 items-center justify-center pointer-events-none opacity-0 peer-focus/input:opacity-100 transition-opacity duration-200">
+					<div className="hidden lg:flex absolute right-2 top-0 bottom-0 items-center justify-center pointer-events-none opacity-0 peer-focus/input:opacity-100 transition-opacity duration-200">
 						<Kbd>Esc</Kbd>
 					</div>
 				</>

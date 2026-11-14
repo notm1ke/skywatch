@@ -398,7 +398,7 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 			<div className="border-t">
 				<ErrorSection
 					title="Error loading meteorological report"
-					className="border-t rounded-none border-solid h-[288px]"
+					className="border-t rounded-none border-solid h-(--panel-height)"
 					error={error?.message}
 					refresh={refetch}
 				/>
@@ -425,7 +425,7 @@ export const MeteorologicalReport: React.FC<MeterologicalReportProps> = ({ airpo
 				</FullReport>
 			</div>
 
-			<ScrollArea className="h-[288.5px]">
+			<ScrollArea className="h-[calc(var(--panel-height)+0.5px)]">
 				<div className="p-3 border-t">
 					<div className="grid grid-cols-3 gap-3">
 						{/* temp, wind, viz */}

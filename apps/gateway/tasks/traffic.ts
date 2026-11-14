@@ -41,6 +41,19 @@ export type TrafficFlowResponse = {
 	}>;
 }
 
+/**
+ * The FAA payload carries one arrival rate (AAR, flights/hour) per hour of its rolling window, counted from
+ * the window's first bucket, i.e. `rates[floor(bucketIndex / 4)]` for 15 minute buckets. (Observed: every
+ * airport returns 64 buckets and 16 rates; ORD's overnight step-down lands on local midnight.)
+ * The window start isn't persisted anywhere else, so it has to be resolved here, per bucket, at ingest.
+ */
+const BUCKETS_PER_RATE = 4;
+
+const aarForBucket = (rates: string[], bucketIndex: number): number | null => {
+	const aar = parseInt(rates[Math.floor(bucketIndex / BUCKETS_PER_RATE)]);
+	return isNaN(aar) ? null : aar;
+}
+
 const sanitizeAndTransform = (flow: TrafficFlowResponse): AirportTrafficFlow => ({
 	iata_code: flow.name,
 	year: parseInt(flow.year),
@@ -53,9 +66,11 @@ const sanitizeAndTransform = (flow: TrafficFlowResponse): AirportTrafficFlow => 
 	fixes: flow.fixes,
 	time_buckets: flow
 		.timeBuckets
+		// resolve each bucket's AAR from its position in the *unfiltered* window, before dropping next-day buckets
+		.map((bucket, index) => ({ bucket, aar: aarForBucket(flow.rates, index) }))
 		// toward the end of the day, next day's data starts coming through
-		.filter(bucket => parseInt(bucket.day) === parseInt(flow.day)) // parse both to ints because it can be padded with a zero
-		.map(bucket => ({
+		.filter(({ bucket }) => parseInt(bucket.day) === parseInt(flow.day)) // parse both to ints because it can be padded with a zero
+		.map(({ bucket, aar }) => ({
 			iata_code: flow.name,
 			year: parseInt(flow.year),
 			month: parseInt(flow.month),
@@ -63,6 +78,7 @@ const sanitizeAndTransform = (flow: TrafficFlowResponse): AirportTrafficFlow => 
 			time: bucket.time,
 			counts: bucket.counts,
 			flights: bucket.flights,
+			aar,
 		}))
 });
 
@@ -199,7 +215,8 @@ const traffic = defineTask({
 								day: bucket.day,
 								time: bucket.time,
 								counts: bucket.counts,
-								flights: bucket.flights
+								flights: bucket.flights,
+								aar: bucket.aar
 							}))
 						})
 					]))

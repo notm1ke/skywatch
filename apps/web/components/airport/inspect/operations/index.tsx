@@ -9,7 +9,7 @@ import { HistoricalStatus } from "./historical";
 export const InspectorOperationsTab: React.FC<{ airport: AirportWithJoins }> = ({ airport }) => {
 	return (
 		<>
-			<div className="basis-full sm:basis-2/3">
+			<div className="basis-full lg:basis-2/3">
 				<div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y">
 					<AtisBroadcast airport={airport} />
 					<RunwayConditions airport={airport} />
@@ -17,7 +17,7 @@ export const InspectorOperationsTab: React.FC<{ airport: AirportWithJoins }> = (
 					<AirportAdvisories airport={airport} />
 				</div>
 			</div>
-			<div className="sm:basis-1/3">
+			<div className="lg:basis-1/3">
 				<MeteorologicalReport airport={airport} />
 				<TsaWaitTimes airport={airport} />
 			</div>

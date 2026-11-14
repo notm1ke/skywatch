@@ -1,8 +1,8 @@
 import { Skeleton } from "~/components/ui/skeleton";
 
 export const AirportsPageSkeleton = () => (
-	<div className="flex h-[calc(100svh-4rem)] overflow-hidden">
-		<aside className="flex w-52 shrink-0 flex-col border-r">
+	<div className="flex h-(--page-height) overflow-hidden">
+		<aside className="flex w-(--sidebar-width) shrink-0 flex-col border-r">
 			<div className="border-b p-2">
 				<Skeleton className="h-7 w-full" />
 			</div>

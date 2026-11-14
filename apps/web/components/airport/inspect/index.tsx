@@ -9,6 +9,8 @@ import { AirportAdvisory } from "~/lib/schemas";
 import { ArrowLeft, Plane } from "lucide-react";
 import { Skeleton } from "~/components/ui/skeleton";
 import { InspectorOperationsTab } from "./operations";
+import { InspectorReferenceTab } from "./reference";
+import { InspectorTrafficTab } from "./traffic";
 import { MetarSkeletonLoader } from "./operations/metar";
 import { useAirports } from "~/components/airport-provider";
 import { useAirspace } from "~/components/airspace/provider";
@@ -77,8 +79,8 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 			<AdvisoryRibbonSkeletonLoader />
 			
 			<TabSwitcher disabled />
-			<div className="flex flex-col sm:flex-row">
-				<div className="basis-full sm:basis-2/3">
+			<div className="flex flex-col lg:flex-row">
+				<div className="basis-full lg:basis-2/3">
 					<div className="grid grid-cols-1 sm:grid-cols-2 divide-x-2 divide-y-2">
 						<AtisBroadcastSkeletonLoader />
 						<RunwaysSkeletonLoader />
@@ -86,7 +88,7 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 						<AirportAdvisoriesSkeletonLoader />
 					</div>
 				</div>
-				<div className="sm:basis-1/3 border-l">
+				<div className="lg:basis-1/3 border-l">
 					<MetarSkeletonLoader />
 					<TsaWaitTimesSkeletonLoader />
 				</div>
@@ -96,7 +98,7 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 	
 	const airport = airports.find(airport => airport.iata_code?.toLowerCase() === iata.toLowerCase());
 	if (!airport) return (
-		<div className="h-[calc(100vh-8rem)] flex flex-col items-center justify-center bg-muted/5">
+		<div className="h-(--page-height) flex flex-col items-center justify-center bg-muted/5">
 			<Empty>
 				<EmptyHeader>
 					<EmptyMedia>
@@ -136,8 +138,10 @@ export const AirportInspector: React.FC<{ iata: string }> = ({ iata }) => {
 			<AdvisoryRibbon airport={airport} />
 			<TabSwitcher />
 			
-			<div className="flex flex-col sm:flex-row">
+			<div className="flex flex-col lg:flex-row">
 				{tab === "operations" && <InspectorOperationsTab airport={airport} />}
+				{tab === "traffic" && <InspectorTrafficTab airport={airport} />}
+				{tab === "reference" && <InspectorReferenceTab airport={airport} />}
 			</div>
 		</div>
 	)

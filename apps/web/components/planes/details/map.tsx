@@ -12,7 +12,7 @@ import { AnimatedPlaneIcon } from "./plane-icon";
 import { PlaneTrail } from "./plane-track";
 
 export const AirportMapSkeletonLoader = () => (
-	<div className="relative h-[40vh] overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+	<div className="relative h-(--map-height) overflow-hidden bg-zinc-100 dark:bg-zinc-900">
 		<Skeleton className="h-full w-full" />
 
 		<div className="hidden sm:absolute left-2 top-1.5 min-w-[calc(100%-1.15rem)] sm:min-w-auto sm:max-w-sm rounded-lg border border-border/50 bg-white/65 dark:bg-[#0a0a0a]/65 p-5 backdrop-blur-sm">
@@ -91,7 +91,7 @@ export const PlaneAdsbMap: React.FC<{ plane: PlaneRegistration }> = ({ plane }) 
 	return (
 		<div
 			ref={mapContainerRef}
-			className="w-full h-full relative data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-[43.05vh] overflow-hidden"
+			className="w-full h-full relative data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-[calc(var(--map-height)+3.05vh)] overflow-hidden"
 			data-fullscreen={false}
 		>
 			<Map

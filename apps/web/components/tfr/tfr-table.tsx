@@ -265,7 +265,7 @@ export const TfrTable: React.FC<{ tfrs: Tfr[] }> = ({ tfrs }) => {
 					{...dataGridProps}
 				/>
 			</div>
-			<div className={cn("shrink-0 transition-all duration-300 ease-in-out overflow-hidden", active ? "w-full sm:w-[365px]" : "w-0")}>
+			<div className={cn("shrink-0 transition-all duration-300 ease-in-out overflow-hidden", active ? "w-full sm:w-(--detail-panel-width)" : "w-0")}>
 				<div className="w-full border-y border-r border-border overflow-hidden">
 					{active && <TfrInfoPanel tfr={active} />}
 				</div>

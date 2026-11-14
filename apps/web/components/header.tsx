@@ -9,23 +9,37 @@ import { ThemeToggle } from "./theme-toggle";
 import { GitHubButton } from "./github-button";
 import { HeaderEnvBadge } from "./header-env-badge";
 import { AnimatedTabs, AnimatedTabItem } from "./ui/animated-tabs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const NavLinks: AnimatedTabItem[] = [
 	{ content: "Airspaces",  tabType: "airspaces",  href: "/",           hint: "1" },
 	{ content: "Airports",   tabType: "airports",   href: "/airports",   hint: "2" },
 	{ content: "Planes",     tabType: "airplanes",  href: "/planes",     hint: "3" },
-	// { content: "Routing", tabType: "routing", href: "/routing" },
-	{ content: "TFRs",       tabType: "tfrs",       href: "/tfrs",       hint: "4" },
-	{ content: "Waypoints",  tabType: "waypoints",  href: "/waypoints",  hint: "5" },
-	{ content: "Statistics", tabType: "statistics", href: "/statistics", hint: "6" },
+	{ content: "Routing",    tabType: "routing",    href: "/routing",    hint: "4" },
+	{ content: "TFRs",       tabType: "tfrs",       href: "/tfrs",       hint: "5" },
+	{ content: "Waypoints",  tabType: "waypoints",  href: "/waypoints",  hint: "6" },
+	{ content: "Statistics", tabType: "statistics", href: "/statistics", hint: "7" },
 ];
 
 export const Header = () => {
 	const router = useRouter();
 	const { setActiveTab } = usePageControls();
 	const [showHints, setShowHints] = useState(false);
+	const headerRef = useRef<HTMLElement>(null);
+
+	// Publish the real header + tab bar height so page-height math (--page-height) isn't a guess.
+	useEffect(() => {
+		const el = headerRef.current;
+		if (!el) return;
+
+		const publish = () => document.documentElement.style.setProperty("--app-chrome-height", `${el.offsetHeight}px`);
+		publish();
+
+		const observer = new ResizeObserver(publish);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, []);
 
 	useEffect(() => {
 		const isInputFocused = () => {
@@ -42,7 +56,7 @@ export const Header = () => {
 			if (isInputFocused()) return;
 			if (e.key === "Alt") setShowHints(true);
 			if (e.altKey) {
-				const m = e.code.match(/^Digit([1-6])$/);
+				const m = e.code.match(/^Digit([1-7])$/);
 				if (m) {
 					e.preventDefault();
 					const item = NavLinks[parseInt(m[1]) - 1];
@@ -65,8 +79,8 @@ export const Header = () => {
 	}, [setActiveTab, router]);
 
 	return (
-		<header className="border-b dark:border-zinc-800 bg-background">
-			<div className="flex h-16 items-center px-5 justify-between">
+		<header ref={headerRef} className="border-b dark:border-zinc-800 bg-background">
+			<div className="flex h-(--header-height) items-center px-5 justify-between">
 				<Link prefetch href="/" onClick={() => setActiveTab("airspaces")}>
 					<div className="flex items-center gap-2 cursor-pointer">
 						<TowerControl className="size-7" />

@@ -12,7 +12,7 @@ interface MobileContextType {
 	pending: boolean;
 }
 
-const MOBILE_BREAKPOINT = 768;
+const MOBILE_BREAKPOINT = 1024;
 
 const MobileContext = createContext<MobileContextType | undefined>(undefined);
 

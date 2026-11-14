@@ -56,7 +56,7 @@ export const WaypointsTab = () => {
 	);
 	
 	if (error || (!isLoading && !data)) return (
-		<div className="h-[calc(100vh-8rem)] flex flex-col items-center justify-center bg-muted/5">
+		<div className="h-(--page-height) flex flex-col items-center justify-center bg-muted/5">
 			<Empty>
 				<EmptyHeader>
 					<EmptyMedia>
@@ -88,7 +88,7 @@ export const WaypointsTab = () => {
 	return (
 		<div
 			ref={mapContainerRef}
-			className="relative w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-[calc(85svh)]"
+			className="relative w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-(--map-height-tall)"
 			data-fullscreen={false}
 		>
 			<Map

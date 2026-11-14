@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { InspectorTabType, useAirportInspector } from "./store";
 
 import {
@@ -10,6 +11,8 @@ import {
 import {
 	BookOpenText,
 	ChevronDown,
+	CloudOff,
+	Flag,
 	LucideIcon,
 	Megaphone,
 	Plane,
@@ -19,6 +22,7 @@ import {
 type TabMeta = {
 	title: string;
 	icon: LucideIcon;
+	rightContent?: ReactNode;
 }
 
 const Tabs: Record<InspectorTabType, TabMeta> = {
@@ -36,7 +40,13 @@ const Tabs: Record<InspectorTabType, TabMeta> = {
 	},
 	reference: {
 		title: "Reference",
-		icon: BookOpenText
+		icon: BookOpenText,
+		rightContent: (
+			<div className="flex flex-row items-center gap-2 bg-amber-400 dark:bg-amber-800 rounded-sm px-2 py-0.5 text-xs font-mono tracking-tighter font-bold select-none">
+				<CloudOff className="size-3 fill-inherit dark:fill-white" />
+				<span>Not for operational use</span>
+			</div>
+		)
 	}
 }
 
@@ -64,6 +74,8 @@ export const TabSwitcher: React.FC<{ disabled?: boolean }> = ({ disabled }) => {
 					))}
 				</DropdownMenuContent>
 			</DropdownMenu>
+
+			{metadata.rightContent}
 		</div>
 	)
 }

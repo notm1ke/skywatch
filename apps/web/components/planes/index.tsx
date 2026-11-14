@@ -57,7 +57,7 @@ export const PlanesTab = () => {
 	if (!data && isLoading) return <PlaneRegistrationsGridSkeleton />;
 
 	if (error || !data) return (
-		<div className="h-[calc(100vh-8rem)] flex flex-col items-center justify-center bg-muted/5">
+		<div className="h-(--page-height) flex flex-col items-center justify-center bg-muted/5">
 			<Empty>
 				<EmptyHeader>
 					<EmptyMedia>

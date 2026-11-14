@@ -31,7 +31,7 @@ export const MobileFilterSheet = ({
 		+ (elevationRange ? 1 : 0);
 
 	return (
-		<div className="sm:hidden pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center pb-[env(safe-area-inset-bottom)]">
+		<div className="lg:hidden pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center pb-[env(safe-area-inset-bottom)]">
 			<Sheet>
 				<SheetTrigger asChild>
 					<Button

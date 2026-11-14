@@ -31,13 +31,13 @@ export const AirspaceAdvisoryDetails: React.FC<{ advisory: z.infer<typeof Airspa
 			<motion.div layout className={cn(
 				"flex flex-col space-y-2 divide-y",
 				expanded
-					? "sm:min-w-5xl sm:max-w-5xl"
+					? "lg:min-w-5xl lg:max-w-5xl"
 					: "sm:min-w-xl sm:max-w-2xl"
 			)}>
 				<div className="bg-zinc-50 dark:bg-zinc-900 px-4 py-2.5 flex flex-row items-center justify-between">
 					<h2 className="font-medium">Advisory #{advisory.advisoryNumber}</h2>
 					<div className="flex flex-row space-x-4 items-center">
-						<button className="hidden sm:flex cursor-pointer" onClick={() => setExpanded(!expanded)}>
+						<button className="hidden lg:flex cursor-pointer" onClick={() => setExpanded(!expanded)}>
 							{expanded
 								? <Minimize className="size-4 text-zinc-700 dark:text-zinc-300" />
 								: <Maximize className="size-4 text-zinc-700 dark:text-zinc-300" />}

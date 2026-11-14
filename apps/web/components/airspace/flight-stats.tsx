@@ -128,7 +128,7 @@ export const FlightStatuses: React.FC = () => {
 	const activePct = 100 - cancelledPct - delayedPct;
 	
 	return (
-		<div className="border-t sm:border-t-0">
+		<div className="border-t lg:border-t-0">
 			<div className="flex flex-row px-3 py-2 justify-between border-b">
 				<span className="text-md font-semibold pointer-events-none">
 					Flight Statuses
