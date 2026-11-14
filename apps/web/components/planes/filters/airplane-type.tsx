@@ -38,6 +38,7 @@ export const AirplaneTypeFilter = ({ mode = "button" }: { mode?: "button" | "lis
 		<ComboboxButton
 			multiple
 			label="Type"
+			description="The kind of aircraft: fixed-wing single or multi engine, rotorcraft, glider, balloon, blimp and so on."
 			placeholder="Filter aircraft type.."
 			items={items}
 			value={aircraft_type}

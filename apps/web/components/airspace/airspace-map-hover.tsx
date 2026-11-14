@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { cn } from "cnfast";
 import { Snowflake } from "lucide-react";
 import { PropsWithChildren } from "react";
 import { AirportAdvisory } from "~/lib/schemas";
@@ -8,6 +9,21 @@ import { AirportWithJoins } from "@skywatch/gateway/schemas";
 import { AdvisoryType, advisoryPriority } from "./active-programs";
 import { formatAirportLocation, shortenAirportName } from "~/lib/utils";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
+
+/** the stripe down the card's edge, in the same color as the pin */
+const statusStripe = (priority: AdvisoryType) => {
+	switch (priority) {
+		case AdvisoryType.AirportClosure: return "bg-red-400";
+		case AdvisoryType.GroundStop: return "bg-orange-400";
+		case AdvisoryType.GroundDelay:
+		case AdvisoryType.DualDelay:
+		case AdvisoryType.ArrivalDelay:
+		case AdvisoryType.DepartureDelay: return "bg-yellow-400";
+		case AdvisoryType.FreeForm:
+		case AdvisoryType.Deicing: return "bg-blue-400";
+		default: return "bg-green-400";
+	}
+}
 
 const indicator = (advisory: AirportAdvisory | undefined, priority: AdvisoryType) => {
 	switch (priority) {
@@ -38,7 +54,7 @@ const indicator = (advisory: AirportAdvisory | undefined, priority: AdvisoryType
 				: advisory.arrivalDelay
 					? "Arrival"
 					: "Departure";
-			
+
 			return (
 				<div className="flex gap-2 items-center text-sm">
 					<div className="size-3 bg-yellow-400 rounded-[30%]" />
@@ -67,43 +83,50 @@ const indicator = (advisory: AirportAdvisory | undefined, priority: AdvisoryType
 	}
 }
 
+/**
+ * The pin is the link (click it to open the airport) and the card is just a read-out: it can't be moved onto, so it
+ * closes the moment the pointer leaves the pin instead of lingering over its neighbors.
+ *
+ * Hovering also lights up the matching row in Active Interruptions, immediately rather than when the card closes.
+ */
 export const AirspaceMapHoverCard: React.FC<PropsWithChildren<{ advisory?: AirportAdvisory, airport: AirportWithJoins }>> = ({ advisory, airport, children }) => {
-	const { hover, hovered } = useAirspaceInteractivity();
+	const hover = useAirspaceInteractivity(state => state.hover);
 	const priority = advisoryPriority(advisory);
-	
+
 	return (
-		<HoverCard
-			openDelay={50}
-			onOpenChange={open => {
-				if (!advisory) return;
-				if (!open) hover(null);
-				if (advisory.airportId === hovered?.airportId) return;
-					else hover(advisory);
-			}}
-		>
-			<HoverCardTrigger>{children}</HoverCardTrigger>
-			<HoverCardContent className="w-64">
+		<HoverCard openDelay={40} closeDelay={0}>
+			<HoverCardTrigger asChild>
 				<Link
 					href={`/airports/${airport.iata_code}`}
+					className="block"
+					onPointerEnter={() => advisory && hover(advisory, "map")}
+					onPointerLeave={() => advisory && hover(null)}
 					onClick={() => hover(null)}
 				>
-					<div className="flex flex-row items-start gap-4">
-						<div>
+					{children}
+				</Link>
+			</HoverCardTrigger>
+			<HoverCardContent
+				side="top"
+				sideOffset={10}
+				className="pointer-events-none w-auto max-w-72 overflow-hidden p-0"
+			>
+				<div className="flex items-stretch">
+					<div className={cn("w-1 shrink-0", statusStripe(priority))} />
+					<div className="grid gap-0.5 px-3 py-2">
+						<div className="flex items-baseline gap-2">
 							<span className="text-zinc-800 dark:text-zinc-400 font-mono font-bold text-sm">
 								{airport.iata_code}
 							</span>
-						</div>
-						
-						<div className="space-y-1">
 							<h4 className="text-sm font-semibold">{shortenAirportName(airport.name)}</h4>
-							<p className="text-sm">{formatAirportLocation(airport)}</p>
-							<div className="text-muted-foreground text-xs">
-								{indicator(advisory, priority)}
-							</div>
+						</div>
+						<p className="text-xs text-muted-foreground">{formatAirportLocation(airport)}</p>
+						<div className="mt-1 text-muted-foreground text-xs">
+							{indicator(advisory, priority)}
 						</div>
 					</div>
-				</Link>
+				</div>
 			</HoverCardContent>
 		</HoverCard>
 	);
-} 
+}

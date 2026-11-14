@@ -3,7 +3,7 @@
 import { cn } from "cnfast";
 import { ArrowLeftRight, Network, Repeat, Route, X } from "lucide-react";
 import { PreferredRouteType } from "@skywatch/gateway/schemas";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
+import { Hint } from "~/components/ui/hint";
 import { typeColor } from "./geo";
 import { endpointCode, isAirport, useRoutingStore, type RoutingEndpoint, type RoutingSlot } from "./store";
 
@@ -56,23 +56,6 @@ const TYPE_HELP: Record<string, string> = {
 	LSD: "Low altitude routes that only apply in one direction.",
 	HSD: "High altitude routes that only apply in one direction."
 };
-
-/** A tooltip with a title, an explanation and an optional note about the current state. Opens on top: the bar is at the bottom. */
-const Hint: React.FC<{
-	title: React.ReactNode;
-	body: React.ReactNode;
-	note?: React.ReactNode;
-	children: React.ReactElement;
-}> = ({ title, body, note, children }) => (
-	<Tooltip delayDuration={300}>
-		<TooltipTrigger asChild>{children}</TooltipTrigger>
-		<TooltipContent side="top" sideOffset={6} className="grid max-w-72 gap-1 px-3 py-2 text-left">
-			<div className="flex items-center gap-2 text-sm font-semibold">{title}</div>
-			<div className="text-background/80">{body}</div>
-			{note && <div className="mt-0.5 border-t border-background/20 pt-1.5 text-background/60">{note}</div>}
-		</TooltipContent>
-	</Tooltip>
-);
 
 const Toggle: React.FC<React.ComponentProps<"button"> & { pressed: boolean }> = ({ pressed, className, ...props }) => (
 	<button

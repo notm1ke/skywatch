@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { cn } from "cnfast";
 import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import { useAirspace } from "./provider";
 import { ScrollArea } from "../ui/scroll-area";
@@ -155,7 +156,31 @@ const programContent = (advisory: AirportAdvisory) => {
 export const ActivePrograms = () => {
 	const { airports } = useAirports();
 	const { advisories, loading, error, refresh } = useAirspace();
-	const { hovered: mapActiveHovered } = useAirspaceInteractivity();
+	const { hovered: mapActiveHovered, hoverSource, hover } = useAirspaceInteractivity();
+	const listRef = useRef<HTMLDivElement>(null);
+
+	// Pointing at a pin on the map brings its row into view. Debounced so sweeping across pins doesn't make the list
+	// chase the pointer, and only when the row isn't already fully visible.
+	useEffect(() => {
+		if (!mapActiveHovered || hoverSource !== "map") return;
+
+		const timer = setTimeout(() => {
+			const viewport = listRef.current?.querySelector<HTMLElement>("[data-slot='scroll-area-viewport']");
+			const row = viewport?.querySelector<HTMLElement>(`[data-airport='${mapActiveHovered.airportId}']`);
+			if (!viewport || !row) return;
+
+			const view = viewport.getBoundingClientRect();
+			const box = row.getBoundingClientRect();
+			if (box.top >= view.top && box.bottom <= view.bottom) return;
+
+			viewport.scrollTo({
+				top: viewport.scrollTop + (box.top - view.top) - (view.height - box.height) / 2,
+				behavior: "smooth"
+			});
+		}, 60);
+
+		return () => clearTimeout(timer);
+	}, [mapActiveHovered, hoverSource]);
 
 	if (loading) return (
 		<div>
@@ -225,7 +250,7 @@ export const ActivePrograms = () => {
 				</div>
 			</div>
 			<div className="border-t">
-				<ScrollArea maskHeight={20} className="sm:min-h-auto h-[300px] sm:h-[342px] sm:max-h-[800px]">
+				<ScrollArea ref={listRef} maskHeight={20} className="sm:min-h-auto h-[300px] sm:h-[342px] sm:max-h-[800px]">
 					{!advisories.length && (
 						<Empty>
 							<EmptyHeader>
@@ -254,11 +279,14 @@ export const ActivePrograms = () => {
 											<motion.div
 												className={cn(
 													"group flex flex-row justify-between px-3 pb-3 pt-3 cursor-pointer hover:bg-muted/30 transition-colors duration-300 ease-out",
-													mapActiveHovered?.airportId === advisory.airportId && "bg-muted animate-pulse"
+													mapActiveHovered?.airportId === advisory.airportId && "bg-muted"
 												)}
 												initial={{ opacity: 0 }}
 												animate={{ opacity: 1 }}
 												transition={{ delay: i * (25 / 1000) }} // 75ms staggered delay
+												data-airport={advisory.airportId}
+												onMouseEnter={() => hover(advisory, "list")}
+												onMouseLeave={() => hover(null)}
 											>
 												<div>
 													<div className="flex items-center">

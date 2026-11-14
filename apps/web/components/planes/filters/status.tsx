@@ -38,6 +38,7 @@ export const RegistrationStatusFilter = ({ mode = "button" }: { mode?: "button" 
 		<ComboboxButton
 			multiple
 			label="Status"
+			description="The FAA registration status: valid, pending, expired, cancelled, reserved and so on. Pick several to combine them."
 			placeholder="Filter registration status.."
 			items={items}
 			value={status}

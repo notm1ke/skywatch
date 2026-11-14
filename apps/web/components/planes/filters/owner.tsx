@@ -60,6 +60,7 @@ export const OwnerFilter = ({ mode = "button" }: { mode?: "button" | "list" }) =
 		<ComboboxButton
 			multiple
 			label="Owner"
+			description="The registered owner, a person or a company. Type at least 3 characters to search."
 			placeholder="Filter owner.."
 			items={items}
 			query={query}

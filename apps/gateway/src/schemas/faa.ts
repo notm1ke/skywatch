@@ -162,14 +162,21 @@ export const OperationsPlanResponse = z.object({
 	enRoutePlanned: z.array(RawPlannedEvent)
 });
 
+// The operations plan is free text, so everything parsed out of it can be missing. `raw` is the original line.
 export const PlannedAirportEvent = z.object({
-	time: z.string(),
+	/** the time as written, in Zulu ("0100Z") */
+	time: z.string().nullable(),
+	/** that time as an instant: the next time it occurs */
+	at: z.string().nullable(),
 	forecastType: z.enum([
 		"until",
 		"after"
-	]),
-	iataCode: z.array(z.string()),
-	eventType: z.string()
+	]).nullable(),
+	/** one row per airport; null when no airport could be read from the line */
+	iataCode: z.string().nullable(),
+	/** what is planned, in sentence case: free text, don't switch on it */
+	eventType: z.string(),
+	raw: z.string()
 });
 
 export const CancellationStats = z.object({

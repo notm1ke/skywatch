@@ -59,6 +59,7 @@ export const AirplaneModelFilter = ({ mode = "button" }: { mode?: "button" | "li
 		<ComboboxButton
 			multiple
 			label="Aircraft"
+			description="The specific aircraft model, such as 172S or G650. Type at least 3 characters to search."
 			placeholder="Filter aircraft.."
 			items={items}
 			query={query}

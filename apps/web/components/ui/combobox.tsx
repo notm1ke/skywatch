@@ -2,11 +2,13 @@
 
 import { cn } from "cnfast"
 import { motion, AnimatePresence } from "motion/react";
+import { Hint } from "~/components/ui/hint";
 
 import {
 	Popover,
-	PopoverContent,
 	PopoverAnchor,
+	PopoverContent,
+	PopoverTrigger,
 } from "~/components/ui/popover"
 
 import {
@@ -14,6 +16,7 @@ import {
 	ChevronDown,
 	Circle,
 	LucideIcon,
+	Search,
 	XIcon
 } from "lucide-react"
 
@@ -25,14 +28,7 @@ import {
 	CommandList,
 } from "~/components/ui/command"
 
-import {
-	ReactNode,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState
-} from "react";
+import { ReactNode, useMemo, useState } from "react";
 
 export interface ComboboxItem {
 	label: string
@@ -44,6 +40,8 @@ export interface ComboboxItem {
 
 export interface ComboboxButtonProps {
 	label: string
+	/** what the filter does: shown in a tooltip while the popover is closed */
+	description?: ReactNode
 	items: ComboboxItem[]
 	multiple?: boolean
 	query?: string
@@ -66,7 +64,7 @@ export function ComboboxSkeleton({ label }: Pick<ComboboxButtonProps, "label">) 
 			disabled
 			key="button"
 			type="button"
-			className="flex h-7 items-center gap-1 px-2 text-xs border-transparent bg-secondary text-secondary-foreground font-medium rounded-sm animate-pulse"
+			className="flex h-full shrink-0 animate-pulse items-center gap-1.5 px-3 text-sm text-muted-foreground"
 		>
 			{label}
 			<ChevronDown className="size-3 shrink-0 opacity-50" />
@@ -74,8 +72,13 @@ export function ComboboxSkeleton({ label }: Pick<ComboboxButtonProps, "label">) 
 	)
 }
 
+/**
+ * A filter button for a bar: the button stays where it is (so nothing around it moves) and a popover opens above it
+ * with the search box and the options.
+ */
 export function ComboboxButton({
 	label,
+	description,
 	items,
 	multiple = false,
 	query: controlledQuery,
@@ -89,26 +92,24 @@ export function ComboboxButton({
 	className,
 }: ComboboxButtonProps) {
 	const [open, setOpen] = useState(false)
-	const [showInput, setShowInput] = useState(false)
-	const [showPopover, setShowPopover] = useState(false)
 	const [internalQuery, setInternalQuery] = useState("")
 	const [highlightedIndex, setHighlightedIndex] = useState(0)
-	const [buttonWidth, setButtonWidth] = useState<number | null>(null)
-	const [popoverWidth, setPopoverWidth] = useState(208)
-	
-	const inputRef = useRef<HTMLInputElement>(null)
-	const containerRef = useRef<HTMLDivElement>(null)
-	const popoverRef = useRef<HTMLDivElement>(null)
-	const buttonRef = useRef<HTMLButtonElement>(null)
 
 	const isQueryControlled = controlledQuery !== undefined
 	const query = isQueryControlled ? controlledQuery : internalQuery
 
 	const handleQueryChange = (newQuery: string) => {
-		if (!isQueryControlled) {
-			setInternalQuery(newQuery)
-		}
+		if (!isQueryControlled) setInternalQuery(newQuery)
 		onQueryChange?.(newQuery)
+		setHighlightedIndex(0)
+	}
+
+	const handleOpenChange = (next: boolean) => {
+		setOpen(next)
+		if (!next) {
+			setHighlightedIndex(0)
+			if (!isQueryControlled) setInternalQuery("")
+		}
 	}
 
 	const filteredItems = useMemo(() => {
@@ -135,318 +136,166 @@ export function ComboboxButton({
 	// Flat list for keyboard navigation (maintains order across groups)
 	const flatFilteredItems = useMemo(() => {
 		if (!groupedItems) return filteredItems
-		const flat: ComboboxItem[] = []
-		for (const items of groupedItems.values()) {
-			flat.push(...items)
-		}
-		return flat
+		return Array.from(groupedItems.values()).flat()
 	}, [groupedItems, filteredItems])
 
-	// Reset highlighted index when filtered items change
-	useEffect(() => {
-		setHighlightedIndex(0)
-	}, [query])
-	
-	const handleClear = (e: React.MouseEvent) => {
-		e.stopPropagation()
-		onValueChange?.([])
-	}
-	
+	const handleClear = () => onValueChange?.([])
+
 	const handleSelect = (itemValue: string) => {
 		if (multiple) {
-			const newValue = value.includes(itemValue)
+			onValueChange?.(value.includes(itemValue)
 				? value.filter((v) => v !== itemValue)
-				: [...value, itemValue]
-			onValueChange?.(newValue)
+				: [...value, itemValue])
 		} else {
-			const newValue = value.includes(itemValue) ? [] : [itemValue]
-			onValueChange?.(newValue)
 			// Don't close on single select - let user close manually
+			onValueChange?.(value.includes(itemValue) ? [] : [itemValue])
 		}
 	}
 
 	const isSelected = (itemValue: string) => value.includes(itemValue)
 
-	const closePopover = useCallback(() => {
-		// Hide popover first
-		setShowPopover(false)
-		setOpen(false)
-		// Then morph back to button after a brief delay
-		setTimeout(() => {
-			setShowInput(false)
-			if (!isQueryControlled) {
-				setInternalQuery("")
-			}
-		}, 50)
-	}, [isQueryControlled])
+	// "Valid, Expired and 2 more" for the tooltip; selected values that aren't in the current item list show as they are
+	const selectedNames = value.map(v => items.find(item => item.value === v)?.label ?? v)
+	const selectedNote = selectedNames.length === 0
+		? "Nothing selected. Click to choose."
+		: `${selectedNames.slice(0, 3).join(", ")}${selectedNames.length > 3 ? ` and ${selectedNames.length - 3} more` : ""}. Click to change.`
 
-	const handleButtonClick = () => {
-		// Capture button width before morphing
-		if (buttonRef.current) {
-			setButtonWidth(buttonRef.current.offsetWidth)
-		}
-		setShowInput(true)
-		setOpen(true)
-		// Show popover after morph animation completes
-		setTimeout(() => {
-			setShowPopover(true)
-		}, 150)
-	}
+	// wide enough for the longest option, unless the filter says otherwise
+	const popoverWidth = width ?? (() => {
+		const longest = items.reduce((max, item) => Math.max(max, item.label.length), 0)
+		return Math.max(208, Math.min((longest + 5) * 8 + 16, 400))
+	})()
 
-	// Disable Radix's built-in open/close - we handle it manually
-	const handleOpenChange = () => {}
+	const renderItem = (item: ComboboxItem, index: number) => (
+		<CommandItem
+			key={item.value}
+			value={item.value}
+			onSelect={() => handleSelect(item.value)}
+			onMouseEnter={() => setHighlightedIndex(index)}
+			data-highlighted={index === highlightedIndex}
+			className="flex items-center gap-2 !bg-transparent data-[highlighted=true]:!bg-accent data-[highlighted=true]:!text-accent-foreground"
+		>
+			{item.icon ? (
+				<item.icon className="size-4 shrink-0" style={{ color: item.varColor }} />
+			) : (
+				<Circle className="size-2.5 shrink-0" style={{ fill: item.varColor, color: item.varColor }} />
+			)}
+			<span className="flex-1 truncate">{item.label}</span>
+			<AnimatePresence>
+				{isSelected(item.value) && (
+					<motion.div
+						initial={{ opacity: 0, scale: 0.5 }}
+						animate={{ opacity: 1, scale: 1 }}
+						exit={{ opacity: 0, scale: 0.5 }}
+						transition={{ duration: 0.15 }}
+					>
+						<Check className="size-4 shrink-0" />
+					</motion.div>
+				)}
+			</AnimatePresence>
+		</CommandItem>
+	)
 
-	// Handle click outside manually
-	useEffect(() => {
-		if (!open) return
-
-		const handleClickOutside = (e: MouseEvent) => {
-			const target = e.target as Node
-			const isInsideContainer = containerRef.current?.contains(target)
-			const isInsidePopover = popoverRef.current?.contains(target)
-			if (!isInsideContainer && !isInsidePopover) {
-				closePopover()
-			}
-		}
-
-		// Delay adding listener to avoid catching the opening click
-		const timer = setTimeout(() => {
-			document.addEventListener("mousedown", handleClickOutside)
-		}, 0)
-
-		return () => {
-			clearTimeout(timer)
-			document.removeEventListener("mousedown", handleClickOutside)
-		}
-	}, [open, closePopover])
-
-	// Auto-focus input when animation completes
-	const handleInputAnimationComplete = useCallback(() => {
-		if (showInput) {
-			inputRef.current?.focus()
-		}
-	}, [showInput])
-
-	// Calculate optimal popover width based on content
-	useEffect(() => {
-		if (showPopover) {
-			if (width) {
-				setPopoverWidth(width);
-			} else {
-				const maxCharWidth = Math.max(...items.map(item => item.label.length)) + 5;
-				const optimalWidth = Math.max(208, Math.min(maxCharWidth * 8 + 16, 400))
-				setPopoverWidth(optimalWidth)
-			}
-		}
-	}, [showPopover, items, width])
+	const trigger = (
+		<PopoverTrigger asChild>
+			<button
+				type="button"
+				className={cn(
+					"flex h-full cursor-pointer items-center gap-1.5 pl-3",
+					value.length > 0 ? "pr-1" : "pr-3",
+					className
+				)}
+			>
+				{label}
+				{value.length > 0 ? (
+					<span className="font-mono text-xs tabular-nums text-muted-foreground">{value.length}</span>
+				) : (
+					<ChevronDown className="size-3 shrink-0 opacity-50" />
+				)}
+			</button>
+		</PopoverTrigger>
+	)
 
 	return (
 		<Popover open={open} onOpenChange={handleOpenChange}>
-			<div ref={containerRef} className="inline-flex">
+			<div className="inline-flex h-full shrink-0">
 				<PopoverAnchor asChild>
-					<motion.div
+					<div
 						className={cn(
-							"relative inline-flex items-center overflow-hidden rounded-md border text-sm font-medium",
-							showInput
-								? "border-input bg-background dark:bg-zinc-800"
+							"flex h-full shrink-0 items-center text-sm font-medium transition-colors",
+							open
+								? "bg-accent/40 text-foreground"
 								: value.length > 0
-									? "border-border bg-background text-foreground"
-									: "border-transparent bg-secondary text-secondary-foreground"
+									? "bg-accent/60 text-foreground"
+									: "text-muted-foreground hover:bg-accent/40"
 						)}
-						animate={{
-							width: showInput
-								? popoverWidth
-								: buttonWidth || "auto"
-						}}
-						transition={{
-							type: "spring",
-							stiffness: 350,
-							damping: 28,
-						}}
 					>
-						<AnimatePresence mode="wait">
-							{showInput ? (
-								<motion.div
-									key="input"
-									className="flex h-7 w-full items-center pr-2"
-									initial={{ opacity: 0, x: -10 }}
-									animate={{ opacity: 1, x: 0 }}
-									exit={{ opacity: 0, x: -10 }}
-									transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-									onAnimationComplete={handleInputAnimationComplete}
-								>
-									<input
-										ref={inputRef}
-										value={query}
-										onChange={(e) => handleQueryChange(e.target.value)}
-										onPointerDown={(e) => e.stopPropagation()}
-										onKeyDown={(e) => {
-											if (e.key === "ArrowDown") {
-												e.preventDefault()
-												setHighlightedIndex((prev) =>
-													prev < flatFilteredItems.length - 1 ? prev + 1 : 0
-												)
-											}
-											if (e.key === "ArrowUp") {
-												e.preventDefault()
-												setHighlightedIndex((prev) =>
-													prev > 0 ? prev - 1 : flatFilteredItems.length - 1
-												)
-											}
-											if (e.key === "Escape") {
-												closePopover()
-											}
-											if (e.key === "Enter" && flatFilteredItems.length > 0) {
-												handleSelect(flatFilteredItems[highlightedIndex].value)
-											}
-										}}
-										placeholder={placeholder}
-										className="h-7 min-w-0 flex-1 bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground"
-									/>
-									<ChevronDown className="size-3 shrink-0 opacity-50" />
-								</motion.div>
-							) : (
-								<motion.button
-									key="button"
-									ref={buttonRef}
-									type="button"
-									className={cn("flex h-7 items-center gap-1 px-2 text-xs", className)}
-									onClick={handleButtonClick}
-									// initial={{ opacity: 0, x: 10 }}
-									// animate={{ opacity: 1, x: 0 }}
-									exit={{ opacity: 0, x: 10 }}
-									transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-								>
-									{label}
-									{value.length > 0 ? (
-										<XIcon 
-											className="size-3 shrink-0" 
-											onClick={handleClear}
-										/>
-									) : (
-										<ChevronDown className="size-3 shrink-0 opacity-50" />
-									)}	
-								</motion.button>
-							)}
-						</AnimatePresence>
-					</motion.div>
-				</PopoverAnchor>
-				<AnimatePresence>
-					{showPopover && (
-						<PopoverContent
-							ref={popoverRef}
-							className="p-0"
-							side="top"
-							align="start"
-							sideOffset={4}
-							style={{ width: popoverWidth }}
-							onOpenAutoFocus={(e) => e.preventDefault()}
-							forceMount
-							asChild
-						>
-							<motion.div
-								initial={{ opacity: 0, y: 8, scaleY: 0.96 }}
-								animate={{ opacity: 1, y: 0, scaleY: 1 }}
-								exit={{ opacity: 0, y: 8, scaleY: 0.96 }}
-								transition={{ duration: 0.15, ease: "easeOut" }}
-								style={{ transformOrigin: "bottom" }}
-							>
-								<Command shouldFilter={false}>
-									<CommandList>
-										<CommandEmpty>{emptyMessage}</CommandEmpty>
-										{groupedItems && (
-											Array.from(groupedItems.entries()).map(([groupName, groupItems]) => (
-												<CommandGroup key={groupName} heading={groupName}>
-													{groupItems.map((item) => {
-														const flatIndex = flatFilteredItems.findIndex((i) => i.value === item.value)
-														return (
-															<CommandItem
-																key={item.value}
-																value={item.value}
-																onSelect={() => handleSelect(item.value)}
-																onMouseEnter={() => setHighlightedIndex(flatIndex)}
-																data-highlighted={flatIndex === highlightedIndex}
-																className="flex items-center gap-2 !bg-transparent data-[highlighted=true]:!bg-accent data-[highlighted=true]:!text-accent-foreground"
-															>
-																{item.icon && (
-																	<item.icon
-																		className="size-4 shrink-0"
-																		style={{ color: item.varColor }}
-																	/>
-																)}
-																{!item.icon && (
-																	<Circle
-																		className="size-2.5 shrink-0"
-																		style={{ fill: item.varColor, color: item.varColor }}
-																	/>
-																)}
-																<span className="flex-1 truncate">{item.label}</span>
-																<AnimatePresence>
-																	{isSelected(item.value) && (
-																		<motion.div
-																			initial={{ opacity: 0, scale: 0.5 }}
-																			animate={{ opacity: 1, scale: 1 }}
-																			exit={{ opacity: 0, scale: 0.5 }}
-																			transition={{ duration: 0.15 }}
-																		>
-																			<Check className="size-4 shrink-0" />
-																		</motion.div>
-																	)}
-																</AnimatePresence>
-															</CommandItem>
-														)
-													})}
-												</CommandGroup>
-											))
-										)}
+						{description
+							? <Hint title={label} body={description} note={selectedNote} disabled={open}>{trigger}</Hint>
+							: trigger}
 
-										{!groupedItems && (
-											<CommandGroup>
-												{flatFilteredItems.map((item, index) => (
-													<CommandItem
-														key={item.value}
-														value={item.value}
-														onSelect={() => handleSelect(item.value)}
-														onMouseEnter={() => setHighlightedIndex(index)}
-														data-highlighted={index === highlightedIndex}
-														className="flex items-center gap-2 !bg-transparent data-[highlighted=true]:!bg-accent data-[highlighted=true]:!text-accent-foreground"
-													>
-														{item.icon && (
-															<item.icon
-																className="size-4 shrink-0"
-																style={{ color: item.varColor }}
-															/>
-														)}
-														{!item.icon && (
-															<Circle
-																className="size-2.5 shrink-0"
-																style={{ fill: item.varColor, color: item.varColor }}
-															/>
-														)}
-														<span className="flex-1 truncate">{item.label}</span>
-														<AnimatePresence>
-															{isSelected(item.value) && (
-																<motion.div
-																	initial={{ opacity: 0, scale: 0.5 }}
-																	animate={{ opacity: 1, scale: 1 }}
-																	exit={{ opacity: 0, scale: 0.5 }}
-																	transition={{ duration: 0.15 }}
-																>
-																	<Check className="size-4 shrink-0" />
-																</motion.div>
-															)}
-														</AnimatePresence>
-													</CommandItem>
-												))}
-											</CommandGroup>
-										)}
-									</CommandList>
-								</Command>
-							</motion.div>
-						</PopoverContent>
-					)}
-				</AnimatePresence>
+						{value.length > 0 && (
+							<button
+								type="button"
+								onClick={handleClear}
+								aria-label={`Clear ${label}`}
+								className="mr-1.5 flex size-6 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+							>
+								<XIcon className="size-3.5" />
+							</button>
+						)}
+					</div>
+				</PopoverAnchor>
 			</div>
+
+			<PopoverContent
+				className="overflow-hidden p-0"
+				side="top"
+				align="start"
+				sideOffset={4}
+				style={{ width: popoverWidth }}
+			>
+				<div className="flex h-10 items-center gap-2 border-b px-3">
+					<Search className="size-3.5 shrink-0 text-muted-foreground" />
+					<input
+						value={query}
+						onChange={(e) => handleQueryChange(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "ArrowDown") {
+								e.preventDefault()
+								setHighlightedIndex((prev) => prev < flatFilteredItems.length - 1 ? prev + 1 : 0)
+							}
+							if (e.key === "ArrowUp") {
+								e.preventDefault()
+								setHighlightedIndex((prev) => prev > 0 ? prev - 1 : flatFilteredItems.length - 1)
+							}
+							if (e.key === "Enter" && flatFilteredItems.length > 0) {
+								e.preventDefault()
+								handleSelect(flatFilteredItems[highlightedIndex].value)
+							}
+						}}
+						placeholder={placeholder}
+						className="h-full min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+					/>
+				</div>
+
+				<Command shouldFilter={false}>
+					<CommandList>
+						<CommandEmpty>{emptyMessage}</CommandEmpty>
+						{groupedItems
+							? Array.from(groupedItems.entries()).map(([groupName, groupItems]) => (
+								<CommandGroup key={groupName} heading={groupName}>
+									{groupItems.map((item) => renderItem(item, flatFilteredItems.indexOf(item)))}
+								</CommandGroup>
+							))
+							: (
+								<CommandGroup>
+									{flatFilteredItems.map((item, index) => renderItem(item, index))}
+								</CommandGroup>
+							)}
+					</CommandList>
+				</Command>
+			</PopoverContent>
 		</Popover>
 	)
 }

@@ -5,7 +5,7 @@ import { ORPCError } from "@orpc/server";
 import { cache } from "@/middleware/cache";
 import { prisma } from "@/services/prisma";
 import { airspaceInput, base } from "@/utils";
-import { capitalizeFirst, formatFaaTime } from "@/utils";
+import { byTime, parsePlannedEntry } from "@/services/ops-plan";
 import { AirportWhereInput } from "@/prisma/generated/models";
 
 import {
@@ -53,18 +53,15 @@ const OpsPlanResponse = z.object({
 const planned = base
 	.input(airspaceInput)
 	.use(cache(
-		input => `__airspace:planned:${input.airspace ?? "any"}`,
+		input => `__airspace:planned:v2:${input.airspace ?? "any"}`,
 		"5 minutes",
 		PlannedAdvisories
 	))
 	.handler(async ({ input: { airspace } }) => {
-		const where: AirportWhereInput = {};
-		if (airspace) where.artcc = { equals: airspace };
+		const airports = await prisma.airport.findMany({ select: { iata_code: true, artcc: true } });
+		const known = new Set(airports.map(airport => airport.iata_code));
 		const tracked = airspace
-			? await prisma
-				.airport
-				.findMany({ select: { iata_code: true }, where })
-				.then(results => new Set(results.map(result => result.iata_code)))
+			? new Set(airports.filter(airport => airport.artcc === airspace).map(airport => airport.iata_code))
 			: null;
 
 		return axios
@@ -75,36 +72,13 @@ const planned = base
 				if (!raw.success) throw new ORPCError("UPSTREAM_ERROR");
 				return raw.data;
 			})
-			.then(data => data.terminalPlanned.map(entry => {
-				// nas started reporting `time` as ""
-				if (!entry.time.trim()) {
-					const [rawTime, rest] = entry.event.split('\t');
-					const [iataCode, ...eventType] = rest.split(' ');
-
-					return {
-						iataCode: iataCode.slice(1).split('/'),
-						time: formatFaaTime(rawTime.split(' ')[1]),
-						forecastType: rawTime.split(' ')[0] === 'AFTER'
-							? 'after'
-							: 'until',
-						eventType: capitalizeFirst(eventType.join(' ').toLowerCase())
-					} as z.infer<typeof PlannedAirportEvent>;
-				}
-
-				const [iataCode, ...eventType] = entry.event.split(' ');
-				const rawTime = entry.time.split(' ')[1];
-
-				return {
-					iataCode: iataCode.split('/'),
-					time: formatFaaTime(rawTime),
-					forecastType: entry.time.split(' ')[0] === 'AFTER'
-						? 'after'
-						: 'until',
-					eventType: capitalizeFirst(eventType.join(' ').toLowerCase())
-				} as z.infer<typeof PlannedAirportEvent>;
-			}))
+			// the feed is free text and has changed shape before: see services/ops-plan.ts for what it tolerates
+			.then(data => data.terminalPlanned
+				.flatMap(entry => parsePlannedEntry(entry, new Date(), known))
+				.sort(byTime)
+			)
 			.then(events => tracked
-				? events.filter(event => event.iataCode.some(code => tracked.has(code)))
+				? events.filter(event => event.iataCode !== null && tracked.has(event.iataCode))
 				: events
 			);
 	})

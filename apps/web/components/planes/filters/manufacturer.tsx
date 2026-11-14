@@ -59,6 +59,7 @@ export const ManufacturerFilter = ({ mode = "button" }: { mode?: "button" | "lis
 		<ComboboxButton
 			multiple
 			label="Manufacturer"
+			description="Who built the aircraft, such as Cessna or Gulfstream. Type at least 3 letters to search."
 			placeholder="Filter manufacturer.."
 			items={items}
 			query={query}

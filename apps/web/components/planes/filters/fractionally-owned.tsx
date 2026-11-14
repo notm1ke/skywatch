@@ -36,6 +36,7 @@ export const FractionalOwnershipFilter = ({ mode = "button" }: { mode?: "button"
 	return (
 		<ComboboxButton
 			label="Fractional"
+			description="Whether the aircraft is part of a fractional ownership program, where several owners share it."
 			placeholder="Filter ownership status.."
 			items={items}
 			value={fractionally_owned}

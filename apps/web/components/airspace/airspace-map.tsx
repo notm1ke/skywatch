@@ -90,6 +90,8 @@ const bboxFeature = (geo: GeoJson<AirspaceProps>, airspace: string): mapboxgl.Ln
 };
 
 const AirportMarker: React.FC<{ advisory?: AirportAdvisory, airport: AirportWithJoins }> = ({ advisory, airport }) => {
+	// lit up while its row in Active Interruptions is hovered (the pin's own hover is plain CSS)
+	const highlighted = useAirspaceInteractivity(state => Boolean(advisory) && state.hovered?.airportId === advisory?.airportId);
 	const status: AirportStatus = useMemo(() => {
 		if (!advisory) return "normal";
 		if (advisory.airportClosure) return "airport_closure";
@@ -106,19 +108,32 @@ const AirportMarker: React.FC<{ advisory?: AirportAdvisory, airport: AirportWith
 			key={airport.iata_code}
 			latitude={airport.latitude_deg}
 			longitude={airport.longitude_deg}
-			className="cursor-help"
+			className="cursor-pointer"
+			style={{ zIndex: highlighted ? 10 : undefined }}
 		>
 			<AirspaceMapHoverCard
 				advisory={advisory}
 				airport={airport}
 			>
+				{/* a roomier hit area than the dot itself: they're small and some sit close together */}
 				<motion.div
-					className={cn("size-2.5 rounded-md", colorForAirportStatus(status))}
+					className="group relative grid size-4 place-items-center"
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.5 }}
-				/>
+				>
+					{status === "airport_closure" && (
+						<span className={cn("absolute size-2.5 animate-ping rounded-[30%] opacity-60", colorForAirportStatus(status))} />
+					)}
+					<span
+						className={cn(
+							"size-2.5 rounded-[30%] ring-2 ring-background transition-transform duration-150 group-hover:scale-150",
+							colorForAirportStatus(status),
+							highlighted && "scale-150"
+						)}
+					/>
+				</motion.div>
 			</AirspaceMapHoverCard>
 		</Marker>
 	)

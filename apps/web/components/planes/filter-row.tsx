@@ -19,7 +19,7 @@ export const PLANE_FILTER_DEFS: { id: string; label: string; Component: React.FC
 ]
 
 export const FilterRow = () => (
-	<div className="hidden lg:flex flex-row space-x-2 items-center px-2">
+	<div className="hidden h-full min-w-0 flex-row divide-x overflow-x-auto lg:flex">
 		{PLANE_FILTER_DEFS.map(({ id, Component }) => (
 			<Component key={id} />
 		))}

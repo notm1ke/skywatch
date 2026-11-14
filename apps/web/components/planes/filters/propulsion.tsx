@@ -38,6 +38,7 @@ export const PropulsionTypeFilter = ({ mode = "button" }: { mode?: "button" | "l
 		<ComboboxButton
 			multiple
 			label="Propulsion"
+			description="The engine type: reciprocating, turboprop, turboshaft, turbojet, turbofan and so on."
 			placeholder="Filter propulsion type.."
 			items={items}
 			value={engine_type}

@@ -45,13 +45,12 @@ const planeHeaders: Array<{ label: string; width: string; icon?: LucideIcon }> =
 ];
 
 const FilterRowSkeleton = () => (
-	<div className="flex items-center gap-2 pr-2">
-		<Skeleton className="h-6 w-20" />
-		<Skeleton className="h-6 w-16" />
-		<Skeleton className="h-6 w-16" />
-		<Skeleton className="h-6 w-18" />
-		<Skeleton className="h-6 w-18" />
-		<Skeleton className="h-6 w-16" />
+	<div className="flex h-full divide-x">
+		{["w-14", "w-24", "w-16", "w-10", "w-20", "w-14", "w-16"].map((width, index) => (
+			<div key={index} className="flex h-full items-center px-3">
+				<Skeleton className={`h-4 ${width}`} />
+			</div>
+		))}
 	</div>
 );
 
