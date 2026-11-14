@@ -32,8 +32,5 @@
 		".next/dev/types/**/*.ts",
 		"**/*.mts"
 	],
-	"exclude": ["node_modules", "../gateway/*"],
-	"references": [
-		{ "path": "../gateway" }
-	]
+	"exclude": ["node_modules", "../gateway/*"]
 }
