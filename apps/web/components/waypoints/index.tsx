@@ -2,20 +2,18 @@
 
 import { Badge } from "../ui/badge";
 import { orpc } from "~/lib/gateway";
-import { motion } from "motion/react";
 import { Button } from "../ui/button";
-import { useTheme } from "next-themes";
-import { useRef, useState } from "react";
-import { WaypointSearchbar } from "./search";
-import { useMobile } from "../mobile-provider";
+import { motion } from "motion/react";
+import { useMemo } from "react";
+import { FilterBar } from "./filter-bar";
+import { HoverHint } from "./hover-hint";
+import { WaypointPanel } from "./search";
+import { useWaypointControls } from "./store";
+import { WaypointMap } from "./waypoint-map";
+import { useWaypointUrlSync } from "./url-sync";
 import { useQuery } from "@tanstack/react-query";
-import { MapStyleSelector } from "./style-selector";
-import { WaypointMapStyleLayer } from "./style-layer";
-import { Layer, Map, Source } from "react-map-gl/mapbox";
-import { MapControls, MapLayers } from "../ui/map-controls";
-import { Loader, MapIcon, RefreshCcw, WaypointsIcon } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { buildIndex, type MapPoint } from "./geo";
+import { Loader, RefreshCcw, WaypointsIcon } from "lucide-react";
 
 import {
 	Empty,
@@ -26,35 +24,30 @@ import {
 	EmptyTitle
 } from "../ui/empty";
 
+const NO_POINTS: MapPoint[] = [];
+
+/**
+ * Every waypoint on a map. Hover a dot to see what it is, click it (or search) to open it: its airways are drawn on
+ * the map, and the panel lists them along with the preferred routes that use it.
+ */
 export const WaypointsTab = () => {
-	const { resolvedTheme: theme } = useTheme();
-	const { mobile } = useMobile();
-	const { data, isLoading, error, refetch } = useQuery(orpc.airspace.waypoints.geojson.queryOptions());
-	
-	const mapContainerRef = useRef<HTMLDivElement>(null);
-	const layers: MapLayers = [
-		{
-			key: "waypoint",
-			name: "Waypoint",
-			color: "var(--color-purple-400)",
-			count: data?.features.length || NaN
-		},
-		{
-			key: "label",
-			name: "Label",
-			color: "var(--color-zinc-400)",
-			count: data?.features.length || NaN
-		}
-	];
-	
-	const [enabledLayers, setEnabledLayers] = useState<Set<string>>(
-		() => new Set<string>(
-			layers
-				.filter(layer => layer.defaultState === undefined || layer.defaultState === true)
-				.map(layer => layer.key)
-		)
+	useWaypointUrlSync();
+
+	const hiddenTypes = useWaypointControls(state => state.hiddenTypes);
+
+	const { data, isLoading, error, refetch } = useQuery({
+		...orpc.airspace.waypoints.points.queryOptions(),
+		// the waypoints only change with a new FAA cycle: no reason to ask again while the tab is open
+		staleTime: Infinity
+	});
+
+	const index = useMemo(() => buildIndex(data ?? NO_POINTS), [data]);
+	const total = data?.length ?? 0;
+	const visible = useMemo(
+		() => index.counts.reduce((sum, [type, count]) => hiddenTypes.includes(type) ? sum : sum + count, 0),
+		[index, hiddenTypes]
 	);
-	
+
 	if (error || (!isLoading && !data)) return (
 		<div className="h-(--page-height) flex flex-col items-center justify-center bg-muted/5">
 			<Empty>
@@ -83,119 +76,16 @@ export const WaypointsTab = () => {
 				</EmptyHeader>
 			</Empty>
 		</div>
-	)
-	
+	);
+
 	return (
-		<div
-			ref={mapContainerRef}
-			className="relative w-full data-[fullscreen='true']:h-screen data-[fullscreen='false']:h-(--map-height-tall)"
-			data-fullscreen={false}
-		>
-			<Map
-				mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-				initialViewState={{
-					latitude: 37.833333,
-					longitude: -97.583333,
-					zoom: 4.15
-				}}
-				projection="mercator"
-				attributionControl={false}
-				interactiveLayerIds={['airspace']}
-				style={{ width: "100%" }}
-				mapStyle={
-					theme === "dark"
-						? "mapbox://styles/mapbox/dark-v11"
-						: "mapbox://styles/mapbox/light-v11"
-				}
-			>
-				<WaypointSearchbar />
-				
-				{mobile && (
-					<MapControls
-						ref={mapContainerRef}
-						position="bottom-right"
-						orientation="horizontal"
-						initialView={{
-							latitude: 37.833333,
-							longitude: -97.583333,
-							zoom: 4.15
-						}}
-						showFullscreen
-						showReset
-						layers={layers}
-						layerState={enabledLayers}
-						syncLayers={setEnabledLayers}
-						customControls={[
-							{
-								section: "map-controls",
-								node: side => (
-									<DropdownMenu key="waypoint-map-style-control">
-										<Tooltip>
-											<DropdownMenuTrigger asChild>
-												<TooltipTrigger asChild>
-													<Button variant="outline" size="icon">
-														<MapIcon />
-													</Button>
-												</TooltipTrigger>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent side={side} align="start">
-												<MapStyleSelector />
-											</DropdownMenuContent>
-											<TooltipContent side={side}>
-												Map styles
-											</TooltipContent>
-										</Tooltip>
-									</DropdownMenu>
-								)
-							}
-						]}
-					/>
-				)}
-				
-				{!mobile && (
-					<MapControls
-						ref={mapContainerRef}
-						position="top-right"
-						initialView={{
-							latitude: 37.833333,
-							longitude: -97.583333,
-							zoom: 4.15
-						}}
-						showFullscreen
-						showReset
-						layers={layers}
-						layerState={enabledLayers}
-						syncLayers={setEnabledLayers}
-						customControls={[
-							{
-								section: "map-controls",
-								node: side => (
-									<DropdownMenu key="waypoint-map-style-control">
-										<Tooltip>
-											<DropdownMenuTrigger asChild>
-												<TooltipTrigger asChild>
-													<Button variant="outline" size="icon">
-														<MapIcon />
-													</Button>
-												</TooltipTrigger>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent side={side} align="start">
-												<MapStyleSelector />
-											</DropdownMenuContent>
-											<TooltipContent side={side}>
-												Map styles
-											</TooltipContent>
-										</Tooltip>
-									</DropdownMenu>
-								)
-							}
-						]}
-					/>
-				)}
-				
+		<div className="flex h-(--page-height) flex-col">
+			<div className="relative min-h-0 flex-1">
+				<WaypointMap index={index} ready={Boolean(data)} />
+
 				{isLoading && (
 					<motion.div
-						className="absolute bottom-2 left-2 sm:right-2"
+						className="absolute bottom-2 left-2 z-10"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
@@ -206,52 +96,12 @@ export const WaypointsTab = () => {
 						</Badge>
 					</motion.div>
 				)}
-				
-				{!isLoading && (
-					<>
-						<WaypointMapStyleLayer />
-						
-						{enabledLayers.has("waypoint") && (
-							<Source id="markers" type="geojson" data={data}>
-								<Layer
-									id="points"
-									type="circle"
-									minzoom={3.5}
-									paint={{
-										'circle-radius': 4,
-										'circle-color': theme === "dark" ? "#6E11B0" : "#C27AFF",
-										"circle-opacity": 0.85
-									}}
-								 />
-							</Source>	
-						)}
-						
-						{enabledLayers.has("label") && (
-							<Source id="text" type="geojson" data={data}>
-								<Layer
-									id="labels"
-									type="symbol"
-									minzoom={7}
-									layout={{
-										'text-field': ['get', 'waypoint_id'],
-										'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-										'text-size': 11.5,
-										'text-offset': [0, 1],
-										'text-anchor': 'top',
-										'icon-text-fit': 'none',
-									}}
-									paint={{
-										"text-opacity": 0.85,
-										'text-color': theme === "dark"
-											? "#ffffff"
-											: "#000000",
-									}}
-								/>
-							</Source>
-						)}
-					</>
-				)}
-			</Map>
+
+				<HoverHint index={index} />
+				<WaypointPanel index={index} />
+			</div>
+
+			<FilterBar counts={index.counts} visible={visible} total={total} loading={isLoading} />
 		</div>
-	)
-}
+	);
+};

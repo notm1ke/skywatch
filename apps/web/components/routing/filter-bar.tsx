@@ -4,6 +4,7 @@ import { cn } from "cnfast";
 import { ArrowLeftRight, Network, Repeat, Route, X } from "lucide-react";
 import { PreferredRouteType } from "@skywatch/gateway/schemas";
 import { Hint } from "~/components/ui/hint";
+import { BarToggle } from "~/components/ui/bar-toggle";
 import { typeColor } from "./geo";
 import { endpointCode, isAirport, useRoutingStore, type RoutingEndpoint, type RoutingSlot } from "./store";
 
@@ -57,19 +58,6 @@ const TYPE_HELP: Record<string, string> = {
 	HSD: "High altitude routes that only apply in one direction."
 };
 
-const Toggle: React.FC<React.ComponentProps<"button"> & { pressed: boolean }> = ({ pressed, className, ...props }) => (
-	<button
-		type="button"
-		aria-pressed={pressed}
-		className={cn(
-			"flex h-full shrink-0 cursor-pointer items-center gap-1.5 px-3 text-sm transition-colors hover:bg-accent/40",
-			pressed ? "bg-accent/60 text-foreground" : "text-muted-foreground",
-			className
-		)}
-		{...props}
-	/>
-);
-
 type Props = {
 	/** the view being shown: chosen automatically for big searches, or forced with the toggle */
 	view: "routes" | "pairs";
@@ -114,10 +102,10 @@ export const FilterBar: React.FC<Props> = ({ view, typeCounts, incomplete, visib
 				body="Also include routes flying the opposite direction. Without it, From is always the origin and To is always the destination."
 				note={bidirectional ? "On: the search matches both directions." : "Off: only From to To."}
 			>
-				<Toggle pressed={bidirectional} onClick={() => setBidirectional(!bidirectional)}>
+				<BarToggle pressed={bidirectional} onClick={() => setBidirectional(!bidirectional)}>
 					<Repeat className="size-3.5" />
 					Both ways
-				</Toggle>
+				</BarToggle>
 			</Hint>
 
 			{/* big searches open as an overview of pairs; click Routes to draw every route anyway */}
@@ -126,20 +114,20 @@ export const FilterBar: React.FC<Props> = ({ view, typeCounts, incomplete, visib
 				body="Draw every preferred route along its fixes and airways. Hover one to light it up, click to open its details."
 				note={view === "routes" ? "Showing now." : "Big searches open as pairs; this draws every route anyway, which can be slow and busy."}
 			>
-				<Toggle pressed={view === "routes"} onClick={() => setViewMode("routes")}>
+				<BarToggle pressed={view === "routes"} onClick={() => setViewMode("routes")}>
 					<Route className="size-3.5" />
 					Routes
-				</Toggle>
+				</BarToggle>
 			</Hint>
 			<Hint
 				title="Pairs"
 				body="One line per origin and destination, with a count of how many routes connect them. Click a pair to drill into just its routes."
 				note={view === "pairs" ? "Showing now." : "Opens automatically when a search matches more than 400 routes."}
 			>
-				<Toggle pressed={view === "pairs"} onClick={() => setViewMode("pairs")}>
+				<BarToggle pressed={view === "pairs"} onClick={() => setViewMode("pairs")}>
 					<Network className="size-3.5" />
 					Pairs
-				</Toggle>
+				</BarToggle>
 			</Hint>
 
 			{typeCounts.map(([type, count]) => {
@@ -157,11 +145,11 @@ export const FilterBar: React.FC<Props> = ({ view, typeCounts, incomplete, visib
 						body={TYPE_HELP[type] ?? "An FAA preferred route type we don't have a description for yet."}
 						note={`${count.toLocaleString()} ${count === 1 ? "route" : "routes"} in this search. Click to ${hidden ? "show" : "hide"} them.`}
 					>
-						<Toggle pressed={!hidden} onClick={() => toggleType(type)} className={cn(hidden && "opacity-50")}>
+						<BarToggle pressed={!hidden} onClick={() => toggleType(type)} className={cn(hidden && "opacity-50")}>
 							<span className="size-2 rounded-full" style={{ backgroundColor: typeColor(type) }} />
 							<span className="font-mono">{type}</span>
 							<span className="font-mono text-xs tabular-nums text-muted-foreground">{count.toLocaleString()}</span>
-						</Toggle>
+						</BarToggle>
 					</Hint>
 				);
 			})}
@@ -172,10 +160,10 @@ export const FilterBar: React.FC<Props> = ({ view, typeCounts, incomplete, visib
 					body="Hide routes with a fix or airway we couldn't place on the map. Those routes are still drawn, but with dashed lines that skip the missing pieces."
 					note={`${incomplete.toLocaleString()} ${incomplete === 1 ? "route has" : "routes have"} gaps in this search. ${completeOnly ? "Click to show them again." : "Click to hide them."}`}
 				>
-					<Toggle pressed={completeOnly} onClick={() => setCompleteOnly(!completeOnly)}>
+					<BarToggle pressed={completeOnly} onClick={() => setCompleteOnly(!completeOnly)}>
 						Complete only
 						<span className="font-mono text-xs tabular-nums text-muted-foreground">-{incomplete.toLocaleString()}</span>
-					</Toggle>
+					</BarToggle>
 				</Hint>
 			)}
 

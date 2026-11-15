@@ -3,79 +3,32 @@ import { orpc } from "~/lib/gateway";
 import { useRef, useState } from "react";
 import { immediately } from "~/lib/utils";
 import { Kbd, KbdGroup } from "../ui/kbd";
-import { useMap } from "react-map-gl/mapbox";
 import { useWaypointControls } from "./store";
-import { useMobile } from "../mobile-provider";
+import { WaypointDetails } from "./details";
+import { typeInfo, waypointLocation } from "./types";
 import { ScrollArea } from "../ui/scroll-area";
-import { WaypointDetailsPane } from "./details";
-import { UsStateAbbreviations } from "~/lib/geo";
 import { useDebounce } from "~/hooks/use-debounce";
 import { AnimatedNumber } from "../ui/animated-number";
 import { useKeyHandler } from "~/hooks/use-key-handler";
 import { useClickOutside } from "~/hooks/use-click-outside";
+import { WaypointUseLocalizations } from "@skywatch/gateway/schemas";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { Waypoint, WaypointUseLocalizations } from "@skywatch/gateway/schemas";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
+import { ArrowUpDown, CornerDownLeft, Loader, Search, TriangleAlert } from "lucide-react";
+import type { WaypointIndex } from "./geo";
 
-import {
-	Empty,
-	EmptyDescription,
-	EmptyHeader,
-	EmptyMedia,
-	EmptyTitle
-} from "../ui/empty";
+/**
+ * The floating panel over the map: the search box, and below it the waypoint that's open. While you're searching, the
+ * results sit on top of the open waypoint instead of pushing it down.
+ */
+export const WaypointPanel: React.FC<{ index: WaypointIndex }> = ({ index }) => {
+	const selectedId = useWaypointControls(state => state.selectedId);
+	const query = useWaypointControls(state => state.query);
+	const { select, clear, search } = useWaypointControls.getState();
 
-import {
-	ArrowUpDown,
-	CircleX,
-	CornerDownLeft,
-	FileQuestion,
-	Helicopter,
-	LandPlot,
-	LayoutGrid,
-	Loader,
-	LucideIcon,
-	Navigation,
-	Radar,
-	Search,
-	Sparkle,
-	SplinePointer,
-	Tangent,
-	TriangleAlert
-} from "lucide-react";
-
-export const WaypointTypeIcon: Record<string, { icon: LucideIcon, color: string }> = {
-	"RADAR": { icon: Radar, color: "text-green-600" },
-	"WP": { icon: Sparkle, color: "text-purple-400 dark:text-purple-700 dark:opacity-85" },
-	"CN": { icon: Navigation, color: "text-blue-400" },
-	"MW": { icon: Helicopter, color: "text-lime-800" },
-	"NRS": { icon: LayoutGrid, color: "text-teal-700" },
-	"VFR": { icon: LandPlot, color: "text-teal-700" },
-	"RP": { icon: SplinePointer, color: "text-teal-700" },
-	"MR": { icon: Tangent, color: "text-teal-700" }
-}
-
-export const renderWaypointLocation = (match: Waypoint) => {
-	if (!match.state_code.trim().length) return "Unknown";
-	if (match.state_code === "OA") return "Atlantic Ocean";
-	if (match.state_code === "OP") return "Pacific Ocean";
-	if (match.state_code === "OG") return "Gulf of America";
-	
-	// islands and other things we don't need to localize
-	if (!UsStateAbbreviations[match.state_code]) return "Unknown";
-	
-	return `${UsStateAbbreviations[match.state_code]}, US`;
-}
-
-export const WaypointSearchbar = () => {
-	const { mobile, pending } = useMobile();
-	const { active, query, style, activate, deactivate, search } = useWaypointControls();
-	
 	const [visible, setVisible] = useState(false);
 	const [selected, setSelected] = useState<number | null>(0);
-	
-	const mapRef = useMap();
+
 	const containerRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const detailsRef = useRef<HTMLDivElement>(null);
@@ -85,49 +38,39 @@ export const WaypointSearchbar = () => {
 	const { data, isLoading, error } = useQuery(orpc.airspace.waypoints.search.queryOptions({
 		input: { query: debouncedQuery },
 		placeholderData: keepPreviousData,
-		enabled: !!debouncedQuery,
+		// opening a waypoint from the map puts its name in the box: that's not a search
+		enabled: visible && !!debouncedQuery,
 	}));
-	
-	const activateWaypoint = (waypoint: Waypoint) => {
-		activate(waypoint);
-		mapRef.current?.flyTo({
-			center: {
-				lat: waypoint.latitude_deg,
-				lng: waypoint.longitude_deg,
-			},
-			duration: 1500,
-			zoom: 12
-		});
-		
+
+	const open = (id: string) => {
+		select(id, true);
 		setVisible(false);
 		setSelected(0);
 		inputRef.current?.blur();
-	}
-	
+	};
+
 	const scroll = (resultIndex: number, behavior: ScrollBehavior = "smooth") => scrollAreaRef
 		.current
 		?.querySelector(`#waypoint-result-${resultIndex}`)
 		?.scrollIntoView({ behavior, block: "nearest" });
-	
+
 	const dismiss = () => {
-		if (!active) return;
-		search("");
-		deactivate();
-		inputRef?.current?.focus();
-	}
+		clear();
+		inputRef.current?.focus();
+	};
 
 	const interactable = visible && data && data.length;
-	
+
 	useKeyHandler({
 		"arrowup": () => {
 			if (!interactable) return;
-			
+
 			setSelected(prev => {
 				if (prev === null) return 0;
 				const calculated = prev - 1 < 0
 					? data.length - 1
 					: prev - 1;
-				
+
 				immediately(() => scroll(calculated));
 				return calculated;
 			});
@@ -149,23 +92,20 @@ export const WaypointSearchbar = () => {
 		},
 		"arrowdown": () => {
 			if (!interactable) return;
-			
+
 			setSelected(prev => {
 				if (prev === null) return 0;
 				const calculated = prev + 1 >= data.length
 					? 0
 					: prev + 1;
-				
+
 				immediately(() => scroll(calculated));
 				return calculated;
 			});
 		},
 		"enter": () => {
 			if (!interactable) return;
-			if (selected !== null) {
-				const waypoint = data![selected];
-				activateWaypoint(waypoint);
-			}
+			if (selected !== null) open(data![selected].waypoint_id);
 		},
 		"keyf": () => {
 			if (visible) return;
@@ -173,199 +113,152 @@ export const WaypointSearchbar = () => {
 			setVisible(true);
 		},
 		"escape": () => {
-			if (!visible) return;
-			inputRef.current?.blur();
-			setVisible(false);
-			setSelected(0);
+			// out of the search first, then out of the open waypoint
+			if (visible) {
+				inputRef.current?.blur();
+				setVisible(false);
+				setSelected(0);
+				return;
+			}
+
+			if (useWaypointControls.getState().selectedId) clear();
 		}
 	}, true);
-	
+
 	useClickOutside(
 		containerRef,
 		() => setVisible(false),
 		[detailsRef]
 	);
-	
+
 	return (
-		<div ref={containerRef} className="absolute top-2 left-2 w-[95svw] sm:w-md">
-			<div className="flex flex-col space-y-2">
-				<InputGroup className={cn(
-					"bg-background dark:bg-input/30 dark:backdrop-blur-xl h-12 sm:h-10",
-					style !== "default" && "dark:mix-blend-difference border-none"
+		<div ref={containerRef} className="pointer-events-none absolute inset-x-2 top-2 z-10 flex flex-col gap-2 lg:right-auto lg:w-96">
+			<InputGroup className="pointer-events-auto h-12 bg-background/90 shadow-lg backdrop-blur sm:h-10 dark:bg-input/30">
+				<InputGroupInput
+					ref={inputRef}
+					value={query}
+					placeholder="Search by Waypoint Name"
+					onFocus={() => setVisible(true)}
+					onChange={(e) => search(e.target.value)}
+				/>
+				<InputGroupAddon>
+					<Search />
+				</InputGroupAddon>
+				<InputGroupAddon align="inline-end">
+					{!visible && (
+						<Kbd className="animate-in fade-in hidden sm:inline-flex">F</Kbd>
+					)}
+
+					{isLoading && <Loader className="animate-spin duration-200" />}
+					{visible && <Kbd className="animate-in fade-in fade-out hidden sm:inline-flex">Esc</Kbd>}
+				</InputGroupAddon>
+			</InputGroup>
+
+			{selectedId && (
+				<div
+					ref={detailsRef}
+					className="pointer-events-auto overflow-hidden rounded-lg border bg-background/90 shadow-lg backdrop-blur"
+				>
+					<WaypointDetails id={selectedId} type={index.types.get(selectedId)} onClose={dismiss} />
+				</div>
+			)}
+
+			{visible && debouncedQuery.length > 0 && !isLoading && (
+				<div className={cn(
+					"pointer-events-auto overflow-hidden rounded-lg border bg-background/95 shadow-lg backdrop-blur",
+					selectedId && "absolute inset-x-0 top-14 z-10 shadow-xl sm:top-12" // over the open waypoint
 				)}>
-					<InputGroupInput
-						ref={inputRef}
-						value={query}
-						placeholder="Search by Waypoint Name"
-						onFocus={() => setVisible(true)}
-						onChange={(e) => search(e.target.value)}
-					/>
-					<InputGroupAddon>
-						<Search />
-					</InputGroupAddon>
-					<InputGroupAddon align="inline-end">
-						{!visible && !active && (
-							<Kbd className="animate-in fade-in hidden sm:inline-flex">F</Kbd>
-						)}
-						
-						{active && (
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<CircleX
-										className="text-muted-foreground size-4 cursor-pointer"
-										onClick={dismiss}
-									/>
-								</TooltipTrigger>
-								<TooltipContent side="bottom">
-									Dismiss {active.waypoint_id}
-								</TooltipContent>
-							</Tooltip>
-						)}
-						
-						{isLoading && <Loader className="animate-spin duration-200" />}
-						{visible && <Kbd className="animate-in fade-in fade-out hidden sm:inline-flex">Esc</Kbd>}
-					</InputGroupAddon>
-				</InputGroup>
-				
-				{active && (
-					<div
-						ref={detailsRef}
-						className={cn(
-							"bg-background dark:bg-input/80 dark:backdrop-blur-xl rounded-sm border border-border dark:border-zinc-700/80",
-							style !== "default" && "dark:bg-input/90"
-						)}
+					<ScrollArea
+						ref={scrollAreaRef}
+						viewportClassName="max-h-[min(24rem,calc(var(--page-height)-12rem))]"
 					>
-						{mobile && (
-							<ScrollArea className="h-108 rounded-sm" viewportClassName="divide-y dark:divide-zinc-700/80">
-								<WaypointDetailsPane />
-							</ScrollArea>
-						)}
-						
-						{(!mobile || pending) && <WaypointDetailsPane />}
-					</div>
-				)}
-				
-				{visible && debouncedQuery.length > 0 && !isLoading && (
-					<div className={cn(
-						"bg-background/80 dark:bg-input/60 rounded-md backdrop-blur-xl border border-border dark:border-zinc-700/80",
-						active && "absolute top-12 w-full shadow-xl z-10" // overlay atop active pane
-					)}>
-						<ScrollArea
-							ref={scrollAreaRef}
-							className="h-96 rounded-t-md"
-							maskClassName="dark:before:from-input/30 dark:after:from-input/30"
-						>
-							{data?.length === 0 && (
-								<div className="p-4 text-center text-muted-foreground flex items-center justify-center min-h-96">
-									No results found.
-								</div>
-							)}
-							
-							{error && (
-								<Empty className="min-h-96 items-center">
-									<EmptyHeader>
-										<EmptyMedia>
-											<div className="bg-amber-200 dark:bg-amber-700 p-2 rounded-lg">
-												<TriangleAlert />
-											</div>
-										</EmptyMedia>
-										<EmptyTitle>Something went wrong</EmptyTitle>
-										<EmptyDescription>
-											We hit a snag while searching waypoints, please try again..
-										</EmptyDescription>
-									</EmptyHeader>
-								</Empty>
-							)}
-							
-							<div className="flex flex-col space-y-1">
-								{data?.map((match, i) => {
-									const indicator = WaypointTypeIcon[match.waypoint_use_code] ?? {
-										icon: FileQuestion,
-										color: "text-muted-foreground"
-									};
-									
-									return (
-										<div
-											key={match.waypoint_id}
-											id={`waypoint-result-${i}`}
-											onClick={() => activateWaypoint(match)}
-											onMouseOver={() => setSelected(i)}
-											className={cn(
-												"px-4 py-2 cursor-pointer transition-colors duration-75 hover:bg-zinc-200 dark:hover:bg-muted/80",
-												selected === i ? "bg-zinc-200 dark:bg-muted/80" : ""
-											)}
-										>
-											<div className="flex flex-row space-x-4 items-center">
-												<div>
-													<indicator.icon className={cn("size-8", indicator.color)} />
-												</div>
-												<div className="flex flex-col space-y-0.5">
-													<div className="font-medium">{match.waypoint_id}</div>
-													<div className="flex flex-row space-x-1.5 text-xs font-mono tracking-tighter text-muted-foreground">
-														<span>{WaypointUseLocalizations[match.waypoint_use_code]}</span>
-														<span>•</span>
-														<span>{renderWaypointLocation(match)}</span>
-													</div>
-												</div>
-											</div>
-										</div>
-									);
-								})}
+						{data?.length === 0 && (
+							<div className="px-4 py-10 text-center text-sm text-muted-foreground">
+								No waypoints start with &ldquo;{debouncedQuery.toUpperCase()}&rdquo;.
 							</div>
-						</ScrollArea>
-						
-						<div className="hidden sm:block border-t dark:bg-zinc-900 rounded-b-md px-4 py-2">
-							<div className="flex rounded-b-md justify-between space-x-3">
-								<div>
-									<span className="text-muted-foreground font-normal">
-										<AnimatedNumber
-											value={data?.length ?? 0}
-											className="font-mono tracking-normal"
-											springOptions={{
-												bounce: 0,
-												duration: 500,
-											}}
-										/>{" "}
-										match{data?.length === 1 ? "" : "es"}
-									</span>
+						)}
+
+						{error && (
+							<div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
+								<div className="rounded-lg bg-amber-200 p-2 dark:bg-amber-700">
+									<TriangleAlert className="size-5" />
 								</div>
-								<div className="flex flex-row space-x-4">
-									<div className="flex flex-row gap-1">
-										<div className="items-center">
-											<Kbd>
-												<ArrowUpDown />
-											</Kbd>
+								<div className="text-sm font-medium">Something went wrong</div>
+								<p className="text-xs text-muted-foreground">We hit a snag while searching waypoints, please try again.</p>
+							</div>
+						)}
+
+						<div className="flex flex-col">
+							{data?.map((match, i) => {
+								const info = typeInfo(match.waypoint_use_code);
+
+								return (
+									<div
+										key={match.waypoint_id}
+										id={`waypoint-result-${i}`}
+										onClick={() => open(match.waypoint_id)}
+										onMouseOver={() => setSelected(i)}
+										className={cn(
+											"flex cursor-pointer items-center gap-3 px-3 py-2 transition-colors duration-75",
+											selected === i ? "bg-accent" : "hover:bg-accent/60"
+										)}
+									>
+										<div
+											className="flex size-9 shrink-0 items-center justify-center rounded-md"
+											style={{ backgroundColor: `${info.color}26` }}
+										>
+											<info.icon className="size-4" style={{ color: info.color }} />
 										</div>
-										
-										<span className="text-muted-foreground">Navigate</span>
-									</div>
-									<div className="flex flex-row gap-1">
-										<div className="items-center">
-											<KbdGroup>
-												<Kbd>
-													⌘
-													<ArrowUpDown />
-												</Kbd>
-											</KbdGroup>
+
+										<div className="flex min-w-0 flex-col">
+											<div className="font-mono font-semibold">{match.waypoint_id}</div>
+											<div className="truncate text-xs text-muted-foreground">
+												{WaypointUseLocalizations[match.waypoint_use_code] ?? match.waypoint_use_code} · {waypointLocation(match.state_code)}
+											</div>
 										</div>
-										
-										<span className="text-muted-foreground">Top/Bottom</span>
 									</div>
-									<div className="flex flex-row gap-1">
-										<div className="items-center">
-											<Kbd>
-												<CornerDownLeft />
-											</Kbd>
-										</div>
-										
-										<span className="text-muted-foreground">Select</span>
-									</div>
+								);
+							})}
+						</div>
+					</ScrollArea>
+
+					<div className="hidden border-t bg-muted/30 px-4 py-2 text-xs sm:block">
+						<div className="flex justify-between space-x-3">
+							<span className="text-muted-foreground">
+								<AnimatedNumber
+									value={data?.length ?? 0}
+									className="font-mono tracking-normal"
+									springOptions={{
+										bounce: 0,
+										duration: 500,
+									}}
+								/>{" "}
+								match{data?.length === 1 ? "" : "es"}
+							</span>
+
+							<div className="flex flex-row space-x-4 text-muted-foreground">
+								<div className="flex flex-row items-center gap-1">
+									<Kbd><ArrowUpDown /></Kbd>
+									Navigate
+								</div>
+								<div className="flex flex-row items-center gap-1">
+									<KbdGroup>
+										<Kbd>
+											⌘
+											<ArrowUpDown />
+										</Kbd>
+									</KbdGroup>
+									Top/Bottom
+								</div>
+								<div className="flex flex-row items-center gap-1">
+									<Kbd><CornerDownLeft /></Kbd>
+									Select
 								</div>
 							</div>
 						</div>
 					</div>
-				)}
-			</div>
+				</div>
+			)}
 		</div>
-	)
-}
+	);
+};
