@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useAirportFilters } from "./store";
 import { AirportList } from "./airport-list";
 import { AirportAdvisory } from "~/lib/schemas";
+import { closureScope } from "@skywatch/gateway/schemas";
 import { FilterSidebar } from "./filter-sidebar";
 import { MobileFilterSheet } from "./mobile-filter-sheet";
 import { AirportsPageSkeleton } from "./skeleton";
@@ -12,8 +13,9 @@ import { useAirspace } from "~/components/airspace/provider";
 
 function getAdvisoryStatus(advisory: AirportAdvisory | undefined): "ground_stop" | "delay" | "normal" {
 	if (!advisory) return "normal";
-	if (advisory.groundStop || advisory.airportClosure) return "ground_stop";
-	if (advisory.groundDelay || advisory.arrivalDelay || advisory.departureDelay) return "delay";
+	if (advisory.groundStop || (advisory.airportClosure && closureScope(advisory.airportClosure) === "full")) return "ground_stop";
+	// a limited closure (a daily window, or only some traffic) limits the airport rather than stopping it
+	if (advisory.groundDelay || advisory.arrivalDelay || advisory.departureDelay || advisory.airportClosure) return "delay";
 	return "normal";
 }
 

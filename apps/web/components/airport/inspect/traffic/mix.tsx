@@ -12,7 +12,7 @@ import { BarList, BoundedBody, Query, QueryBody } from "./shared";
 
 type Scope = { iata: string; date: string | undefined; className?: string };
 
-/** Airlines / aircraft are d3 treemaps whose single data point carries every key's count. */
+/** Airlines / aircraft are the shared treemap (`ui/treemap.tsx`), fed one data point that carries every key's count. */
 const totalOf = (query: Query<{ data: Array<{ cumulative: number }> }>) =>
 	query.data?.data[0] ? shortNumberFormatter.format(query.data.data[0].cumulative) : undefined;
 

@@ -20,7 +20,7 @@ export const TotalAirportsSkeleton = () => {
 
 export const TotalAirports = () => {
 	const { airports, loading } = useAirports();
-	
+
 	return (
 		<div className="flex items-center gap-1 w-full md:w-fit md:justify-start mt-2 font-mono space-x-1">
 			<span aria-hidden="true" className="text-zinc-900 dark:text-zinc-100">

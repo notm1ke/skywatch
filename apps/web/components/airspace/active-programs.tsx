@@ -9,6 +9,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { ErrorSection } from "../error-section";
 import { DelayProgram } from "./programs/delay";
 import { AirportAdvisory } from "~/lib/schemas";
+import { closureScope } from "@skywatch/gateway/schemas";
 import { useAirports } from "../airport-provider";
 import { useAirspaceInteractivity } from "./store";
 import { DeicingProgram } from "./programs/deicing";
@@ -49,6 +50,9 @@ export enum AdvisoryType {
 	Normal,
 	Deicing,
 	FreeForm,
+	// a closure with a qualifier (a daily window, or only some traffic): it doesn't shut the airport, so it ranks with the
+	// things that limit it, below any delay or stop that's also going on
+	LimitedClosure,
 	DepartureDelay,
 	ArrivalDelay,
 	DualDelay,
@@ -59,12 +63,13 @@ export enum AdvisoryType {
 
 export const advisoryPriority = (advisory?: AirportAdvisory) => {
 	if (!advisory) return AdvisoryType.Normal;
-	if (advisory.airportClosure) return AdvisoryType.AirportClosure;
+	if (advisory.airportClosure && closureScope(advisory.airportClosure) === "full") return AdvisoryType.AirportClosure;
 	if (advisory.groundStop) return AdvisoryType.GroundStop;
 	if (advisory.groundDelay) return AdvisoryType.GroundDelay;
 	if (advisory.arrivalDelay && advisory.departureDelay) return AdvisoryType.DualDelay;
 	if (advisory.arrivalDelay) return AdvisoryType.ArrivalDelay;
 	if (advisory.departureDelay) return AdvisoryType.DepartureDelay;
+	if (advisory.airportClosure) return AdvisoryType.LimitedClosure;
 	if (advisory.freeForm) return AdvisoryType.FreeForm;
 	if (advisory.deicing) return AdvisoryType.Deicing;
 	return AdvisoryType.Normal;
@@ -80,6 +85,13 @@ const programIndicator = (advisory: AirportAdvisory) => {
 			<div className="flex gap-2 items-center text-sm">
 				<div className="size-3 bg-red-400 animate-pulse rounded-[30%]" />
 				Airport Closure
+			</div>
+		)
+		case AdvisoryType.LimitedClosure: return (
+			<div className="flex gap-2 items-center text-sm">
+				{/* hollow where a full closure is solid: it's red, but it doesn't shut the airport */}
+				<div className="size-3 border-2 border-red-400 rounded-[30%]" />
+				Limited Closure
 			</div>
 		)
 		case AdvisoryType.GroundStop: return (
@@ -135,6 +147,7 @@ const programContent = (advisory: AirportAdvisory) => {
 	const priority = advisoryPriority(advisory);
 	switch (priority) {
 		case AdvisoryType.AirportClosure:
+		case AdvisoryType.LimitedClosure:
 			return <AirportClosureProgram advisory={advisory} />
 		case AdvisoryType.GroundStop:
 			return <GroundStopProgram advisory={advisory} />
@@ -153,7 +166,11 @@ const programContent = (advisory: AirportAdvisory) => {
 	}
 }
 
-export const ActivePrograms = () => {
+/**
+ * `fill` is for when it sits in a box of a set height (the right column's top half, as tall as the map beside it): the
+ * list takes whatever room the box has instead of a height of its own.
+ */
+export const ActivePrograms: React.FC<{ fill?: boolean }> = ({ fill = false }) => {
 	const { airports } = useAirports();
 	const { advisories, loading, error, refresh } = useAirspace();
 	const { hovered: mapActiveHovered, hoverSource, hover } = useAirspaceInteractivity();
@@ -183,7 +200,7 @@ export const ActivePrograms = () => {
 	}, [mapActiveHovered, hoverSource]);
 
 	if (loading) return (
-		<div>
+		<div className={cn(fill && "flex min-h-0 flex-1 flex-col")}>
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<span className="text-md font-semibold pointer-events-none">
 					Active Interruptions
@@ -192,8 +209,8 @@ export const ActivePrograms = () => {
 					<Skeleton className="h-[25px] w-10 rounded-sm" />
 				</div>
 			</div>
-			<div className="border-t">
-				<ScrollArea className="min-h-auto h-[300px] sm:h-[342px] sm:max-h-[800px]">
+			<div className={cn("border-t", fill && "min-h-0 flex-1")}>
+				<ScrollArea className={fill ? "h-full" : "min-h-auto h-[300px] sm:h-[342px] sm:max-h-[800px]"}>
 					{Array(7).fill(null).map((_, i) => (
 						<div
 							key={`active-programs-skeleton-${i}`}
@@ -217,7 +234,7 @@ export const ActivePrograms = () => {
 	);
 
 	if (error) return (
-		<div>
+		<div className={cn(fill && "flex min-h-0 flex-1 flex-col")}>
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<span className="text-md font-semibold pointer-events-none">
 					Active Interruptions
@@ -226,8 +243,8 @@ export const ActivePrograms = () => {
 					<Skeleton className="h-[25px] w-10 rounded-sm" />
 				</div>
 			</div>
-			<div className="border-t">
-				<ScrollArea className="min-h-auto h-[559px] max-h-[800px]">
+			<div className={cn("border-t", fill && "min-h-0 flex-1")}>
+				<ScrollArea className={fill ? "h-full" : "min-h-auto h-[559px] max-h-[800px]"}>
 					<ErrorSection
 						title="Error loading active interruptions"
 						className="border-t rounded-none border-solid"
@@ -240,7 +257,7 @@ export const ActivePrograms = () => {
 	);
 
 	return (
-		<div>
+		<div className={cn(fill && "flex min-h-0 flex-1 flex-col")}>
 			<div className="flex flex-row px-3 py-2 justify-between">
 				<span className="text-md font-semibold pointer-events-none">
 					Active Interruptions
@@ -249,8 +266,8 @@ export const ActivePrograms = () => {
 					{advisories.length}
 				</div>
 			</div>
-			<div className="border-t">
-				<ScrollArea ref={listRef} maskHeight={20} className="sm:min-h-auto h-[300px] sm:h-[342px] sm:max-h-[800px]">
+			<div className={cn("border-t", fill && "min-h-0 flex-1")}>
+				<ScrollArea ref={listRef} maskHeight={20} className={fill ? "h-full" : "sm:min-h-auto h-[300px] sm:h-[342px] sm:max-h-[800px]"}>
 					{!advisories.length && (
 						<Empty>
 							<EmptyHeader>

@@ -55,8 +55,16 @@ export const AirspaceTab = () => {
 					</div>
 				</div>
 				<div className="sm:basis-1/3 border-t border-l-0 sm:border-l sm:border-t-0">
-					<ActivePrograms />
-					<AirspacePlannedEvents />
+					{/*
+					  As tall as the map beside it, so the advisories under it start where the traffic row does and the dividers
+					  across the row line up. Planned keeps its four whole rows; Active's list takes what's left.
+					*/}
+					<div className="flex flex-col sm:h-[var(--map-min-height)]">
+						<ActivePrograms fill />
+						<div className="shrink-0">
+							<AirspacePlannedEvents />
+						</div>
+					</div>
 					<ActiveAdvisories />
 				</div>
 			</div>

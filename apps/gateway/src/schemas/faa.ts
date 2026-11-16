@@ -7,6 +7,7 @@ export const AirportStatus = z.enum([
 	"ground_delay",
 	"ops_delay",
 	"airport_closure",
+	"limited_closure",
 	"freeform",
 	"deicing",
 ]);
@@ -23,6 +24,19 @@ export const AirportClosureAdvisory = z.object({
 	notamNumber: z.number(),
 	issuedDate: z.string(),
 });
+
+/**
+ * Does a closure shut the airport, or only limit it? A NOTAM that closes an airport outright says so and nothing else.
+ * One with a qualifier after it ("DLY 0730-1415": a daily window; "TO NON SKED INTL AIR CARRIER EXC 6HR PPR": closed to
+ * some traffic only) isn't an outright closure, whatever the qualifier turns out to mean.
+ *
+ * It deliberately doesn't read the qualifier. The wording has more variety than we've seen, and a wrong plain-language
+ * guess on a closure notice does more harm than showing the original text next to a label that says "limited".
+ */
+export type ClosureScope = "full" | "limited";
+
+export const closureScope = (closure: { text: string } | null | undefined): ClosureScope =>
+	(closure?.text ?? "").trim() === "" ? "full" : "limited";
 
 export const GroundDelayAdvisory = z.object({
 	id: z.string(),

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { cn } from "cnfast";
-import { AirportWithJoins } from "@skywatch/gateway/schemas";
+import { AirportWithJoins, closureScope } from "@skywatch/gateway/schemas";
 import { AirportAdvisory } from "~/lib/schemas";
 import { Avatar, AvatarImage, AvatarFallback, AvatarGroup } from "~/components/ui/avatar";
 import { AIRLINES, AirlineCode } from "./airlines";
@@ -13,8 +13,9 @@ type AdvisoryLevel = "ground-stop" | "delay" | null;
 
 function getAdvisoryLevel(advisory: AirportAdvisory | undefined): AdvisoryLevel {
 	if (!advisory) return null;
-	if (advisory.groundStop || advisory.airportClosure) return "ground-stop";
-	if (advisory.groundDelay || advisory.arrivalDelay || advisory.departureDelay) return "delay";
+	if (advisory.groundStop || (advisory.airportClosure && closureScope(advisory.airportClosure) === "full")) return "ground-stop";
+	// a limited closure (a daily window, or only some traffic) limits the airport rather than stopping it
+	if (advisory.groundDelay || advisory.arrivalDelay || advisory.departureDelay || advisory.airportClosure) return "delay";
 	return null;
 }
 

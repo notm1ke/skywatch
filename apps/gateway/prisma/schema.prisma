@@ -203,6 +203,14 @@ enum AirportInterruptionType {
    departure_delay
 }
 
+/// Whether a closure shuts the airport or only limits it. `full` is a closure with no qualifier; `limited` has one
+/// ("DLY 0730-1415", "TO NON SKED INTL AIR CARRIER EXC 6HR PPR"): a daily window, or closed to some traffic only.
+/// Decided by whether there's qualifier text, not by reading it: see `closureScope`.
+enum AirportClosureScope {
+   full
+   limited
+}
+
 model AirportStatusHistory {
    event_id     String                  @id @default(uuid())
    event_type   AirportInterruptionType
@@ -210,6 +218,15 @@ model AirportStatusHistory {
    airport      Airport                 @relation(fields: [airport_iata], references: [iata_code])
    observed_at  DateTime
    resolved_at  DateTime?
+
+   /// Why, as the FAA says it. A closure's NOTAM qualifier (the raw text, kept as it came), a ground stop's or ground
+   /// delay's impacting condition, a delay's reason ("WX:Wind"). Null on events recorded before this column existed.
+   reason        String?
+   /// Closures only; null on every other type and on closures recorded before this column existed.
+   closure_scope AirportClosureScope?
+   /// The period the FAA gave the event: it can start after `observed_at` (a NOTAM is published ahead of the closure).
+   starts_at     DateTime?
+   ends_at       DateTime?
 
    @@unique([airport_iata, event_type, observed_at])
    @@index([observed_at, resolved_at])

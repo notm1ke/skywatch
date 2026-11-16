@@ -17,7 +17,7 @@ import { AirspaceMapHoverCard } from "./airspace-map-hover";
 import { MapControls, MapLayers } from "../ui/map-controls";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Layer, MapRef, Marker, Source } from "react-map-gl/mapbox";
-import { AirportStatus, AirportWithJoins, Airspaces } from "@skywatch/gateway/schemas";
+import { AirportStatus, AirportWithJoins, Airspaces, closureScope } from "@skywatch/gateway/schemas";
 
 type AirportStatus = z.infer<typeof AirportStatus>;
 
@@ -70,6 +70,8 @@ const filterOnlyCenters = (geojson: GeoJson<AirspaceProps>) => ({
 const colorForAirportStatus = (status: AirportStatus) => {
 	switch (status) {
 		case "airport_closure": return "bg-red-400";
+		// hollow where a full closure is solid: red, but it doesn't shut the airport
+		case "limited_closure": return "border-2 border-red-400 bg-red-400/20";
 		case "ground_stop": return "bg-orange-400";
 		case "ground_delay": return "bg-yellow-400";
 		case "ops_delay": return "bg-yellow-400";
@@ -94,10 +96,11 @@ const AirportMarker: React.FC<{ advisory?: AirportAdvisory, airport: AirportWith
 	const highlighted = useAirspaceInteractivity(state => Boolean(advisory) && state.hovered?.airportId === advisory?.airportId);
 	const status: AirportStatus = useMemo(() => {
 		if (!advisory) return "normal";
-		if (advisory.airportClosure) return "airport_closure";
+		if (advisory.airportClosure && closureScope(advisory.airportClosure) === "full") return "airport_closure";
 		if (advisory.groundStop) return "ground_stop";
 		if (advisory.groundDelay) return "ground_delay";
 		if (advisory.arrivalDelay || advisory.departureDelay) return "ops_delay";
+		if (advisory.airportClosure) return "limited_closure";
 		if (advisory.freeForm) return "freeform";
 		if (advisory.deicing) return "deicing";
 		return "normal";

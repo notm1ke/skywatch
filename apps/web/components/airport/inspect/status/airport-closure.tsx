@@ -1,9 +1,10 @@
 import moment from "moment-timezone";
 
+import { cn } from "cnfast";
 import { Button } from "~/components/ui/button";
 import { AirportAdvisory } from "~/lib/schemas";
 import { Separator } from "~/components/ui/separator";
-import { AirportWithJoins } from "@skywatch/gateway/schemas";
+import { AirportWithJoins, closureScope } from "@skywatch/gateway/schemas";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { getLatestTimeValue, shortenAirportName } from "~/lib/utils";
 
@@ -32,14 +33,25 @@ import {
 	DialogTrigger
 } from "~/components/ui/dialog";
 
+/** a closure with a qualifier after it: a daily window, or only some traffic. It's labeled, not translated. */
+const isLimited = (advisory: AirportAdvisory) => closureScope(advisory.airportClosure) === "limited";
+
 export const ClosureProgram: React.FC<{ airport: AirportWithJoins, advisory: AirportAdvisory }> = ({ airport, advisory }) => (
 	<div className="sticky top-0 border-y border-red-500/20 bg-red-500/10 px-4.5 py-3 backdrop-blur-sm">
 		<div className="flex items-center gap-3 justify-between">
 			<span className="flex flex-row items-center gap-2 text-sm font-semibold text-red-400">
-				<OctagonMinus className="size-4 animate-pulse" />
-				Airport Closed
+				{/* a full closure pulses; a limited one doesn't shut the airport, so it holds still */}
+				<OctagonMinus className={cn("size-4", !isLimited(advisory) && "animate-pulse")} />
+				{isLimited(advisory) ? "Limited Closure" : "Airport Closed"}
 			</span>
 			<div className="flex font-mono text-sm text-red-400 items-center gap-2 h-4">
+				{/* what the NOTAM says, as it says it */}
+				{isLimited(advisory) && (
+					<span className="hidden max-w-80 truncate text-xs uppercase sm:inline" title={advisory.airportClosure!.simpleText}>
+						{advisory.airportClosure!.text}
+					</span>
+				)}
+
 				<span>
 					Ends in {getLatestTimeValue(
 						moment
@@ -62,10 +74,14 @@ export const ClosureProgram: React.FC<{ airport: AirportWithJoins, advisory: Air
 					<DialogContent>
 						<DialogHeader>
 							<DialogTitle>
-								{shortenAirportName(airport.name)} is closed
+								{isLimited(advisory)
+									? <>{shortenAirportName(airport.name)} has a limited closure</>
+									: <>{shortenAirportName(airport.name)} is closed</>}
 							</DialogTitle>
 							<DialogDescription>
-								This closure will be in effect until{" "}
+								{isLimited(advisory)
+									? "This closure doesn't shut the airport outright: it's a window of time or applies to some traffic only. The NOTAM below says which. It stays on the books until "
+									: "This closure will be in effect until "}
 								{moment.utc(advisory.airportClosure!.endTime).format('ddd, MMM Do YYYY [at] h:mm A')}.
 							</DialogDescription>
 						</DialogHeader>
