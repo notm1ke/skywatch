@@ -79,10 +79,12 @@ export default async function StatisticsOgImage() {
 		});
 	});
 
-	const busiest = Math.max(...stats.airports.map(([, , , flights]) => flights));
+	// JSON arrays come in typed as `(string | number)[]`, so say what the rows are, biggest first: that way a small airport
+	// beside a big one (LaGuardia by Kennedy) is drawn on top of it and still shows
+	const airports = stats.airports as Array<[iata: string, lng: number, lat: number, flights: number]>;
+	const busiest = Math.max(...airports.map(([, , , flights]) => flights));
 
-	// biggest first, so a small airport beside a big one (LaGuardia by Kennedy) is drawn on top of it and still shows
-	const markers = stats.airports.flatMap(([iata, lng, lat, flights]) => {
+	const markers = airports.flatMap(([iata, lng, lat, flights]) => {
 		const coords = projection([lng, lat]);
 		if (!coords) return [];
 
