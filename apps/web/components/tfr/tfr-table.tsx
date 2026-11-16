@@ -2,27 +2,22 @@
 
 import { cn } from "cnfast";
 import { Tfr } from "~/lib/schemas";
-import { TfrInfoPanel } from "./info-panel";
-import { useTfrInteractivity } from "./store";
+import { useTfrControls } from "./store";
+import { TFR_TYPES } from "./types";
 import { UsStateAbbreviations } from "~/lib/geo";
 import { SkeletonWithDelay } from "../ui/skeleton";
 import { DataGrid } from "~/components/ui/data-grid";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, Row } from "@tanstack/react-table";
 import { useDataGrid } from "~/components/ui/data-grid/hook";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
 	Baseline,
 	Calendar,
-	Crown,
-	Drone,
 	Earth,
-	Flag,
-	LandPlot,
 	List,
-	Lock,
 	LucideIcon,
 	Megaphone,
-	Rocket,
 	TowerControl
 } from "lucide-react";
 
@@ -80,50 +75,13 @@ const columns: ColumnDef<Tfr>[] = [
 		meta: {
 			cell: {
 				variant: "select",
-				options: [
-					{
-						label: "Air Show / Sports",
-						value: "AIR SHOWS/SPORTS",
-						icon: LandPlot,
-						color: "green"
-					},
-					{
-						label: "Hazards",
-						value: "HAZARDS",
-						icon: Flag,
-						color: "red"
-					},
-					{
-						label: "Security",
-						value: "SECURITY",
-						icon: Lock,
-						color: "orange"
-					},
-					{
-						label: "Space Operations",
-						value: "SPACE OPERATIONS",
-						icon: Rocket,
-						color: "blue"
-					},
-					{
-						label: "Special",
-						value: "SPECIAL",
-						icon: Megaphone,
-						color: "purple"
-					},
-					{
-						label: "Drone Show",
-						value: "UAS PUBLIC GATHERING",
-						icon: Drone,
-						color: "purple"
-					},
-					{
-						label: "VIP Movement",
-						value: "VIP",
-						icon: Crown,
-						color: "yellow"
-					},
-				]
+				// the same colors as the map's shapes and the bar's chips
+				options: TFR_TYPES.map(type => ({
+					label: type.label,
+					value: type.value,
+					icon: type.icon,
+					color: type.badge
+				}))
 			},
 		},
 		minSize: 120,
@@ -230,8 +188,17 @@ export const TfrTableSkeletonLoader = () => (
 	</div>
 )
 
+// the grid's rows are "medium": see getRowHeightValue
+const ROW_HEIGHT = 56;
+
+/**
+ * The TFRs as a table, in step with the map: hovering a row picks its shape out on the map and the other way round, a
+ * click on either opens the TFR, and a TFR opened on the map is scrolled into view here.
+ */
 export const TfrTable: React.FC<{ tfrs: Tfr[] }> = ({ tfrs }) => {
-	const { active, clickRow } = useTfrInteractivity();
+	const selectedId = useTfrControls(state => state.selectedId);
+	const hoverId = useTfrControls(state => state.hoverId);
+
 	const { table, ...dataGridProps } = useDataGrid<Tfr>({
 		columns,
 		data: tfrs,
@@ -245,31 +212,70 @@ export const TfrTable: React.FC<{ tfrs: Tfr[] }> = ({ tfrs }) => {
 			},
 		},
 	});
-	
+
+	// The grid scrolls inside a box with a maximum height in pixels, so it's given the room it has.
+	const roomRef = useRef<HTMLDivElement>(null);
+	const [room, setRoom] = useState(320);
+
+	useEffect(() => {
+		const element = roomRef.current;
+		if (!element) return;
+
+		const observer = new ResizeObserver(([entry]) => setRoom(Math.floor(entry.contentRect.height)));
+		observer.observe(element);
+		return () => observer.disconnect();
+	}, []);
+
+	// A TFR opened on the map: bring its row into view, if it's in the table. The rows are virtual, so most of them
+	// aren't on the page to scroll to: work out where this one is.
+	const { dataGridRef, headerRef } = dataGridProps;
+	useEffect(() => {
+		const grid = dataGridRef.current;
+		if (!selectedId || !grid) return;
+
+		const position = table.getRowModel().rows.findIndex(row => row.id === selectedId);
+		if (position < 0) return;
+
+		const header = headerRef.current?.offsetHeight ?? 0;
+		const top = position * ROW_HEIGHT;
+		const bottom = top + ROW_HEIGHT;
+		const visibleHeight = grid.clientHeight - header;
+
+		if (top < grid.scrollTop) grid.scrollTo({ top, behavior: "smooth" });
+		else if (bottom > grid.scrollTop + visibleHeight) grid.scrollTo({ top: bottom - visibleHeight, behavior: "smooth" });
+	}, [selectedId, table, dataGridRef, headerRef]);
+
+	const getRowProps = useCallback((row: Row<Tfr>) => {
+		const id = row.original.notam_id;
+		if (id === selectedId) return { className: "bg-amber-500/10" };
+		if (id === hoverId) return { className: "bg-accent/50" };
+	}, [selectedId, hoverId]);
+
 	return (
-		<div className="flex w-full h-full">
-			<div className="flex-1 min-w-0 transition-all duration-300 ease-in-out">
-				<DataGrid
-					table={table}
-					stretchColumns
-					onRowClicked={row => {
-						const stale = table.getSelectedRowModel().flatRows.map(r => r.original.notam_id);
-						const updated = {
-							[row.original.notam_id]: true,
-							...stale.reduce((acc, id) => ({ ...acc, [id]: false }), {})
-						};
-						
-						clickRow(row.original)
-						table.setRowSelection(updated);
-					}}
-					{...dataGridProps}
-				/>
-			</div>
-			<div className={cn("shrink-0 transition-all duration-300 ease-in-out overflow-hidden", active ? "w-full sm:w-(--detail-panel-width)" : "w-0")}>
-				<div className="w-full border-y border-r border-border overflow-hidden">
-					{active && <TfrInfoPanel tfr={active} />}
-				</div>
-			</div>
+		<div ref={roomRef} className="h-full min-h-0 w-full">
+			{tfrs.length === 0
+				? (
+					<div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
+						No TFRs match. Zoom out, or turn a type back on.
+					</div>
+				)
+				: (
+					<DataGrid
+						table={table}
+						stretchColumns
+						border={false}
+						height={room}
+						getRowProps={getRowProps}
+						onRowHoverChange={(row, hovered) => {
+							const { hoverId, setHover } = useTfrControls.getState();
+							if (hovered) return setHover(row.original.notam_id);
+							// moving from one row to the next fires this row's leave after the next one's enter
+							if (hoverId === row.original.notam_id) setHover(null);
+						}}
+						onRowClicked={row => useTfrControls.getState().select(row.original.notam_id, true)}
+						{...dataGridProps}
+					/>
+				)}
 		</div>
 	);
 }

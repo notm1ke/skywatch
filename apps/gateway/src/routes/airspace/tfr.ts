@@ -7,6 +7,8 @@ import { cache } from "@/middleware/cache";
 
 import {
 	TfrResponse,
+	TfrOverview,
+	TfrShapes,
 	Tfr,
 	TfrGeoJson,
 	TfrText
@@ -26,6 +28,78 @@ const active = base
 		])
 		.then(([tfrs, geo]) => ({ tfrs, geo }))
 	)
+
+// The list and the shapes, ready for a map: see TfrShapes. A new endpoint next to `active` rather than a change to it, so
+// web builds that still call `active` keep working.
+const overview = base
+	.input(z.void())
+	.use(cache(
+		"__airspace:tfr:overview",
+		"2 minutes",
+		TfrOverview
+	))
+	.handler(async () => {
+		const [tfrs, geo] = await Promise.all([
+			getTfrList(),
+			// the list is useful without the shapes: a failure here means a table with no map, not an error page
+			getTfrGeoFeatures().catch(() => null)
+		]);
+
+		return { tfrs, shapes: toShapes(tfrs, geo) };
+	})
+
+// https://epsg.io/3857 -> https://epsg.io/4326
+const WEB_MERCATOR_EXTENT = 20037508.34;
+
+// four decimals is about 10 metres: plenty for an outline on a map of the whole country
+const round = (value: number) => Math.round(value * 1e4) / 1e4;
+
+const toLngLat = ([x, y]: number[]): [number, number] => [
+	round((x * 180) / WEB_MERCATOR_EXTENT),
+	round((Math.atan(Math.exp((y * Math.PI) / WEB_MERCATOR_EXTENT)) * 360) / Math.PI - 90)
+];
+
+const toShapes = (
+	tfrs: z.infer<typeof Tfr>[],
+	geo: z.infer<typeof TfrGeoJson> | null
+): z.infer<typeof TfrShapes> => {
+	const types = new Map(tfrs.map(tfr => [tfr.notam_id, tfr.type]));
+	const bounds = new Map<string, [number, number, number, number]>();
+	const features: z.infer<typeof TfrShapes>["features"] = [];
+
+	for (const feature of geo?.features ?? []) {
+		// a NOTAM key is "6/7601-1-FDC-F": the id is the part before the first dash
+		const id = feature.properties.NOTAM_KEY.split("-")[0];
+		const type = types.get(id);
+		if (!type) continue;
+
+		const coordinates = feature.geometry.coordinates.map(ring => ring.map(toLngLat));
+		features.push({
+			type: "Feature",
+			properties: { id, type },
+			geometry: { type: "Polygon", coordinates }
+		});
+
+		// one NOTAM can have several polygons: its bounds cover all of them
+		const box = bounds.get(id) ?? [Infinity, Infinity, -Infinity, -Infinity];
+		for (const [lng, lat] of coordinates.flat()) {
+			box[0] = Math.min(box[0], lng);
+			box[1] = Math.min(box[1], lat);
+			box[2] = Math.max(box[2], lng);
+			box[3] = Math.max(box[3], lat);
+		}
+		bounds.set(id, box);
+	}
+
+	const items = [...bounds.entries()].map(([id, box]) => ({
+		id,
+		type: types.get(id) ?? "",
+		center: [round((box[0] + box[2]) / 2), round((box[1] + box[3]) / 2)] as [number, number],
+		bounds: box
+	}));
+
+	return { type: "FeatureCollection", features, items };
+}
 
 const getTfrList = async () => axios
 	.get("https://tfr.faa.gov/tfrapi/getTfrList")
@@ -96,5 +170,5 @@ const details = base
 		}))
 
 export const tfrs = {
-	active, details
+	active, overview, details
 }

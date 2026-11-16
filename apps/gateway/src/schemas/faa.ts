@@ -232,6 +232,39 @@ export const TfrResponse = z.object({
 	geo: TfrGeoJson
 });
 
+/**
+ * What the TFR map draws: the polygons in lng/lat (the FAA serves them in web mercator metres), each tagged with the
+ * NOTAM it belongs to and that NOTAM's type, plus one entry per NOTAM with its center and bounding box. Only NOTAMs
+ * that are in the active list are here, and a NOTAM the FAA hasn't published a shape for simply has no entry.
+ */
+export const TfrShapes = z.object({
+	type: z.literal("FeatureCollection"),
+	features: z.array(z.object({
+		type: z.literal("Feature"),
+		properties: z.object({
+			id: z.string(),
+			type: z.string()
+		}),
+		geometry: z.object({
+			type: z.literal("Polygon"),
+			coordinates: PolygonCoordinate
+		})
+	})),
+	items: z.array(z.object({
+		id: z.string(),
+		type: z.string(),
+		/** [lng, lat] */
+		center: z.tuple([z.number(), z.number()]),
+		/** [west, south, east, north] */
+		bounds: z.tuple([z.number(), z.number(), z.number(), z.number()])
+	}))
+});
+
+export const TfrOverview = z.object({
+	tfrs: z.array(Tfr),
+	shapes: TfrShapes
+});
+
 export type Waypoint = WaypointGetPayload<{}>;
 
 export const WaypointUseType = [
