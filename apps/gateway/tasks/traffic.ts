@@ -82,6 +82,37 @@ const sanitizeAndTransform = (flow: TrafficFlowResponse): AirportTrafficFlow => 
 		}))
 });
 
+/**
+ * Writes an airport's buckets, touching only the ones that changed.
+ *
+ * Every pull returns the same rolling window as the last, and nearly all of it is the same as before: the buckets in the
+ * past don't move. This used to delete and re-insert the whole window each time, which left thousands of dead rows an
+ * hour behind in the days every query reads, and those queries slowed down until autovacuum got around to the table
+ * (every day or two). An upsert that skips identical rows writes next to nothing for the buckets that didn't change.
+ *
+ * Done in raw SQL because Prisma's upsert can't take the "only if different" condition, and one statement per airport
+ * is also one atomic write, like the transaction it replaces.
+ */
+const saveBuckets = async (flow: AirportTrafficFlow) => {
+	// one row per bucket: the same time twice in a statement would be "affecting a row a second time", an error
+	const buckets = [...new Map(flow.time_buckets.map(bucket => [
+		`${bucket.day}:${bucket.time}`,
+		{ day: bucket.day, time: bucket.time, counts: bucket.counts, flights: bucket.flights, aar: bucket.aar }
+	])).values()];
+
+	if (!buckets.length) return;
+
+	await prisma.$executeRaw`
+		INSERT INTO airport_traffic_record AS t (iata_code, year, month, day, time, counts, flights, aar)
+		SELECT ${flow.iata_code}::text, ${flow.year}::int, ${flow.month}::int, b.day, b.time, b.counts, b.flights, b.aar
+		FROM jsonb_to_recordset(${JSON.stringify(buckets)}::jsonb)
+			AS b(day int, time text, counts jsonb, flights jsonb, aar int)
+		ON CONFLICT (iata_code, year, month, day, time) DO UPDATE
+			SET counts = EXCLUDED.counts, flights = EXCLUDED.flights, aar = EXCLUDED.aar
+			WHERE (t.counts, t.flights, t.aar) IS DISTINCT FROM (EXCLUDED.counts, EXCLUDED.flights, EXCLUDED.aar)
+	`;
+};
+
 const traffic = defineTask({
 	meta: {
 		name: "traffic",
@@ -187,39 +218,7 @@ const traffic = defineTask({
 							fixes: flow.fixes
 						}
 					})
-					.then(() => prisma.$transaction([
-						prisma.airportTrafficFlowRecord.deleteMany({
-							where: {
-								iata_code: flow.iata_code,
-								year: flow.year,
-								month: flow.month,
-								day: {
-									in: [...new Set(flow
-										.time_buckets
-										.map(bucket => bucket.day)
-									)]
-								},
-								time: {
-									in: [...new Set(flow
-										.time_buckets
-										.map(bucket => bucket.time)
-									)]
-								}
-							}
-						}),
-						prisma.airportTrafficFlowRecord.createMany({
-							data: flow.time_buckets.map(bucket => ({
-								iata_code: bucket.iata_code,
-								year: bucket.year,
-								month: bucket.month,
-								day: bucket.day,
-								time: bucket.time,
-								counts: bucket.counts,
-								flights: bucket.flights,
-								aar: bucket.aar
-							}))
-						})
-					]))
+					.then(() => saveBuckets(flow))
 					.catch(console.error)
 				)),
 			{ concurrency: 15 }

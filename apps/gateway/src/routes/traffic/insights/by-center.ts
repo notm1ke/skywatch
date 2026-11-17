@@ -1,5 +1,6 @@
 import { airspaceInput, base } from "@/utils";
 import { prisma } from "@/services/prisma";
+import { cache } from "@/middleware/cache";
 import { injectDataMarker } from "@/middleware/traffic-marker";
 import { trafficScopeKey, trafficScopeSql } from "@/services/traffic-scope";
 
@@ -7,7 +8,9 @@ import {
 	Airspaces,
 	AirspaceType,
 	ChartConfig,
-	TrafficFlowAggregation
+	TrafficFlowAggregation,
+	TrafficFlowOutput,
+	TRAFFIC_CACHE_TTL
 } from "@/schemas";
 
 const TrafficByCenterConfig = {
@@ -108,6 +111,11 @@ const forAllCenters = (records: TrafficFlowAggregation[] | undefined) => {
 
 export const centers = base
 	.input(airspaceInput)
+	.use(cache(
+		input => `traffic:centers:${trafficScopeKey(input)}`,
+		TRAFFIC_CACHE_TTL,
+		TrafficFlowOutput
+	))
 	.use(injectDataMarker)
 	.handler(async ({ context: { marker }, input }) => {
 		const scopeFilter = trafficScopeSql(input);

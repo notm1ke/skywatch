@@ -8,6 +8,13 @@ type CacheKeyGenerator<TInput> = (input: TInput) => string;
 
 type UseCache<TInput> = (input: TInput) => boolean;
 
+/**
+ * Work in progress, by cache key. When an entry expires, every request that arrives before the first one has refilled it
+ * would otherwise run the same query itself: with a slow one, a page that fires a few requests at once turns into a
+ * pile of identical queries all fighting over the same disk. They wait for the first one's answer instead.
+ */
+const inflight = new Map<string, Promise<unknown>>();
+
 export const cache = <TInput extends Record<string, any>, TOutput>(
 	key: CacheKeyGenerator<TInput> | string,
 	ttl: Duration.DurationInput,
@@ -26,14 +33,22 @@ export const cache = <TInput extends Record<string, any>, TOutput>(
 		if (parsed.success) return output(parsed.data as TOutput);
 	}
 
-	const result = await next(input as TInput);
-	redis.set(
-		cacheKey,
-		JSON.stringify(result.output),
-		'EX', Duration
-			.decode(ttl)
-			.pipe(Duration.toSeconds)
-	);
+	const pending = inflight.get(cacheKey) as Promise<TOutput> | undefined;
+	if (pending) return output(await pending);
 
-	return output(result.output as TOutput);
+	const work = (async () => {
+		const result = await next(input as TInput);
+		redis.set(
+			cacheKey,
+			JSON.stringify(result.output),
+			'EX', Duration
+				.decode(ttl)
+				.pipe(Duration.toSeconds)
+		);
+
+		return result.output as TOutput;
+	})().finally(() => inflight.delete(cacheKey));
+
+	inflight.set(cacheKey, work);
+	return output(await work);
 });

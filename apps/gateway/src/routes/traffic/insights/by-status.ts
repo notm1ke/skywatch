@@ -1,23 +1,9 @@
-import { z } from "zod/v4";
 import { prisma } from "@/services/prisma";
 import { cache } from "@/middleware/cache";
 import { airspaceInput, base } from "@/utils";
 import { injectDataMarker } from "@/middleware/traffic-marker";
 import { trafficScopeKey, trafficScopeSql } from "@/services/traffic-scope";
-import { ChartConfig, TrafficFlowAggregation } from "@/schemas";
-
-const TrafficByStatusOutput = z.object({
-	config: z.record(z.string(), z.object({
-		label: z.string().optional(),
-		color: z.string().optional()
-	})),
-	dataKeys: z.array(z.string()),
-	data: z.array(z.object({
-		time: z.string(),
-		datum: z.record(z.string(), z.number()),
-		cumulative: z.number()
-	}))
-});
+import { ChartConfig, TrafficFlowAggregation, TrafficFlowOutput, TRAFFIC_CACHE_TTL } from "@/schemas";
 
 const TrafficByStatusConfig = {
 	arrived: {
@@ -50,8 +36,8 @@ export const statuses = base
 	.input(airspaceInput)
 	.use(cache(
 		input => `traffic:statuses:${trafficScopeKey(input)}`,
-		"1 minutes",
-		TrafficByStatusOutput
+		TRAFFIC_CACHE_TTL,
+		TrafficFlowOutput
 	))
 	.use(injectDataMarker)
 	.handler(async ({ context: { marker }, input }) => {

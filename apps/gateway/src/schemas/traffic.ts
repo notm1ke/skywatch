@@ -73,6 +73,23 @@ export type TrafficFlow<K extends string = string> = {
 	data: Array<DataPoint<K>>;
 }
 
+/** What a `TrafficFlow` looks like once it's been through the cache (JSON), for the endpoints that cache one. */
+export const TrafficFlowOutput = z.object({
+	config: z.record(z.string(), z.object({
+		label: z.string().optional(),
+		color: z.string().optional()
+	})),
+	dataKeys: z.array(z.string()),
+	data: z.array(z.object({
+		time: z.string(),
+		datum: z.record(z.string(), z.number()),
+		cumulative: z.number()
+	}))
+});
+
+/** How long the traffic charts are cached for. The FAA data is pulled every 30 minutes, so a few minutes is invisible. */
+export const TRAFFIC_CACHE_TTL = "5 minutes";
+
 export type FlowMetricType = "STATUS" | "CENTER" | "FIX";
 
 export type FlowStatusMetricKeys =

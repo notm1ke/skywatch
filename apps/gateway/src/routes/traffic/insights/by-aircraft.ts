@@ -1,9 +1,10 @@
-import { TrafficFlow } from "@/schemas";
+import { TrafficFlow, TrafficFlowOutput, TRAFFIC_CACHE_TTL } from "@/schemas";
 import { prisma } from "@/services/prisma";
+import { cache } from "@/middleware/cache";
 import { airspaceInput, base } from "@/utils";
 import { Prisma } from "@/prisma/generated/client";
 import { injectDataMarker } from "@/middleware/traffic-marker";
-import { trafficScopeSql } from "@/services/traffic-scope";
+import { trafficScopeKey, trafficScopeSql } from "@/services/traffic-scope";
 
 export type CommonPaxAircraftType = typeof CommonPaxAircraft[number];
 
@@ -25,6 +26,11 @@ type QueryResponse = {
 
 export const aircraft = base
 	.input(airspaceInput)
+	.use(cache(
+		input => `traffic:aircraft:${trafficScopeKey(input)}`,
+		TRAFFIC_CACHE_TTL,
+		TrafficFlowOutput
+	))
 	.use(injectDataMarker)
 	.handler(async ({ context: { marker }, input }) => {
 		const scopeFilter = trafficScopeSql(input);
