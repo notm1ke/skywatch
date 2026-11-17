@@ -1,9 +1,11 @@
 import { z } from "zod/v4";
-import { base } from "@/utils";
 import { ORPCError } from "@orpc/server";
+import { base, safeJsonParse } from "@/utils";
 import { prisma } from "@/services/prisma";
+import { redis } from "@/services/redis";
 import { cache } from "@/middleware/cache";
-import { Marker, markerDate, shiftDate } from "../traffic/airport/common";
+import { Prisma } from "@/prisma/generated/client";
+import { Marker, markerDate, parseDate, shiftDate } from "../traffic/airport/common";
 
 /**
  * Numbers for the statistics page, across the whole stored history rather than a single day. Everything here is cached
@@ -16,6 +18,85 @@ const RECENT_DAYS = 30;
 const MIX_DAYS = 7;
 /** A day counts as complete once it has this share of the most buckets any day in the window has. */
 const COMPLETE_RATIO = 0.85;
+
+/** Every day from `from` to `to`, both included. */
+const daysBetween = (from: Marker, to: Marker) => {
+	const days: Marker[] = [];
+	for (let day = from; markerDate(day) <= markerDate(to); day = shiftDate(day, 1)) days.push(day);
+	return days;
+};
+
+/**
+ * "`airport_traffic_record` row `r` is on one of these days", with the days named.
+ *
+ * The obvious way to say it, `(r.year, r.month, r.day) >= (...) AND ... <= (...)`, makes Postgres guess that about a
+ * third of the table matches, so it reads all of it: for a week of flights that was the whole 4.6 GB table (590,000
+ * pages) in a table that only has a few thousand pages a day, and it flushed everything else out of the cache with it,
+ * which is what made the live traffic charts slow afterward. Naming the days gets an index scan (27,000 pages).
+ */
+const onDays = (days: Marker[]) =>
+	Prisma.sql`(r.year, r.month, r.day) IN (${Prisma.join(days.map(day => Prisma.sql`(${day.year}, ${day.month}, ${day.day})`))})`;
+
+/**
+ * A day this many days before the latest one is done: the traffic task only writes today and tomorrow, so nothing that
+ * is written after this can reach back to it.
+ */
+const SETTLED_AFTER_DAYS = 2;
+/** a bit more than the longest window, so a day is remembered for as long as anything asks for it */
+const DAY_MEMO_SECONDS = 70 * 86400;
+
+/**
+ * What a query works out for each day, kept for the days that are done.
+ *
+ * Statistics over a window (the heatmap goes through 56 days of flights) are mostly the same days as last time: the
+ * past doesn't change, only the last couple of days do. So each finished day's result is kept on its own in Redis, and
+ * only the days that aren't there (the unfinished ones, and on the first run all of them) go to the database.
+ *
+ * Losing what's kept costs nothing but time: a day that's gone, or that doesn't parse, is just a day to work out again,
+ * and gets put back. So does Redis being down; that's the same as the days not being there.
+ *
+ * `compute` gets the days to work out and returns the result for each that has one; a day it leaves out has no data,
+ * and isn't kept, in case some arrives. `name` carries a version: change what's computed, change the name.
+ */
+const perDay = async <T>(
+	name: string,
+	schema: z.ZodType<T>,
+	days: Marker[],
+	latest: Marker,
+	compute: (missing: Marker[]) => Promise<Map<string, T>>
+): Promise<Map<string, T>> => {
+	const keyOf = (day: Marker) => `__statistics:day:${name}:${markerDate(day)}`;
+	const settledBefore = markerDate(shiftDate(latest, -SETTLED_AFTER_DAYS));
+	const settled = days.filter(day => markerDate(day) <= settledBefore);
+
+	const result = new Map<string, T>();
+	if (settled.length) {
+		const stored = await redis.mget(settled.map(keyOf)).catch(() => [] as Array<string | null>);
+		stored.forEach((raw, index) => {
+			if (!raw) return;
+			const parsed = schema.safeParse(safeJsonParse(raw));
+			if (parsed.success) result.set(markerDate(settled[index]), parsed.data);
+		});
+	}
+
+	const missing = days.filter(day => !result.has(markerDate(day)));
+	if (!missing.length) return result;
+
+	const computed = await compute(missing);
+	const keep = new Set(settled.map(markerDate));
+	const writes = redis.pipeline();
+
+	for (const day of missing) {
+		const value = computed.get(markerDate(day));
+		if (value === undefined) continue;
+
+		result.set(markerDate(day), value);
+		if (keep.has(markerDate(day))) writes.set(keyOf(day), JSON.stringify(value), "EX", DAY_MEMO_SECONDS);
+	}
+
+	await writes.exec().catch(() => undefined);
+	return result;
+};
 
 /** The most recent day we have traffic for. */
 const latestDay = async (): Promise<Marker> => {
@@ -33,7 +114,7 @@ type BucketRow = { year: number; month: number; day: number; buckets: number };
 
 /** Every day in the window with its totals and whether the feed covered all of it. */
 const dailyRows = async (from: Marker, to: Marker) => {
-	const [totals, buckets] = await Promise.all([
+	const [totals, byDate] = await Promise.all([
 		prisma.$queryRaw<DayRow[]>`
 			SELECT t.year, t.month, t.day,
 				SUM(t.total_flights)::int AS total,
@@ -44,17 +125,20 @@ const dailyRows = async (from: Marker, to: Marker) => {
 			GROUP BY t.year, t.month, t.day
 			ORDER BY t.year, t.month, t.day
 		`,
-		prisma.$queryRaw<BucketRow[]>`
-			SELECT r.year, r.month, r.day, COUNT(DISTINCT r.time)::int AS buckets
-			FROM airport_traffic_record r
-			WHERE (r.year, r.month, r.day) >= (${from.year}, ${from.month}, ${from.day})
-				AND (r.year, r.month, r.day) <= (${to.year}, ${to.month}, ${to.day})
-			GROUP BY r.year, r.month, r.day
-		`
+		// counting the distinct times in a day goes through every record of it, and a finished day's count never changes
+		perDay("buckets-v1", z.number(), daysBetween(from, to), to, async missing => {
+			const rows = await prisma.$queryRaw<BucketRow[]>`
+				SELECT r.year, r.month, r.day, COUNT(DISTINCT r.time)::int AS buckets
+				FROM airport_traffic_record r
+				WHERE ${onDays(missing)}
+				GROUP BY r.year, r.month, r.day
+			`;
+
+			return new Map(rows.map(row => [markerDate(row), row.buckets]));
+		})
 	]);
 
-	const byDate = new Map(buckets.map(row => [markerDate(row), row.buckets]));
-	const most = Math.max(0, ...buckets.map(row => row.buckets));
+	const most = Math.max(0, ...byDate.values());
 	const threshold = Math.ceil(most * COMPLETE_RATIO);
 
 	return totals.map(row => ({
@@ -126,7 +210,41 @@ const Heatmap = z.object({
 	cells: z.array(z.object({ dow: z.number(), hour: z.number(), avg: z.number(), samples: z.number() }))
 });
 
-type CellRow = { dow: number; hr: number; avg: number; samples: number };
+/** one day's arrivals: [airport, local hour, arrivals], where the hour counts hours since 1970 on that airport's own clock */
+const DayHours = z.array(z.tuple([z.string(), z.number(), z.number()]));
+type HourRow = { year: number; month: number; day: number; iata_code: string; hour: number; n: number };
+
+/**
+ * Arrivals per airport per hour for each of these days, with the hours on the airports' own clocks (a 6pm rush is 6pm
+ * everywhere). Airports without a time zone we know are left out. This is the expensive part, a few hundred thousand
+ * rows of flights through `jsonb_array_elements`, so a finished day is only ever worked out once.
+ */
+const hourlyArrivals = (days: Marker[], latest: Marker) => perDay("heatmap-v1", DayHours, days, latest, async missing => {
+	const rows = await prisma.$queryRaw<HourRow[]>`
+		WITH b AS (
+			SELECT r.year, r.month, r.day, r.iata_code,
+				date_trunc('hour', (make_timestamp(r.year, r.month, r.day, substr(r.time, 1, 2)::int, substr(r.time, 3, 2)::int, 0) AT TIME ZONE 'UTC') AT TIME ZONE a.timezone) AS h,
+				COALESCE((SELECT SUM((e->>'count')::int) FROM jsonb_array_elements(r.counts::jsonb) e WHERE e->>'type' = 'STATUS'), 0)::int AS n
+			FROM airport_traffic_record r
+			JOIN airports a ON a.iata_code = r.iata_code
+			WHERE a.timezone IN (SELECT name FROM pg_timezone_names)
+				AND ${onDays(missing)}
+		)
+		SELECT year, month, day, iata_code, (EXTRACT(EPOCH FROM h) / 3600)::int AS hour, SUM(n)::int AS n
+		FROM b
+		GROUP BY 1, 2, 3, 4, 5
+	`;
+
+	const byDate = new Map<string, Array<[string, number, number]>>();
+	for (const row of rows) {
+		const date = markerDate(row);
+		const hours = byDate.get(date) ?? [];
+		hours.push([row.iata_code, row.hour, row.n]);
+		byDate.set(date, hours);
+	}
+
+	return byDate;
+});
 
 const heatmap = base
 	.input(z.void())
@@ -135,45 +253,52 @@ const heatmap = base
 		const latest = await latestDay();
 		const from = shiftDate(latest, -(HEATMAP_DAYS - 1));
 		const days = await dailyRows(from, latest);
-		const dates = days.filter(day => day.complete).map(day => day.date);
+		const dates = days.filter(day => day.complete).map(day => parseDate(day.date));
 
 		if (!dates.length) return { sampleDays: 0, cells: [] };
 
-		// Each airport's arrivals are put on its own clock (a 6pm rush is 6pm everywhere), averaged per weekday and hour,
-		// and then added up across airports: "arrivals per hour across the system, as if the clock were the same
-		// everywhere". Airports without a time zone we know are left out.
-		const rows = await prisma.$queryRaw<CellRow[]>`
-			WITH b AS (
-				SELECT r.iata_code,
-					(make_timestamp(r.year, r.month, r.day, substr(r.time, 1, 2)::int, substr(r.time, 3, 2)::int, 0) AT TIME ZONE 'UTC') AT TIME ZONE a.timezone AS lt,
-					COALESCE((SELECT SUM((e->>'count')::int) FROM jsonb_array_elements(r.counts::jsonb) e WHERE e->>'type' = 'STATUS'), 0)::int AS n
-				FROM airport_traffic_record r
-				JOIN airports a ON a.iata_code = r.iata_code
-				WHERE a.timezone IN (SELECT name FROM pg_timezone_names)
-					AND (r.year, r.month, r.day) >= (${from.year}, ${from.month}, ${from.day})
-					AND (r.year, r.month, r.day) <= (${latest.year}, ${latest.month}, ${latest.day})
-					AND make_date(r.year, r.month, r.day) = ANY(${dates}::date[])
-			),
-			hours AS (SELECT iata_code, date_trunc('hour', lt) AS h, SUM(n)::int AS n FROM b GROUP BY 1, 2),
-			cells AS (
-				SELECT iata_code, EXTRACT(dow FROM h)::int AS dow, EXTRACT(hour FROM h)::int AS hr, AVG(n)::float AS avg, COUNT(*)::int AS samples
-				FROM hours
-				GROUP BY 1, 2, 3
-			)
-			SELECT dow, hr, SUM(avg)::float AS avg, ROUND(AVG(samples))::int AS samples
-			FROM cells
-			GROUP BY 1, 2
-			ORDER BY 1, 2
-		`;
+		const byDate = await hourlyArrivals(dates, latest);
+
+		// A local hour of a half-hour time zone falls across two Zulu days, so the days' hours are put together first.
+		const hours = new Map<string, number>();
+		for (const day of byDate.values()) {
+			for (const [iata, hour, n] of day) hours.set(`${iata}|${hour}`, (hours.get(`${iata}|${hour}`) ?? 0) + n);
+		}
+
+		// Each airport's hours are averaged per weekday and hour of the day...
+		const perAirport = new Map<string, { dow: number; hr: number; sum: number; samples: number }>();
+		for (const [key, n] of hours) {
+			const [iata, hour] = key.split("|");
+			const at = new Date(Number(hour) * 3600000);
+			const [dow, hr] = [at.getUTCDay(), at.getUTCHours()];
+
+			const entry = perAirport.get(`${iata}|${dow}|${hr}`) ?? { dow, hr, sum: 0, samples: 0 };
+			entry.sum += n;
+			entry.samples++;
+			perAirport.set(`${iata}|${dow}|${hr}`, entry);
+		}
+
+		// ...and then added up across airports: "arrivals per hour across the system, as if the clock were the same
+		// everywhere".
+		const cells = new Map<string, { dow: number; hr: number; avg: number; samples: number; airports: number }>();
+		for (const { dow, hr, sum, samples } of perAirport.values()) {
+			const cell = cells.get(`${dow}|${hr}`) ?? { dow, hr, avg: 0, samples: 0, airports: 0 };
+			cell.avg += sum / samples;
+			cell.samples += samples;
+			cell.airports++;
+			cells.set(`${dow}|${hr}`, cell);
+		}
 
 		return {
 			sampleDays: dates.length,
-			cells: rows.map(row => ({
-				dow: row.dow,
-				hour: row.hr,
-				avg: Math.round(row.avg),
-				samples: row.samples
-			}))
+			cells: [...cells.values()]
+				.sort((a, b) => a.dow - b.dow || a.hr - b.hr)
+				.map(cell => ({
+					dow: cell.dow,
+					hour: cell.hr,
+					avg: Math.round(cell.avg),
+					samples: Math.round(cell.samples / cell.airports)
+				}))
 		};
 	});
 
@@ -276,8 +401,7 @@ const mix = base
 				COUNT(*)::int AS n
 			FROM airport_traffic_record r,
 			LATERAL jsonb_array_elements(r.flights::jsonb) AS flight
-			WHERE (r.year, r.month, r.day) >= (${from.year}, ${from.month}, ${from.day})
-				AND (r.year, r.month, r.day) <= (${latest.year}, ${latest.month}, ${latest.day})
+			WHERE ${onDays(daysBetween(from, latest))}
 			GROUP BY 1, 2, 3
 		`;
 
@@ -782,8 +906,7 @@ const corridors = base
 				SELECT COALESCE(flight->>'origin', '') AS origin, r.iata_code AS destination, COUNT(*)::int AS n
 				FROM airport_traffic_record r,
 				LATERAL jsonb_array_elements(r.flights::jsonb) AS flight
-				WHERE (r.year, r.month, r.day) >= (${from.year}, ${from.month}, ${from.day})
-					AND (r.year, r.month, r.day) <= (${latest.year}, ${latest.month}, ${latest.day})
+				WHERE ${onDays(daysBetween(from, latest))}
 				GROUP BY 1, 2
 			`,
 			prisma.airport.findMany({ select: { iata_code: true } })
